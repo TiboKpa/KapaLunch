@@ -1,29 +1,37 @@
-import mongoose from 'mongoose'
+import { Sequelize } from 'sequelize'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+// Configuration SQLite
+const dbPath = process.env.DB_PATH || path.join(__dirname, '../../database.sqlite')
+
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: dbPath,
+  logging: process.env.NODE_ENV === 'development' ? console.log : false,
+  define: {
+    timestamps: true,
+    underscored: false
+  }
+})
 
 const connectDB = async () => {
   try {
-    const options = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-
-    const conn = await mongoose.connect(process.env.MONGODB_URI, options)
-
-    console.log(`✅ MongoDB connecté: ${conn.connection.host}`)
-    console.log(`📋 Base de données: ${conn.connection.name}`)
-
-    mongoose.connection.on('error', (err) => {
-      console.error('❌ Erreur MongoDB:', err)
-    })
-
-    mongoose.connection.on('disconnected', () => {
-      console.log('⚠️  MongoDB déconnecté')
-    })
-
+    await sequelize.authenticate()
+    console.log(`✅ SQLite connecté: ${dbPath}`)
+    
+    // Synchroniser les modèles avec la base de données
+    await sequelize.sync({ alter: process.env.NODE_ENV === 'development' })
+    console.log('✅ Modèles synchronisés')
+    
   } catch (error) {
-    console.error('❌ Erreur de connexion MongoDB:', error.message)
+    console.error('❌ Erreur de connexion SQLite:', error.message)
     process.exit(1)
   }
 }
 
+export { sequelize, connectDB }
 export default connectDB
