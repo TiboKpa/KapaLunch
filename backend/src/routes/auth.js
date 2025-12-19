@@ -33,20 +33,20 @@ router.post('/signup', [
       name,
       email,
       password,
-      isAdmin: false
+      role: 'lurker' // Nouveau compte = lurker par défaut
     })
 
     const token = generateToken(user.id)
 
     res.status(201).json({
       success: true,
-      message: 'Compte créé avec succès',
+      message: 'Compte créé avec succès. En attente de validation par un administrateur.',
       token,
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
-        isAdmin: user.isAdmin
+        role: user.role
       }
     })
 
@@ -60,7 +60,7 @@ router.post('/signup', [
 })
 
 router.post('/login', [
-  body('email').isEmail().withMessage('Email invalide'),
+  body('email').notEmpty().withMessage('Email requis'),
   body('password').notEmpty().withMessage('Le mot de passe est requis')
 ], async (req, res) => {
   try {
@@ -109,7 +109,7 @@ router.post('/login', [
         id: user.id,
         name: user.name,
         email: user.email,
-        isAdmin: user.isAdmin
+        role: user.role
       }
     })
 
@@ -129,7 +129,7 @@ router.get('/verify', protect, async (req, res) => {
       id: req.user.id,
       name: req.user.name,
       email: req.user.email,
-      isAdmin: req.user.isAdmin
+      role: req.user.role
     }
   })
 })
