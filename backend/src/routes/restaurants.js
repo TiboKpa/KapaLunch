@@ -1,6 +1,8 @@
 import express from 'express'
 import { body, validationResult } from 'express-validator'
+import { Op } from 'sequelize'
 import Restaurant from '../models/Restaurant.js'
+import User from '../models/User.js'
 import { protect } from '../middleware/auth.js'
 import { requireAdmin } from '../middleware/admin.js'
 
@@ -10,22 +12,28 @@ router.get('/', async (req, res) => {
   try {
     const { type, search } = req.query
 
-    let filter = { isValidated: true }
+    let where = { isValidated: true }
 
     if (type && type !== 'all') {
-      filter.type = type
+      where.type = type
     }
 
     if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { address: { $regex: search, $options: 'i' } }
+      where[Op.or] = [
+        { name: { [Op.like]: `%${search}%` } },
+        { address: { [Op.like]: `%${search}%` } }
       ]
     }
 
-    const restaurants = await Restaurant.find(filter)
-      .populate('createdBy', 'name email')
-      .sort({ createdAt: -1 })
+    const restaurants = await Restaurant.findAll({
+      where,
+      include: [{
+        model: User,
+        as: 'creator',
+        attributes: ['id', 'name', 'email']
+      }],
+      order: [['createdAt', 'DESC']]
+    })
 
     res.json({
       success: true,
@@ -44,8 +52,13 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const restaurant = await Restaurant.findById(req.params.id)
-      .populate('createdBy', 'name email')
+    const restaurant = await Restaurant.findByPk(req.params.id, {
+      include: [{
+        model: User,
+        as: 'creator',
+        attributes: ['id', 'name', 'email']
+      }]
+    })
 
     if (!restaurant) {
       return res.status(404).json({
@@ -88,8 +101,7 @@ router.post('/', [
     const { name, address, lat, lon, type, description } = req.body
 
     const existingRestaurant = await Restaurant.findOne({ 
-      name, 
-      address 
+      where: { name, address }
     })
 
     if (existingRestaurant) {
@@ -106,7 +118,7 @@ router.post('/', [
       lon,
       type: type || '',
       description: description || '',
-      createdBy: req.user._id
+      createdBy: req.user.id
     })
 
     res.status(201).json({
@@ -131,7 +143,7 @@ router.put('/:id', [
   try {
     const { name, address, lat, lon, type, description } = req.body
 
-    const restaurant = await Restaurant.findById(req.params.id)
+    const restaurant = await Restaurant.findByPk(req.params.id)
 
     if (!restaurant) {
       return res.status(404).json({
@@ -169,7 +181,7 @@ router.delete('/:id', [
   requireAdmin
 ], async (req, res) => {
   try {
-    const restaurant = await Restaurant.findById(req.params.id)
+    const restaurant = await Restaurant.findByPk(req.params.id)
 
     if (!restaurant) {
       return res.status(404).json({
@@ -178,7 +190,7 @@ router.delete('/:id', [
       })
     }
 
-    await restaurant.deleteOne()
+    await restaurant.destroy()
 
     res.json({
       success: true,
@@ -196,11 +208,19 @@ router.delete('/:id', [
 
 router.get('/meta/types', async (req, res) => {
   try {
-    const types = await Restaurant.distinct('type')
+    const restaurants = await Restaurant.findAll({
+      attributes: ['type'],
+      group: ['type'],
+      where: {
+        type: { [Op.ne]: '' }
+      }
+    })
+    
+    const types = restaurants.map(r => r.type)
     
     res.json({
       success: true,
-      data: types.filter(type => type !== '')
+      data: types
     })
 
   } catch (error) {
