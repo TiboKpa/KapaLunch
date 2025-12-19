@@ -5,6 +5,7 @@ import RestaurantList from './components/RestaurantList'
 import AddRestaurantForm from './components/AddRestaurantForm'
 import RestaurantDetail from './components/RestaurantDetail'
 import './styles/App.css'
+import './styles/features.css'
 
 function App() {
   const [restaurants, setRestaurants] = useState([])
