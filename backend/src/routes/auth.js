@@ -21,7 +21,7 @@ router.post('/signup', [
 
     const { name, email, password } = req.body
 
-    const existingUser = await User.findOne({ email })
+    const existingUser = await User.findOne({ where: { email } })
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -36,14 +36,14 @@ router.post('/signup', [
       isAdmin: false
     })
 
-    const token = generateToken(user._id)
+    const token = generateToken(user.id)
 
     res.status(201).json({
       success: true,
       message: 'Compte créé avec succès',
       token,
       user: {
-        id: user._id,
+        id: user.id,
         name: user.name,
         email: user.email,
         isAdmin: user.isAdmin
@@ -74,7 +74,7 @@ router.post('/login', [
 
     const { email, password } = req.body
 
-    const user = await User.findOne({ email }).select('+password')
+    const user = await User.findOne({ where: { email } })
 
     if (!user) {
       return res.status(401).json({
@@ -99,14 +99,14 @@ router.post('/login', [
       })
     }
 
-    const token = generateToken(user._id)
+    const token = generateToken(user.id)
 
     res.json({
       success: true,
       message: 'Connexion réussie',
       token,
       user: {
-        id: user._id,
+        id: user.id,
         name: user.name,
         email: user.email,
         isAdmin: user.isAdmin
@@ -126,7 +126,7 @@ router.get('/verify', protect, async (req, res) => {
   res.json({
     success: true,
     user: {
-      id: req.user._id,
+      id: req.user.id,
       name: req.user.name,
       email: req.user.email,
       isAdmin: req.user.isAdmin
