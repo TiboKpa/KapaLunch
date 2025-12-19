@@ -1,0 +1,505 @@
+/* Badges de rôles */
+.role-badge {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  margin-left: 0.5rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Bouton admin */
+.btn-admin {
+  background: #d4af37;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-admin:hover {
+  background: #c19b2a;
+  transform: translateY(-2px);
+}
+
+/* Boutons success/danger */
+.btn-success {
+  background: #4caf50;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.btn-success:hover {
+  background: #45a049;
+}
+
+.btn-danger {
+  background: #f44336;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.btn-danger:hover {
+  background: #da190b;
+}
+
+/* Panneau admin */
+.admin-panel {
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.admin-section {
+  margin-bottom: 2rem;
+}
+
+.admin-section h3 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.lurkers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.lurker-card {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lurker-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.lurker-info strong {
+  color: #2c3e50;
+}
+
+.lurker-email {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.lurker-date {
+  color: #adb5bd;
+  font-size: 0.8rem;
+}
+
+.lurker-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.empty-message {
+  text-align: center;
+  color: #6c757d;
+  padding: 2rem;
+  font-size: 0.95rem;
+}
+
+/* Avis et reviews */
+.reviews-list {
+  margin-top: 1.5rem;
+}
+
+.reviews-list h3 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.review-card {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  border: 1px solid #dee2e6;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.review-author {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.review-author strong {
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.review-date {
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.review-rating {
+  font-size: 1rem;
+  color: #ffc107;
+}
+
+.review-comment {
+  color: #495057;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.reviews-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+}
+
+.empty-subtitle {
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+/* Formulaire d'ajout d'avis */
+.add-review-form {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #dee2e6;
+}
+
+.add-review-form h3 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.rating-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: transform 0.2s ease;
+  color: #ddd;
+}
+
+.star-btn.active {
+  color: #ffc107;
+}
+
+.star-btn:hover {
+  transform: scale(1.2);
+}
+
+.rating-text {
+  margin-left: 0.5rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.review-form-blocked {
+  background: #fff3cd;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  margin-bottom: 1rem;
+}
+
+/* Détail restaurant modal */
+.restaurant-detail-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 2rem;
+}
+
+.restaurant-detail {
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.restaurant-header {
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px 12px 0 0;
+}
+
+.restaurant-header h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.8rem;
+}
+
+.restaurant-type {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  padding: 0.3rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.restaurant-address {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.restaurant-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.restaurant-rating .stars {
+  font-size: 1.2rem;
+}
+
+.restaurant-rating .rating-value {
+  font-weight: 600;
+}
+
+.restaurant-rating .review-count {
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.restaurant-description {
+  margin-top: 1rem;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.restaurant-content {
+  padding: 1.5rem 2rem 2rem 2rem;
+}
+
+.reviews-section {
+  margin-top: 1.5rem;
+}
+
+/* Messages de succès */
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  padding: 0.7rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  border: 1px solid #c3e6cb;
+}
+
+/* Boutons modales */
+.modal-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  justify-content: flex-end;
+}
+
+/* Popups carte avec avis */
+.popup-rating {
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.popup-stars {
+  color: #ffc107;
+  font-size: 1rem;
+}
+
+.popup-reviews {
+  margin-top: 0.75rem;
+  border-top: 1px solid #dee2e6;
+  padding-top: 0.75rem;
+}
+
+.popup-reviews h4 {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: #495057;
+}
+
+.popup-review {
+  background: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.popup-review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.popup-review-header strong {
+  font-size: 0.85rem;
+  color: #2c3e50;
+}
+
+.popup-review-header span {
+  font-size: 0.9rem;
+}
+
+.popup-review-comment {
+  color: #495057;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.popup-more {
+  text-align: center;
+  color: #6c757d;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.popup-no-reviews {
+  color: #6c757d;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.popup-btn {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  width: 100%;
+  transition: background 0.2s ease;
+}
+
+.popup-btn:hover {
+  background: #5568d3;
+}
+
+.popup-loading {
+  color: #6c757d;
+  font-size: 0.85rem;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Scrollbar pour modal */
+.restaurant-detail::-webkit-scrollbar,
+.admin-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.restaurant-detail::-webkit-scrollbar-track,
+.admin-panel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.restaurant-detail::-webkit-scrollbar-thumb,
+.admin-panel::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+.restaurant-detail::-webkit-scrollbar-thumb:hover,
+.admin-panel::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .restaurant-detail-overlay {
+    padding: 1rem;
+  }
+
+  .restaurant-detail {
+    max-width: 100%;
+  }
+
+  .restaurant-header,
+  .restaurant-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .lurker-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .lurker-actions {
+    width: 100%;
+  }
+
+  .lurker-actions button {
+    flex: 1;
+  }
+}
