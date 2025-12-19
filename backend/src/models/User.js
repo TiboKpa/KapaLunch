@@ -1,64 +1,82 @@
-import mongoose from 'mongoose'
+import { DataTypes } from 'sequelize'
 import bcrypt from 'bcryptjs'
+import { sequelize } from '../config/database.js'
 
-const userSchema = new mongoose.Schema({
+const User = sequelize.define('User', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
   name: {
-    type: String,
-    required: [true, 'Le nom est requis'],
-    trim: true,
-    minlength: [2, 'Le nom doit contenir au moins 2 caractères'],
-    maxlength: [50, 'Le nom ne peut pas dépasser 50 caractères']
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: 'Le nom est requis' },
+      len: {
+        args: [2, 50],
+        msg: 'Le nom doit contenir entre 2 et 50 caractères'
+      }
+    }
   },
   email: {
-    type: String,
-    required: [true, 'L\'email est requis'],
+    type: DataTypes.STRING,
+    allowNull: false,
     unique: true,
-    lowercase: true,
-    trim: true,
-    match: [/^\S+@\S+\.\S+$/, 'Email invalide']
+    validate: {
+      isEmail: { msg: 'Email invalide' },
+      notEmpty: { msg: 'L\'email est requis' }
+    },
+    set(value) {
+      this.setDataValue('email', value.toLowerCase().trim())
+    }
   },
   password: {
-    type: String,
-    required: [true, 'Le mot de passe est requis'],
-    minlength: [6, 'Le mot de passe doit contenir au moins 6 caractères'],
-    select: false
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: 'Le mot de passe est requis' },
+      len: {
+        args: [6, 255],
+        msg: 'Le mot de passe doit contenir au moins 6 caractères'
+      }
+    }
   },
   isAdmin: {
-    type: Boolean,
-    default: false
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   },
   isActive: {
-    type: Boolean,
-    default: true
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
   }
 }, {
-  timestamps: true
+  tableName: 'users',
+  timestamps: true,
+  hooks: {
+    beforeCreate: async (user) => {
+      if (user.password) {
+        const salt = await bcrypt.genSalt(10)
+        user.password = await bcrypt.hash(user.password, salt)
+      }
+    },
+    beforeUpdate: async (user) => {
+      if (user.changed('password')) {
+        const salt = await bcrypt.genSalt(10)
+        user.password = await bcrypt.hash(user.password, salt)
+      }
+    }
+  }
 })
 
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) {
-    return next()
-  }
-  try {
-    const salt = await bcrypt.genSalt(10)
-    this.password = await bcrypt.hash(this.password, salt)
-    next()
-  } catch (error) {
-    next(error)
-  }
-})
-
-userSchema.methods.comparePassword = async function(candidatePassword) {
+User.prototype.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password)
 }
 
-userSchema.methods.toJSON = function() {
-  const user = this.toObject()
-  delete user.password
-  delete user.__v
-  return user
+User.prototype.toJSON = function() {
+  const values = { ...this.get() }
+  delete values.password
+  return values
 }
-
-const User = mongoose.model('User', userSchema)
 
 export default User
