@@ -7,7 +7,7 @@ Application complète de gestion de restaurants avec carte interactive.
 ```
 KapaLunch/
 ├── frontend/    # React + Vite + Leaflet
-└── backend/     # Node.js + Express + MongoDB
+└── backend/     # Node.js + Express + SQLite
 ```
 
 ## 🚀 Installation complète
@@ -18,11 +18,13 @@ KapaLunch/
 cd backend
 npm install
 cp .env.example .env
-# Éditer .env avec vos valeurs (MongoDB URI, JWT_SECRET)
+# Pas de configuration nécessaire !
 npm run dev
 ```
 
 L'API sera disponible sur `http://localhost:5000/api`
+
+**SQLite crée automatiquement le fichier `database.sqlite` au démarrage !**
 
 ### Frontend
 
@@ -35,37 +37,18 @@ npm run dev
 
 L'application sera disponible sur `http://localhost:3000`
 
-## 🛠️ Configuration
+## 🔑 Premier utilisateur admin
 
-### MongoDB
-
-**Option 1 : MongoDB local**
 ```bash
-# Installer MongoDB
-brew install mongodb-community  # macOS
-sudo apt install mongodb        # Ubuntu
-
-# Démarrer MongoDB
-mongod
+cd backend
+sqlite3 database.sqlite
+UPDATE users SET isAdmin = 1 WHERE email = "votre@email.com";
+.quit
 ```
 
-**Option 2 : MongoDB Atlas (cloud gratuit)**
-1. Créer un compte sur [mongodb.com](https://mongodb.com)
-2. Créer un cluster gratuit
-3. Récupérer l'URI de connexion
-4. Mettre à jour `MONGODB_URI` dans `backend/.env`
-
-### Premier utilisateur admin
-
+Ou en une ligne :
 ```bash
-# Se connecter à MongoDB
-mongosh kapalunch
-
-# Rendre un utilisateur admin
-db.users.updateOne(
-  { email: "votre@email.com" },
-  { $set: { isAdmin: true } }
-)
+echo "UPDATE users SET isAdmin = 1 WHERE email = 'votre@email.com';" | sqlite3 backend/database.sqlite
 ```
 
 ## ✨ Fonctionnalités
@@ -77,6 +60,7 @@ db.users.updateOne(
 - ✅ **Recherche et filtres** en temps réel
 - ✅ **Géocodage automatique** des adresses (Nominatim)
 - ✅ **Responsive design** mobile-friendly
+- ✅ **SQLite** - Zéro configuration de base de données
 
 ## 📚 API Endpoints
 
@@ -107,9 +91,17 @@ db.users.updateOne(
 ### Backend
 - Node.js
 - Express
-- MongoDB / Mongoose
+- **SQLite** / Sequelize
 - JWT
 - bcryptjs
+
+## 💾 SQLite - Avantages
+
+- ✅ **Zéro installation** - Pas de serveur à installer
+- ✅ **Fichier unique** - Toute la DB dans `database.sqlite`
+- ✅ **Auto-création** - Démarre immédiatement
+- ✅ **Portable** - Copiez le fichier pour sauvegarder
+- ✅ **Parfait pour le développement** et les petits projets
 
 ## 👨‍💻 Développement
 
