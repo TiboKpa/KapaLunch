@@ -2,16 +2,22 @@ import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import connectDB from './config/database.js'
+import seedAdmin from './config/seed.js'
 
 import authRoutes from './routes/auth.js'
 import restaurantRoutes from './routes/restaurants.js'
 import geocodeRoutes from './routes/geocode.js'
+import userRoutes from './routes/users.js'
+import reviewRoutes from './routes/reviews.js'
 
 dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 5000
 
-connectDB()
+// Connexion DB et seed admin
+connectDB().then(() => {
+  seedAdmin()
+})
 
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
@@ -29,6 +35,8 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes)
 app.use('/api/restaurants', restaurantRoutes)
 app.use('/api/geocode', geocodeRoutes)
+app.use('/api/users', userRoutes)
+app.use('/api/reviews', reviewRoutes)
 
 app.get('/api/health', (req, res) => {
   res.json({ 
