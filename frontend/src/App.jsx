@@ -3,6 +3,7 @@ import Header from './components/Header'
 import Map from './components/Map'
 import RestaurantList from './components/RestaurantList'
 import AddRestaurantForm from './components/AddRestaurantForm'
+import RestaurantDetail from './components/RestaurantDetail'
 import './styles/App.css'
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
   const [user, setUser] = useState(null)
   const [selectedRestaurant, setSelectedRestaurant] = useState(null)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [showRestaurantDetail, setShowRestaurantDetail] = useState(false)
 
   useEffect(() => {
     loadRestaurants()
@@ -18,7 +20,7 @@ function App() {
 
   const loadRestaurants = async () => {
     try {
-      const response = await fetch('/api/restaurants')
+      const response = await fetch('http://localhost:5000/api/restaurants')
       const data = await response.json()
       setRestaurants(data.data || data)
     } catch (error) {
@@ -50,7 +52,7 @@ function App() {
   const handleAddRestaurant = async (newRestaurant) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('/api/restaurants', {
+      const response = await fetch('http://localhost:5000/api/restaurants', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,12 +65,22 @@ function App() {
         loadRestaurants()
         setShowAddForm(false)
         alert('Restaurant ajouté avec succès !')
+      } else {
+        const error = await response.json()
+        alert(error.message || 'Erreur lors de l\'ajout')
       }
     } catch (error) {
       console.error('Erreur ajout restaurant:', error)
       alert('Erreur lors de l\'ajout du restaurant')
     }
   }
+
+  const handleSelectRestaurant = (restaurant) => {
+    setSelectedRestaurant(restaurant)
+    setShowRestaurantDetail(true)
+  }
+
+  const canAddRestaurant = user && (user.role === 'user' || user.role === 'admin')
 
   return (
     <div className="app">
@@ -84,22 +96,34 @@ function App() {
           <Map 
             restaurants={restaurants}
             selectedRestaurant={selectedRestaurant}
-            onSelectRestaurant={setSelectedRestaurant}
+            onSelectRestaurant={handleSelectRestaurant}
           />
         </div>
 
         <div className="sidebar">
-          {showAddForm && user?.isAdmin && (
+          {showAddForm && canAddRestaurant && (
             <AddRestaurantForm onSubmit={handleAddRestaurant} />
           )}
 
           <RestaurantList 
             restaurants={restaurants}
             selectedRestaurant={selectedRestaurant}
-            onSelectRestaurant={setSelectedRestaurant}
+            onSelectRestaurant={handleSelectRestaurant}
           />
         </div>
       </div>
+
+      {/* Modal détails restaurant avec avis */}
+      {showRestaurantDetail && selectedRestaurant && (
+        <RestaurantDetail
+          restaurant={selectedRestaurant}
+          onClose={() => {
+            setShowRestaurantDetail(false)
+            setSelectedRestaurant(null)
+          }}
+          user={user}
+        />
+      )}
     </div>
   )
 }
