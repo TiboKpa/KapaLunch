@@ -240,7 +240,8 @@
   border-bottom: 1px solid #dee2e6;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  min-height: 56px;
+  height: 68px;
+  flex-shrink: 0;
 }
 
 .user-panel-header h3 {
@@ -405,42 +406,18 @@
   border: 1px solid #dee2e6;
   border-top: none;
   border-radius: 0 0 12px 12px;
-  padding: 1rem;
+  padding: 0;
   margin-top: -12px;
-  animation: slideDown 0.3s ease;
   overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
 }
 
-/* Animation d'ouverture dropdown */
-@keyframes slideDown {
-  from {
-    max-height: 0;
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    max-height: 800px;
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Animation de fermeture dropdown (REVERSE) */
-@keyframes slideUp {
-  from {
-    max-height: 800px;
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    max-height: 0;
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-}
-
-.dropdown-content.closing {
-  animation: slideUp 0.3s ease forwards;
+.dropdown-content.open {
+  max-height: 1000px;
+  opacity: 1;
+  padding: 1rem;
 }
 
 .dropdown-content .form-group {
