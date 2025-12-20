@@ -189,17 +189,36 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted, pend
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQuery)}`
   }
 
-  const getAddressWithoutNameAndCountry = (address) => {
-    // Format OSM: "Nom, Rue, Code Postal Ville, Pays"
-    // On veut: "40 Quai de la Plage, 69660 Collonges-au-Mont-d'Or"
-    // (tout sauf la première et dernière partie)
+  const extractPostalCodeAndCity = (address) => {
+    if (!address) return ''
+    
+    // Chercher le code postal (5 chiffres)
+    const postalCodeMatch = address.match(/\b(\d{5})\b/)
+    if (!postalCodeMatch) return ''
+    
+    const postalCode = postalCodeMatch[1]
     const parts = address.split(',')
-    if (parts.length > 2) {
-      // Enlever la première partie (nom) et la dernière (pays)
-      return parts.slice(1, -1).join(',').trim()
+    
+    // Chercher la ville (partie juste avant ou après le code postal)
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i].trim()
+      if (part.includes(postalCode)) {
+        // Le code postal est dans cette partie, extraire la ville
+        const cityMatch = part.match(/\d{5}\s+(.+)/)
+        if (cityMatch) {
+          return `${postalCode} ${cityMatch[1]}`
+        }
+      }
     }
-    // Fallback: retourner l'adresse complète si format inattendu
-    return address
+    
+    // Si le code postal est seul, chercher la ville dans les parties précédentes
+    const postalIndex = parts.findIndex(p => p.trim() === postalCode)
+    if (postalIndex > 0) {
+      const city = parts[postalIndex - 1].trim()
+      return `${postalCode} ${city}`
+    }
+    
+    return postalCode
   }
 
   if (!restaurant) return null
@@ -216,7 +235,7 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted, pend
         <div className="restaurant-header">
           <h2>{restaurant.name}</h2>
           
-          {/* Ligne unique avec Type, Adresse (sans nom ni pays), Note */}
+          {/* Ligne unique avec Type, Code Postal + Ville, Note */}
           <div className="restaurant-info-line">
             {restaurant.type && (
               <span className="info-item">
@@ -234,7 +253,7 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted, pend
                 className="city-link"
                 title="Ouvrir dans Google Maps"
               >
-                {getAddressWithoutNameAndCountry(restaurant.address)}
+                {extractPostalCodeAndCity(restaurant.address)}
               </a>
             </span>
 
