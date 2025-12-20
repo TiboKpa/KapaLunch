@@ -41,7 +41,7 @@ function AddRestaurantForm({ onSubmit }) {
 
       if (geocodeData.success && geocodeData.lat && geocodeData.lon) {
         setGeocodeStatus('success')
-        setFoundAddress(geocodeData.display_name || searchQuery)
+        setFoundAddress(geocodeData.displayName || searchQuery)
       } else {
         setGeocodeStatus('error')
         setFoundAddress('')
@@ -59,11 +59,30 @@ function AddRestaurantForm({ onSubmit }) {
     })
   }
 
+  const handleAddressChange = (e) => {
+    // Permettre la modification uniquement si l'adresse n'a pas été trouvée
+    if (geocodeStatus !== 'success') {
+      setFoundAddress(e.target.value)
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     
+    // Validation du type de cuisine (obligatoire)
+    if (!formData.type) {
+      alert('Le type de cuisine est obligatoire')
+      return
+    }
+    
+    // Validation de l'adresse (obligatoire)
+    if (!foundAddress || foundAddress.trim() === '') {
+      alert('L\'adresse est obligatoire')
+      return
+    }
+    
     if (geocodeStatus !== 'success') {
-      alert('Veuillez attendre la validation de l\'adresse')
+      alert('Veuillez attendre la validation de l\'adresse ou saisir l\'adresse complète manuellement')
       return
     }
 
@@ -109,7 +128,7 @@ function AddRestaurantForm({ onSubmit }) {
         alert('Impossible de géocoder cette adresse')
       }
     } catch (error) {
-      alert('Erreur lors de l\'ajout du restaurant')
+      alert('Erreur lors de l\'ajout de l\'établissement')
     } finally {
       setLoading(false)
     }
@@ -137,11 +156,11 @@ function AddRestaurantForm({ onSubmit }) {
 
   return (
     <div className="add-restaurant-form pop-in">
-      <h2>Ajouter un restaurant</h2>
+      <h2>Ajouter un établissement</h2>
       
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Nom du restaurant *</label>
+          <label>Nom de l'établissement *</label>
           <input
             type="text"
             name="name"
@@ -180,26 +199,60 @@ function AddRestaurantForm({ onSubmit }) {
 
         {geocodeStatus === 'error' && (
           <div className="geocode-status error">
-            ✗ Adresse non trouvée, vérifiez le nom et la ville
+            ✗ Établissement non trouvé, vérifiez le nom et la ville
           </div>
         )}
 
+        {/* Champ Adresse en 4ème position */}
         <div className="form-group">
-          <label>Type de cuisine</label>
+          <label>Adresse complète *</label>
+          <input
+            type="text"
+            name="fullAddress"
+            value={foundAddress}
+            onChange={handleAddressChange}
+            required
+            placeholder="Adresse complète de l'établissement"
+            disabled={geocodeStatus === 'success'}
+            style={{
+              backgroundColor: geocodeStatus === 'success' ? '#f5f5f5' : 'white',
+              cursor: geocodeStatus === 'success' ? 'not-allowed' : 'text',
+              color: geocodeStatus === 'success' ? '#6c757d' : 'inherit'
+            }}
+          />
+          {geocodeStatus === 'success' && (
+            <small style={{ color: '#28a745', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
+              ✓ Adresse trouvée automatiquement
+            </small>
+          )}
+          {geocodeStatus === 'error' && (
+            <small style={{ color: '#dc3545', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
+              ⚠ Établissement non trouvé - Veuillez saisir l'adresse manuellement
+            </small>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label>Type de cuisine *</label>
           <select
             name="type"
             value={formData.type}
             onChange={handleChange}
+            required
           >
             <option value="">Choisir un type</option>
             <option value="Français">Français</option>
             <option value="Italien">Italien</option>
+            <option value="Japonais">Japonais</option>
+            <option value="Chinois">Chinois</option>
+            <option value="Coréen">Coréen</option>
+            <option value="Vietnamien">Vietnamien</option>
             <option value="Asiatique">Asiatique</option>
+            <option value="Indien">Indien</option>
+            <option value="Thaïlandais">Thaïlandais</option>
             <option value="Fast-food">Fast-food</option>
             <option value="Pizza">Pizza</option>
             <option value="Burger">Burger</option>
-            <option value="Japonais">Japonais</option>
-            <option value="Indien">Indien</option>
             <option value="Mexicain">Mexicain</option>
             <option value="Autre">Autre</option>
           </select>
@@ -226,13 +279,13 @@ function AddRestaurantForm({ onSubmit }) {
         <button 
           type="submit" 
           className="btn btn-primary btn-block"
-          disabled={loading || geocodeStatus !== 'success'}
+          disabled={loading || (geocodeStatus !== 'success' && !foundAddress)}
         >
-          {loading ? 'Ajout en cours...' : 'Ajouter le restaurant'}
+          {loading ? 'Ajout en cours...' : 'Ajouter l\'établissement'}
         </button>
       </form>
     </div>
-  )
+  )}
 }
 
 export default AddRestaurantForm
