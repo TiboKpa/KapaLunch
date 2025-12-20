@@ -46,23 +46,16 @@
   flex-shrink: 0;
 }
 
+/* ===== ANIMATION DE LA PAGE QUAND PANNEAU OUVERT ===== */
+.app {
+  transition: margin-right 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.app.panel-open {
+  margin-right: 380px;
+}
+
 /* ===== PANNEAU UTILISATEUR COULISSANT ===== */
-.user-panel-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 2000;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 .user-panel {
   position: fixed;
   top: 0;
@@ -238,6 +231,79 @@
   color: #dc3545;
 }
 
+/* ===== FORMULAIRE CHANGEMENT MOT DE PASSE ===== */
+.password-change-form {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.back-button {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #495057;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  width: fit-content;
+}
+
+.back-button:hover {
+  background: #e9ecef;
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.back-button svg {
+  flex-shrink: 0;
+}
+
+.password-change-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.password-change-form .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.password-change-form .form-group input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.password-change-form .form-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  border: 1px solid #c3e6cb;
+}
+
 /* ===== SÉLECTEUR TYPE DE CARTE (BAS GAUCHE) ===== */
 .map-type-selector {
   position: absolute;
@@ -291,6 +357,10 @@
   .header-center,
   .header-right {
     justify-self: center;
+  }
+
+  .app.panel-open {
+    margin-right: 0;
   }
 
   .user-panel {
