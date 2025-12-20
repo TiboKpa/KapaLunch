@@ -39,12 +39,15 @@ const connectDB = async () => {
     }
     
     // Synchroniser les modèles avec la base de données
-    await sequelize.sync({ alter: process.env.NODE_ENV === 'development' })
+    // Utilise 'force: false' en production et pas d'alter pour éviter les conflits
+    await sequelize.sync({ force: false })
     console.log('✅ Modèles synchronisés')
     
   } catch (error) {
     console.error('❌ Erreur de connexion SQLite:', error.message)
-    console.error('Détails:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Détails:', error)
+    }
     process.exit(1)
   }
 }
