@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 // Composant d'affichage des étoiles SVG
 const StarRating = ({ rating }) => {
   const stars = []
@@ -54,8 +52,9 @@ const LocationPin = () => (
   </svg>
 )
 
-function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant }) {
-  const [searchTerm, setSearchTerm] = useState('')
+import { useState } from 'react'
+
+function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, searchTerm }) {
   const [filterType, setFilterType] = useState('all')
   const [filterCity, setFilterCity] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
@@ -97,30 +96,18 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant })
 
   return (
     <div className="restaurant-list">
-      {/* Barre de recherche avec bouton Filtres */}
+      {/* Barre de filtres */}
       <div className="search-bar">
-        <div className="search-input-wrapper">
-          <input
-            type="text"
-            placeholder="Rechercher un restaurant..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button 
-            className={`filter-toggle-btn ${
-              showFilters ? 'active' : ''
-            } ${
-              hasActiveFilters ? 'has-active-filters' : ''
-            }`}
-            onClick={() => setShowFilters(!showFilters)}
-            title="Filtres"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
-            </svg>
-            <span>Filtres</span>
-          </button>
-        </div>
+        <button 
+          className={`filter-toggle-btn ${showFilters ? 'active' : ''} ${hasActiveFilters ? 'has-active-filters' : ''}`}
+          onClick={() => setShowFilters(!showFilters)}
+          title="Filtres"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
+          </svg>
+          <span>Filtres</span>
+        </button>
       </div>
 
       {/* Panneau de filtres déroulant */}
