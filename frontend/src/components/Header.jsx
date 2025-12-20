@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel, userPanelRef, onLogoClick, searchTerm, setSearchTerm, canAddRestaurant }) {
+function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel, userPanelRef, onLogoClick, searchTerm, setSearchTerm, canAddRestaurant, showFilters, setShowFilters }) {
   // États des différentes sections du panneau
   const [panelView, setPanelView] = useState('menu') // 'menu', 'login', 'admin'
   const [showPasswordDropdown, setShowPasswordDropdown] = useState(false)
@@ -197,14 +197,17 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
         <div className="header-left">
           <h1 
             onClick={onLogoClick}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             title="Retour à la carte globale"
           >
-            🍽️ KapaLunch
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+              <path d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L13.41 13l1.47-1.47z"/>
+            </svg>
+            KapaLunch
           </h1>
         </div>
 
-        {/* Barre de recherche au centre avec bouton + */}
+        {/* Barre de recherche au centre avec boutons Filtres et + */}
         <div className="header-center">
           <div className="search-bar-header">
             <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -217,6 +220,19 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input-header"
             />
+            
+            {/* Bouton Filtres */}
+            <button 
+              className="btn-filter-header"
+              onClick={() => setShowFilters(!showFilters)}
+              title="Filtres avancés"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
+              </svg>
+            </button>
+
+            {/* Bouton + */}
             {canAddRestaurant && (
               <button className="btn-add-header" onClick={onToggleAddForm} title="Ajouter un établissement">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
