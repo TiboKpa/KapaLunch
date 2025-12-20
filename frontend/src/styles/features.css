@@ -318,31 +318,85 @@
   background: #5a6268;
 }
 
-/* ========== BOUTON SUPPRIMER RESTAURANT ========== */
-.restaurant-header-top {
+/* ========== LIGNE D'INFOS RESTAURANT (Type | Ville | Note) ========== */
+.restaurant-info-line {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
-  margin-bottom: 0.5rem;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 1rem 0;
+  flex-wrap: wrap;
 }
 
-.btn-delete-restaurant {
-  background: rgba(220, 53, 69, 0.9);
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.info-label {
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.info-icon {
+  font-size: 1.1rem;
+}
+
+.city-link {
+  color: white;
+  text-decoration: underline;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.city-link:hover {
+  opacity: 0.8;
+}
+
+.rating-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rating-inline .rating-value {
+  font-weight: 600;
+}
+
+.rating-inline .review-count {
+  opacity: 0.85;
+  font-size: 0.9rem;
+}
+
+/* ========== BOUTON SUPPRIMER RESTAURANT EN BAS ========== */
+.btn-delete-restaurant-bottom {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 2rem;
+  background: #dc3545;
+  color: white;
   border: none;
-  padding: 0.6rem;
-  border-radius: 6px;
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
 }
 
-.btn-delete-restaurant:hover {
-  background: rgba(220, 53, 69, 1);
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+.btn-delete-restaurant-bottom:hover {
+  background: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+}
+
+.btn-delete-restaurant-bottom svg {
+  flex-shrink: 0;
 }
 
 /* ========== MODAL DE CONFIRMATION ========== */
@@ -682,6 +736,7 @@
   overflow-y: auto;
   position: relative;
   box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  padding-bottom: 5rem; /* Espace pour le bouton supprimer en bas */
 }
 
 .restaurant-header {
@@ -698,11 +753,11 @@
 
 .restaurant-type {
   display: inline-block;
-  background: rgba(255,255,255,0.2);
-  padding: 0.3rem 0.8rem;
+  background: rgba(255,255,255,0.25);
+  padding: 0.35rem 0.8rem;
   border-radius: 12px;
   font-size: 0.85rem;
-  margin-bottom: 0.5rem;
+  font-weight: 500;
 }
 
 .restaurant-address {
@@ -765,103 +820,6 @@
   justify-content: flex-end;
 }
 
-/* Popups carte avec avis */
-.popup-rating {
-  margin: 0.5rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  background: #f8f9fa;
-  border-radius: 6px;
-}
-
-.popup-stars {
-  color: #ffc107;
-  font-size: 1rem;
-}
-
-.popup-reviews {
-  margin-top: 0.75rem;
-  border-top: 1px solid #dee2e6;
-  padding-top: 0.75rem;
-}
-
-.popup-reviews h4 {
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-  color: #495057;
-}
-
-.popup-review {
-  background: #f8f9fa;
-  padding: 0.5rem;
-  border-radius: 6px;
-  margin-bottom: 0.5rem;
-  font-size: 0.85rem;
-}
-
-.popup-review-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.25rem;
-}
-
-.popup-review-header strong {
-  font-size: 0.85rem;
-  color: #2c3e50;
-}
-
-.popup-review-header span {
-  font-size: 0.9rem;
-}
-
-.popup-review-comment {
-  color: #495057;
-  font-size: 0.8rem;
-  line-height: 1.4;
-  margin: 0;
-}
-
-.popup-more {
-  text-align: center;
-  color: #6c757d;
-  font-size: 0.8rem;
-  margin-top: 0.5rem;
-  font-style: italic;
-}
-
-.popup-no-reviews {
-  color: #6c757d;
-  font-size: 0.85rem;
-  font-style: italic;
-}
-
-.popup-btn {
-  margin-top: 0.75rem;
-  padding: 0.5rem 1rem;
-  background: #667eea;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  width: 100%;
-  transition: background 0.2s ease;
-}
-
-.popup-btn:hover {
-  background: #5568d3;
-}
-
-.popup-loading {
-  color: #6c757d;
-  font-size: 0.85rem;
-  font-style: italic;
-  text-align: center;
-}
-
 /* Scrollbar pour modal */
 .restaurant-detail::-webkit-scrollbar,
 .admin-panel::-webkit-scrollbar {
@@ -899,6 +857,19 @@
     padding: 1.5rem 1rem;
   }
 
+  .restaurant-info-line {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .btn-delete-restaurant-bottom {
+    left: 1rem;
+    right: 1rem;
+    width: calc(100% - 2rem);
+    justify-content: center;
+  }
+
   .lurker-card {
     flex-direction: column;
     align-items: flex-start;
@@ -917,15 +888,6 @@
     flex-direction: column;
     align-items: flex-end;
     gap: 0.5rem;
-  }
-
-  .restaurant-header-top {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .btn-delete-restaurant {
-    align-self: flex-end;
   }
 
   .review-edit-actions {
