@@ -22,8 +22,8 @@ const Review = sequelize.define('Review', {
     allowNull: true,
     validate: {
       len: {
-        args: [0, 1000],
-        msg: 'Le commentaire ne peut pas dépasser 1000 caractères'
+        args: [0, 500],
+        msg: 'Le commentaire ne peut pas dépasser 500 caractères'
       }
     }
   },
