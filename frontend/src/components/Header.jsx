@@ -1,20 +1,30 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
-import LoginModal from './LoginModal'
-import AdminPanel from './AdminPanel'
 
 function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel }) {
-  const [showLoginModal, setShowLoginModal] = useState(false)
-  const [showAdminPanel, setShowAdminPanel] = useState(false)
-  const [showPasswordForm, setShowPasswordForm] = useState(false)
+  // États des différentes sections du panneau
+  const [panelView, setPanelView] = useState('menu') // 'menu', 'login', 'admin'
+  const [showPasswordDropdown, setShowPasswordDropdown] = useState(false)
   
-  // États du formulaire de changement de mot de passe
+  // États login/signup
+  const [isSignup, setIsSignup] = useState(false)
+  const [formData, setFormData] = useState({ email: '', password: '', name: '' })
+  const [authError, setAuthError] = useState('')
+  const [authLoading, setAuthLoading] = useState(false)
+  
+  // États changement mot de passe
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [passwordSuccess, setPasswordSuccess] = useState('')
   const [passwordLoading, setPasswordLoading] = useState(false)
+
+  // États admin panel
+  const [lurkers, setLurkers] = useState([])
+  const [adminLoading, setAdminLoading] = useState(false)
+  const [adminError, setAdminError] = useState('')
+  const [adminSuccess, setAdminSuccess] = useState('')
 
   const getRoleBadge = (role) => {
     const badges = {
@@ -28,6 +38,94 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
         {badge.emoji} {badge.text}
       </span>
     )
+  }
+
+  // Charger les lurkers quand on ouvre le panneau admin
+  useEffect(() => {
+    if (panelView === 'admin' && user?.role === 'admin') {
+      fetchLurkers()
+    }
+  }, [panelView, user])
+
+  const fetchLurkers = async () => {
+    setAdminLoading(true)
+    setAdminError('')
+    try {
+      const token = localStorage.getItem('token')
+      const response = await axios.get(
+        'http://localhost:5000/api/users/lurkers',
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      setLurkers(response.data.data)
+    } catch (err) {
+      setAdminError('Erreur lors du chargement des utilisateurs')
+    } finally {
+      setAdminLoading(false)
+    }
+  }
+
+  const handleValidateLurker = async (userId, userName) => {
+    if (!confirm(`Valider l'utilisateur ${userName} ?`)) return
+
+    try {
+      const token = localStorage.getItem('token')
+      await axios.put(
+        `http://localhost:5000/api/users/${userId}/validate`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      setAdminSuccess(`${userName} a été validé !`)
+      setTimeout(() => setAdminSuccess(''), 3000)
+      fetchLurkers()
+    } catch (err) {
+      setAdminError(err.response?.data?.message || 'Erreur lors de la validation')
+    }
+  }
+
+  const handleRejectLurker = async (userId, userName) => {
+    if (!confirm(`Rejeter (supprimer) l'utilisateur ${userName} ?`)) return
+
+    try {
+      const token = localStorage.getItem('token')
+      await axios.delete(
+        `http://localhost:5000/api/users/${userId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      setAdminSuccess(`${userName} a été rejeté`)
+      setTimeout(() => setAdminSuccess(''), 3000)
+      fetchLurkers()
+    } catch (err) {
+      setAdminError(err.response?.data?.message || 'Erreur lors du rejet')
+    }
+  }
+
+  const handleAuthSubmit = async (e) => {
+    e.preventDefault()
+    setAuthError('')
+    setAuthLoading(true)
+
+    try {
+      const endpoint = isSignup ? 'http://localhost:5000/api/auth/signup' : 'http://localhost:5000/api/auth/login'
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        onLogin(data.user, data.token)
+        handleClosePanel()
+      } else {
+        setAuthError(data.message || 'Erreur lors de la connexion')
+      }
+    } catch (err) {
+      setAuthError('Erreur de connexion au serveur')
+    } finally {
+      setAuthLoading(false)
+    }
   }
 
   const handlePasswordSubmit = async (e) => {
@@ -61,7 +159,7 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
       setConfirmPassword('')
 
       setTimeout(() => {
-        setShowPasswordForm(false)
+        setShowPasswordDropdown(false)
         setPasswordSuccess('')
       }, 2000)
 
@@ -72,14 +170,24 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
     }
   }
 
-  const handleCloseUserPanel = () => {
+  const handleClosePanel = () => {
     setShowUserPanel(false)
-    setShowPasswordForm(false)
+    setPanelView('menu')
+    setShowPasswordDropdown(false)
+    setFormData({ email: '', password: '', name: '' })
+    setAuthError('')
     setCurrentPassword('')
     setNewPassword('')
     setConfirmPassword('')
     setPasswordError('')
     setPasswordSuccess('')
+    setIsSignup(false)
+  }
+
+  const getPanelTitle = () => {
+    if (panelView === 'login') return isSignup ? 'Créer un compte' : 'Se connecter'
+    if (panelView === 'admin') return 'Panneau Admin'
+    return 'Mon compte'
   }
 
   return (
@@ -94,43 +202,39 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
         <div className="header-center">
           {user && (user.role === 'user' || user.role === 'admin') && (
             <button className="btn btn-add" onClick={onToggleAddForm}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
               </svg>
-              <span>Ajouter un resto</span>
+              <span>Ajouter un établissement</span>
             </button>
           )}
         </div>
 
         {/* Menu utilisateur à droite */}
         <div className="header-right">
-          {user ? (
-            <button 
-              className="user-menu-trigger"
-              onClick={() => setShowUserPanel(!showUserPanel)}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-              </svg>
-              <span>{user.name}</span>
-            </button>
-          ) : (
-            <button className="btn btn-primary" onClick={() => setShowLoginModal(true)}>
-              Se connecter
-            </button>
-          )}
+          <button 
+            className="user-menu-trigger"
+            onClick={() => {
+              setShowUserPanel(!showUserPanel)
+              if (!showUserPanel && !user) {
+                setPanelView('login')
+              }
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+            <span>{user ? user.name : 'Connexion'}</span>
+          </button>
         </div>
       </div>
 
-      {/* Panneau utilisateur coulissant depuis la droite */}
+      {/* Panneau latéral */}
       {showUserPanel && (
         <div className="user-panel">
           <div className="user-panel-header">
-            <h3>{showPasswordForm ? 'Changer le mot de passe' : 'Mon compte'}</h3>
-            <button 
-              className="user-panel-close"
-              onClick={handleCloseUserPanel}
-            >
+            <h3>{getPanelTitle()}</h3>
+            <button className="user-panel-close" onClick={handleClosePanel}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
               </svg>
@@ -138,7 +242,59 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
           </div>
 
           <div className="user-panel-content">
-            {!showPasswordForm ? (
+            {/* VUE LOGIN/SIGNUP */}
+            {panelView === 'login' && (
+              <div className="auth-form">
+                <form onSubmit={handleAuthSubmit}>
+                  {isSignup && (
+                    <div className="form-group">
+                      <label>Nom</label>
+                      <input
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        required
+                        placeholder="Votre nom"
+                      />
+                    </div>
+                  )}
+                  <div className="form-group">
+                    <label>Email</label>
+                    <input
+                      type="text"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      required
+                      placeholder="votre@email.com"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Mot de passe</label>
+                    <input
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      required
+                      minLength="6"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  {authError && <div className="error-message">{authError}</div>}
+                  <button type="submit" className="btn btn-primary btn-block" disabled={authLoading}>
+                    {authLoading ? 'Chargement...' : (isSignup ? 'Créer le compte' : 'Se connecter')}
+                  </button>
+                </form>
+                <div className="toggle-auth">
+                  <span>{isSignup ? 'Déjà un compte ?' : 'Pas encore de compte ?'}</span>
+                  <button className="link-btn" onClick={() => setIsSignup(!isSignup)}>
+                    {isSignup ? 'Se connecter' : 'Créer un compte'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* VUE MENU UTILISATEUR */}
+            {panelView === 'menu' && user && (
               <>
                 <div className="user-panel-info">
                   <div className="user-panel-avatar">
@@ -153,13 +309,7 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
                 <div className="user-panel-actions">
                   {/* Panneau admin */}
                   {user.role === 'admin' && (
-                    <button 
-                      className="user-panel-action-btn"
-                      onClick={() => {
-                        setShowAdminPanel(true)
-                        setShowUserPanel(false)
-                      }}
-                    >
+                    <button className="user-panel-action-btn" onClick={() => setPanelView('admin')}>
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                       </svg>
@@ -173,30 +323,80 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
                     </button>
                   )}
 
-                  {/* Changer mot de passe */}
-                  <button 
-                    className="user-panel-action-btn"
-                    onClick={() => setShowPasswordForm(true)}
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                    <div className="action-btn-content">
-                      <span className="action-btn-title">Changer le mot de passe</span>
-                      <span className="action-btn-description">Modifier vos identifiants</span>
-                    </div>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="action-btn-chevron">
-                      <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                    </svg>
-                  </button>
+                  {/* Changer mot de passe avec dropdown */}
+                  <div className="dropdown-section">
+                    <button 
+                      className="user-panel-action-btn"
+                      onClick={() => setShowPasswordDropdown(!showPasswordDropdown)}
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      </svg>
+                      <div className="action-btn-content">
+                        <span className="action-btn-title">Changer le mot de passe</span>
+                        <span className="action-btn-description">Modifier vos identifiants</span>
+                      </div>
+                      <svg 
+                        width="20" 
+                        height="20" 
+                        viewBox="0 0 24 24" 
+                        fill="currentColor" 
+                        className={`action-btn-chevron ${showPasswordDropdown ? 'rotate-down' : ''}`}
+                      >
+                        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                      </svg>
+                    </button>
+
+                    {/* Dropdown animé */}
+                    {showPasswordDropdown && (
+                      <div className="dropdown-content">
+                        <form onSubmit={handlePasswordSubmit}>
+                          <div className="form-group">
+                            <label>Mot de passe actuel</label>
+                            <input
+                              type="password"
+                              value={currentPassword}
+                              onChange={(e) => setCurrentPassword(e.target.value)}
+                              required
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label>Nouveau mot de passe</label>
+                            <input
+                              type="password"
+                              value={newPassword}
+                              onChange={(e) => setNewPassword(e.target.value)}
+                              required
+                              minLength={6}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label>Confirmer</label>
+                            <input
+                              type="password"
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              required
+                              minLength={6}
+                            />
+                          </div>
+                          {passwordError && <div className="error-message">{passwordError}</div>}
+                          {passwordSuccess && <div className="success-message">{passwordSuccess}</div>}
+                          <button type="submit" className="btn btn-primary btn-block" disabled={passwordLoading}>
+                            {passwordLoading ? 'Changement...' : 'Changer'}
+                          </button>
+                        </form>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Déconnexion */}
                   <button 
                     className="user-panel-action-btn user-panel-action-btn-danger"
                     onClick={() => {
                       onLogout()
-                      setShowUserPanel(false)
+                      handleClosePanel()
                     }}
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -214,88 +414,63 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
                   </button>
                 </div>
               </>
-            ) : (
-              /* Formulaire de changement de mot de passe */
-              <div className="password-change-form">
-                <button 
-                  className="back-button"
-                  onClick={() => {
-                    setShowPasswordForm(false)
-                    setPasswordError('')
-                    setPasswordSuccess('')
-                  }}
-                >
+            )}
+
+            {/* VUE PANNEAU ADMIN */}
+            {panelView === 'admin' && user?.role === 'admin' && (
+              <div className="admin-panel-view">
+                <button className="back-button" onClick={() => setPanelView('menu')}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
                   </svg>
                   Retour
                 </button>
 
-                <form onSubmit={handlePasswordSubmit}>
-                  <div className="form-group">
-                    <label>Mot de passe actuel</label>
-                    <input
-                      type="password"
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                      required
-                      autoFocus
-                    />
-                  </div>
+                <div className="admin-section">
+                  <h4>Utilisateurs en attente ({lurkers.length})</h4>
 
-                  <div className="form-group">
-                    <label>Nouveau mot de passe</label>
-                    <input
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      required
-                      minLength={6}
-                    />
-                  </div>
+                  {adminLoading && <p>Chargement...</p>}
+                  {adminError && <div className="error-message">{adminError}</div>}
+                  {adminSuccess && <div className="success-message">{adminSuccess}</div>}
 
-                  <div className="form-group">
-                    <label>Confirmer le nouveau mot de passe</label>
-                    <input
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                      minLength={6}
-                    />
-                  </div>
+                  {!adminLoading && lurkers.length === 0 && (
+                    <p className="empty-message">✅ Aucun utilisateur en attente</p>
+                  )}
 
-                  {passwordError && <div className="error-message">{passwordError}</div>}
-                  {passwordSuccess && <div className="success-message">{passwordSuccess}</div>}
-
-                  <button 
-                    type="submit" 
-                    className="btn btn-primary btn-block" 
-                    disabled={passwordLoading}
-                  >
-                    {passwordLoading ? 'Changement...' : 'Changer le mot de passe'}
-                  </button>
-                </form>
+                  {lurkers.length > 0 && (
+                    <div className="lurkers-list">
+                      {lurkers.map((lurker) => (
+                        <div key={lurker.id} className="lurker-card">
+                          <div className="lurker-info">
+                            <strong>{lurker.name}</strong>
+                            <span className="lurker-email">{lurker.email}</span>
+                            <span className="lurker-date">
+                              {new Date(lurker.createdAt).toLocaleDateString('fr-FR')}
+                            </span>
+                          </div>
+                          <div className="lurker-actions">
+                            <button
+                              onClick={() => handleValidateLurker(lurker.id, lurker.name)}
+                              className="btn-validate"
+                            >
+                              ✓ Valider
+                            </button>
+                            <button
+                              onClick={() => handleRejectLurker(lurker.id, lurker.name)}
+                              className="btn-reject"
+                            >
+                              ✕ Rejeter
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
         </div>
-      )}
-
-      {/* Modales */}
-      {showLoginModal && (
-        <LoginModal 
-          onClose={() => setShowLoginModal(false)}
-          onLogin={onLogin}
-        />
-      )}
-
-      {showAdminPanel && (
-        <AdminPanel
-          isOpen={showAdminPanel}
-          onClose={() => setShowAdminPanel(false)}
-          user={user}
-        />
       )}
     </header>
   )
