@@ -285,7 +285,7 @@ function AddRestaurantForm({ onSubmit }) {
         </button>
       </form>
     </div>
-  )}
+  )
 }
 
 export default AddRestaurantForm
