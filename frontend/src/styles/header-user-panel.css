@@ -90,6 +90,7 @@
   animation: slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* Animation d'entrée depuis la droite */
 @keyframes slideInRight {
   from {
     transform: translateX(100%);
@@ -99,6 +100,23 @@
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+/* Animation de sortie vers la droite (REVERSE) */
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Classe pour l'animation de fermeture */
+.user-panel.closing {
+  animation: slideOutRight 0.3s ease-out forwards;
 }
 
 .user-panel-header {
@@ -277,6 +295,7 @@
   overflow: hidden;
 }
 
+/* Animation d'ouverture dropdown */
 @keyframes slideDown {
   from {
     max-height: 0;
@@ -288,6 +307,24 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Animation de fermeture dropdown (REVERSE) */
+@keyframes slideUp {
+  from {
+    max-height: 500px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.dropdown-content.closing {
+  animation: slideUp 0.3s ease forwards;
 }
 
 .dropdown-content .form-group {
@@ -326,9 +363,20 @@
   animation: fadeIn 0.3s ease;
 }
 
+/* Animation d'entrée fade */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Animation de sortie fade (REVERSE) */
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(10px); }
+}
+
+.auth-form.closing {
+  animation: fadeOut 0.3s ease forwards;
 }
 
 .auth-form .form-group {
@@ -372,6 +420,10 @@
 /* ===== PANNEAU ADMIN ===== */
 .admin-panel-view {
   animation: fadeIn 0.3s ease;
+}
+
+.admin-panel-view.closing {
+  animation: fadeOut 0.3s ease forwards;
 }
 
 .back-button {
