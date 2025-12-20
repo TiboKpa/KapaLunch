@@ -723,39 +723,42 @@
   margin-bottom: 1rem;
 }
 
-/* Détail restaurant modal - POSITIONNÉ À DROITE */
+/* Détail restaurant modal - FENÊTRE FLOTTANTE DANS LA CARTE */
 .restaurant-detail-overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
-  left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  width: 50%;
+  max-width: 600px;
+  min-width: 400px;
+  background: transparent;
   display: flex;
-  justify-content: flex-end; /* Aligné à droite */
+  justify-content: flex-end;
   align-items: stretch;
-  z-index: 2000;
-  padding: 0;
+  z-index: 1000;
+  pointer-events: none;
 }
 
 .restaurant-detail {
   background: white;
-  border-radius: 0;
-  width: 45%; /* 45% de la largeur de l'écran */
-  max-width: 700px;
-  min-width: 400px;
-  height: 100vh;
+  border-radius: 12px;
+  width: 100%;
+  height: calc(100% - 2rem);
+  margin: 1rem;
   overflow-y: auto;
   position: relative;
-  box-shadow: -5px 0 25px rgba(0,0,0,0.3);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
   animation: slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   padding-bottom: 5rem;
+  pointer-events: all;
 }
 
 .restaurant-header {
   padding: 2rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+  border-radius: 12px 12px 0 0;
 }
 
 .restaurant-header h2 {
@@ -857,14 +860,18 @@
 /* Responsive */
 @media (max-width: 768px) {
   .restaurant-detail-overlay {
+    position: fixed;
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    background: rgba(0,0,0,0.5);
     justify-content: center;
     padding: 0;
   }
 
   .restaurant-detail {
-    width: 100%;
-    max-width: 100%;
-    min-width: 100%;
+    margin: 1rem;
+    height: calc(100% - 2rem);
   }
 
   .restaurant-header,
