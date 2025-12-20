@@ -23,6 +23,10 @@ const connectDB = async () => {
     await sequelize.authenticate()
     console.log(`✅ SQLite connecté: ${dbPath}`)
     
+    // Activer les contraintes de clés étrangères pour l'intégrité des données
+    await sequelize.query('PRAGMA foreign_keys = ON')
+    console.log('✅ Contraintes de clés étrangères activées')
+    
     // Synchroniser les modèles avec la base de données
     await sequelize.sync({ alter: process.env.NODE_ENV === 'development' })
     console.log('✅ Modèles synchronisés')
