@@ -15,6 +15,10 @@ const sequelize = new Sequelize({
   define: {
     timestamps: true,
     underscored: false
+  },
+  dialectOptions: {
+    // Activer les contraintes de clés étrangères au niveau de la connexion
+    foreignKeys: true
   }
 })
 
@@ -23,9 +27,16 @@ const connectDB = async () => {
     await sequelize.authenticate()
     console.log(`✅ SQLite connecté: ${dbPath}`)
     
-    // Activer les contraintes de clés étrangères pour l'intégrité des données
-    await sequelize.query('PRAGMA foreign_keys = ON')
-    console.log('✅ Contraintes de clés étrangères activées')
+    // Activer les contraintes de clés étrangères (méthode sécurisée)
+    try {
+      await sequelize.query('PRAGMA foreign_keys = ON', { raw: true })
+      const [results] = await sequelize.query('PRAGMA foreign_keys', { raw: true })
+      if (results[0]?.foreign_keys === 1) {
+        console.log('✅ Contraintes de clés étrangères activées')
+      }
+    } catch (pragmaError) {
+      console.warn('⚠️ Impossible d\'activer les contraintes de clés étrangères:', pragmaError.message)
+    }
     
     // Synchroniser les modèles avec la base de données
     await sequelize.sync({ alter: process.env.NODE_ENV === 'development' })
@@ -33,6 +44,7 @@ const connectDB = async () => {
     
   } catch (error) {
     console.error('❌ Erreur de connexion SQLite:', error.message)
+    console.error('Détails:', error)
     process.exit(1)
   }
 }
