@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFound }) {
+function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFound, showToast }) {
   const [formData, setFormData] = useState({
     name: '',
     city: '',
@@ -159,18 +159,18 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
     
     // Validation du type de cuisine (obligatoire)
     if (!formData.type) {
-      alert('Le type de cuisine est obligatoire')
+      showToast('Le type de cuisine est obligatoire', 'error')
       return
     }
     
     // Validation de l'adresse (obligatoire)
     if (!foundAddress || foundAddress.trim() === '') {
-      alert('L\'adresse est obligatoire')
+      showToast('L\'adresse est obligatoire', 'error')
       return
     }
     
     if (geocodeStatus !== 'success') {
-      alert('Veuillez attendre la validation de l\'adresse ou saisir l\'adresse complète manuellement')
+      showToast('Veuillez attendre la validation de l\'adresse ou saisir l\'adresse complète manuellement', 'warning')
       return
     }
 
@@ -179,19 +179,19 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
     const existingRestaurant = checkDuplicate(finalName, foundAddress)
     
     if (existingRestaurant) {
-      // Restaurant existe déjà
-      const confirmOpen = window.confirm(
-        `L'établissement "${existingRestaurant.name}" existe déjà dans la base.\n\nVoulez-vous ouvrir sa fiche pour ajouter votre avis ?`
-      )
-      
-      if (confirmOpen && onExistingRestaurantFound) {
-        // Passer les données de l'avis au parent
-        const reviewData = {
-          rating: formData.rating,
-          comment: formData.comment
-        }
-        onExistingRestaurantFound(existingRestaurant, reviewData)
+      // Restaurant existe déjà - Utiliser Toast au lieu de confirm()
+      const reviewData = {
+        rating: formData.rating,
+        comment: formData.comment
       }
+      
+      showToast(
+        `L'établissement "${existingRestaurant.name}" existe déjà dans la base.`,
+        'warning',
+        7000, // Durée plus longue pour laisser le temps de cliquer
+        'Voir la fiche',
+        () => onExistingRestaurantFound(existingRestaurant, reviewData)
+      )
       return
     }
 
@@ -235,11 +235,14 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
         setFoundAddress('')
         setExtractedName('')
         setTypeAutoFilled(false)
+        
+        showToast('Établissement ajouté avec succès !', 'success')
       } else {
-        alert('Impossible de géocoder cette adresse')
+        showToast('Impossible de géocoder cette adresse', 'error')
       }
     } catch (error) {
-      alert('Erreur lors de l\'ajout de l\'établissement')
+      console.error('Erreur ajout restaurant:', error)
+      showToast('Erreur lors de l\'ajout de l\'établissement', 'error')
     } finally {
       setLoading(false)
     }
