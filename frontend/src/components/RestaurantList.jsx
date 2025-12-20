@@ -79,18 +79,18 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
     'ain', 'aisne', 'allier', 'alpes-de-haute-provence', 'hautes-alpes', 'alpes-maritimes',
     'ardèche', 'ardennes', 'ariège', 'aube', 'aude', 'aveyron', 'bouches-du-rhône',
     'calvados', 'cantal', 'charente', 'charente-maritime', 'cher', 'corrèze', 'corse',
-    'corse-du-sud', 'haute-corse', 'côte-d'or', 'côtes-d'armor', 'creuse', 'dordogne',
-    'doubs', 'drôme', 'eure', 'eure-et-loir', 'finistère', 'gard', 'haute-garonne', 'gers',
-    'gironde', 'hérault', 'ille-et-vilaine', 'indre', 'indre-et-loire', 'isère', 'jura',
+    'corse-du-sud', 'haute-corse', "c\u00f4te-d'or", "c\u00f4tes-d'armor", 'creuse', 'dordogne',
+    'doubs', 'dr\u00f4me', 'eure', 'eure-et-loir', 'finist\u00e8re', 'gard', 'haute-garonne', 'gers',
+    'gironde', 'h\u00e9rault', 'ille-et-vilaine', 'indre', 'indre-et-loire', 'is\u00e8re', 'jura',
     'landes', 'loir-et-cher', 'loire', 'haute-loire', 'loire-atlantique', 'loiret',
-    'lot', 'lot-et-garonne', 'lozère', 'maine-et-loire', 'manche', 'marne', 'haute-marne',
-    'mayenne', 'meurthe-et-moselle', 'meuse', 'morbihan', 'moselle', 'nièvre', 'nord',
-    'oise', 'orne', 'pas-de-calais', 'puy-de-dôme', 'pyrénées-atlantiques', 'hautes-pyrénées',
-    'pyrénées-orientales', 'bas-rhin', 'haut-rhin', 'rhône', 'haute-saône', 'saône-et-loire',
+    'lot', 'lot-et-garonne', 'loz\u00e8re', 'maine-et-loire', 'manche', 'marne', 'haute-marne',
+    'mayenne', 'meurthe-et-moselle', 'meuse', 'morbihan', 'moselle', 'ni\u00e8vre', 'nord',
+    'oise', 'orne', 'pas-de-calais', 'puy-de-d\u00f4me', 'pyr\u00e9n\u00e9es-atlantiques', 'hautes-pyr\u00e9n\u00e9es',
+    'pyr\u00e9n\u00e9es-orientales', 'bas-rhin', 'haut-rhin', 'rh\u00f4ne', 'haute-sa\u00f4ne', 'sa\u00f4ne-et-loire',
     'sarthe', 'savoie', 'haute-savoie', 'paris', 'seine-maritime', 'seine-et-marne',
-    'yvelines', 'deux-sèvres', 'somme', 'tarn', 'tarn-et-garonne', 'var', 'vaucluse',
-    'vendée', 'vienne', 'haute-vienne', 'vosges', 'yonne', 'territoire de belfort',
-    'essonne', 'hauts-de-seine', 'seine-saint-denis', 'val-de-marne', 'val-d'oise'
+    'yvelines', 'deux-s\u00e8vres', 'somme', 'tarn', 'tarn-et-garonne', 'var', 'vaucluse',
+    'vend\u00e9e', 'vienne', 'haute-vienne', 'vosges', 'yonne', 'territoire de belfort',
+    'essonne', 'hauts-de-seine', 'seine-saint-denis', 'val-de-marne', "val-d'oise"
   ]
 
   // Extraire code postal + ville de l'adresse
