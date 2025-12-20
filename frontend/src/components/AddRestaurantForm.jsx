@@ -12,6 +12,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
   const [geocodeStatus, setGeocodeStatus] = useState('idle') // idle | validating | success | error
   const [foundAddress, setFoundAddress] = useState('')
   const [extractedName, setExtractedName] = useState('') // Nom extrait d'OSM
+  const [typeAutoFilled, setTypeAutoFilled] = useState(false) // Pour savoir si le type a été auto-rempli
 
   // Auto-geocode dès que nom + ville sont remplis
   useEffect(() => {
@@ -112,12 +113,13 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
         }
         
         // Auto-remplir le type de cuisine APRÈS validation de l'adresse
-        // Utiliser le nom OSM s'il existe, sinon le nom saisi
-        const nameToAnalyze = osmName || formData.name
-        if (nameToAnalyze && !formData.type) {
+        // Uniquement si le type n'est pas déjà rempli
+        if (!formData.type) {
+          const nameToAnalyze = osmName || formData.name
           const suggestedType = detectCuisineType(nameToAnalyze)
           if (suggestedType) {
             setFormData(prev => ({ ...prev, type: suggestedType }))
+            setTypeAutoFilled(true)
           }
         }
       } else {
@@ -133,10 +135,16 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
   }
 
   const handleChange = (e) => {
+    const { name, value } = e.target
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     })
+    
+    // Si l'utilisateur modifie manuellement le type, ne plus afficher le message auto-fill
+    if (name === 'type' && value) {
+      setTypeAutoFilled(false)
+    }
   }
 
   const handleAddressChange = (e) => {
@@ -226,6 +234,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
         setGeocodeStatus('idle')
         setFoundAddress('')
         setExtractedName('')
+        setTypeAutoFilled(false)
       } else {
         alert('Impossible de géocoder cette adresse')
       }
@@ -272,11 +281,14 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
             placeholder="Le Petit Bistrot"
             className={geocodeStatus === 'success' ? 'input-success' : geocodeStatus === 'error' ? 'input-error' : ''}
           />
-          {extractedName && extractedName !== formData.name && (
-            <small style={{ color: '#17a2b8', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
-              📍 Nom OSM: {extractedName}
-            </small>
-          )}
+          {/* Réserver espace fixe pour le message */}
+          <div style={{ minHeight: '20px', marginTop: '4px' }}>
+            {extractedName && extractedName !== formData.name && (
+              <small style={{ color: '#17a2b8', fontSize: '0.85em', display: 'block' }}>
+                📍 Nom OSM: {extractedName}
+              </small>
+            )}
+          </div>
         </div>
 
         <div className="form-group">
@@ -290,21 +302,24 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
             placeholder="Lyon"
             className={geocodeStatus === 'success' ? 'input-success' : geocodeStatus === 'error' ? 'input-error' : ''}
           />
-          {geocodeStatus === 'validating' && (
-            <small style={{ color: '#6c757d', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
-              Recherche de l'adresse...
-            </small>
-          )}
-          {geocodeStatus === 'success' && (
-            <small style={{ color: '#28a745', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
-              ✓ Adresse trouvée
-            </small>
-          )}
-          {geocodeStatus === 'error' && (
-            <small style={{ color: '#dc3545', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
-              ✗ Établissement non trouvé, vérifiez le nom et la ville
-            </small>
-          )}
+          {/* Réserver espace fixe pour le message */}
+          <div style={{ minHeight: '20px', marginTop: '4px' }}>
+            {geocodeStatus === 'validating' && (
+              <small style={{ color: '#6c757d', fontSize: '0.85em', display: 'block' }}>
+                Recherche de l'adresse...
+              </small>
+            )}
+            {geocodeStatus === 'success' && (
+              <small style={{ color: '#28a745', fontSize: '0.85em', display: 'block' }}>
+                ✓ Adresse trouvée
+              </small>
+            )}
+            {geocodeStatus === 'error' && (
+              <small style={{ color: '#dc3545', fontSize: '0.85em', display: 'block' }}>
+                ✗ Établissement non trouvé, vérifiez le nom et la ville
+              </small>
+            )}
+          </div>
         </div>
 
         {/* Champ Adresse en 3ème position */}
@@ -324,16 +339,19 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
               color: geocodeStatus === 'success' ? '#6c757d' : 'inherit'
             }}
           />
-          {geocodeStatus === 'success' && (
-            <small style={{ color: '#28a745', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
-              ✓ Adresse trouvée automatiquement
-            </small>
-          )}
-          {geocodeStatus === 'error' && (
-            <small style={{ color: '#dc3545', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
-              ⚠ Établissement non trouvé - Veuillez saisir l'adresse manuellement
-            </small>
-          )}
+          {/* Réserver espace fixe pour le message */}
+          <div style={{ minHeight: '20px', marginTop: '4px' }}>
+            {geocodeStatus === 'success' && (
+              <small style={{ color: '#28a745', fontSize: '0.85em', display: 'block' }}>
+                ✓ Adresse trouvée automatiquement
+              </small>
+            )}
+            {geocodeStatus === 'error' && (
+              <small style={{ color: '#dc3545', fontSize: '0.85em', display: 'block' }}>
+                ⚠ Établissement non trouvé - Veuillez saisir l'adresse manuellement
+              </small>
+            )}
+          </div>
         </div>
 
         <div className="form-group">
@@ -360,11 +378,14 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
             <option value="Mexicain">Mexicain</option>
             <option value="Autre">Autre</option>
           </select>
-          {formData.type && geocodeStatus === 'success' && (
-            <small style={{ color: '#6c757d', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
-              🤖 Type détecté automatiquement - vous pouvez le modifier
-            </small>
-          )}
+          {/* Réserver espace fixe pour le message */}
+          <div style={{ minHeight: '20px', marginTop: '4px' }}>
+            {formData.type && typeAutoFilled && (
+              <small style={{ color: '#6c757d', fontSize: '0.85em', display: 'block' }}>
+                🤖 Type détecté automatiquement - vous pouvez le modifier
+              </small>
+            )}
+          </div>
         </div>
 
         <div className="form-group">
