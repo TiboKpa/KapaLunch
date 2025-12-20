@@ -29,19 +29,17 @@ function App() {
         // Vérifier aussi que le clic n'est pas sur le bouton d'ouverture
         const isUserMenuButton = event.target.closest('.user-menu-trigger')
         if (!isUserMenuButton) {
-          // Déférer la fermeture pour laisser l'événement onClick se propager d'abord
-          // Le setTimeout(fn, 0) met la fermeture dans la queue d'événements APRES le clic
-          setTimeout(() => {
-            setShowUserPanel(false)
-          }, 0)
+          // Fermer le panneau
+          setShowUserPanel(false)
         }
       }
     }
 
-    // Utiliser 'mousedown' pour détecter le clic avant le onClick
-    document.addEventListener('mousedown', handleClickOutside, false)
+    // Utiliser 'click' au lieu de 'mousedown'
+    // 'click' se déclenche APRÈS que tous les onClick handlers ont été exécutés
+    document.addEventListener('click', handleClickOutside, false)
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside, false)
+      document.removeEventListener('click', handleClickOutside, false)
     }
   }, [showUserPanel])
 
