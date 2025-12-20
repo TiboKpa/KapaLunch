@@ -54,10 +54,9 @@ const LocationPin = () => (
 
 import { useState } from 'react'
 
-function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, searchTerm }) {
+function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, searchTerm, showFilters, setShowFilters, canAddRestaurant, onOpenAddForm }) {
   const [filterType, setFilterType] = useState('all')
   const [filterCity, setFilterCity] = useState('all')
-  const [showFilters, setShowFilters] = useState(false)
   const [sortOrder, setSortOrder] = useState('desc') // 'asc', 'desc'
   const [minRating, setMinRating] = useState(0) // 0, 3.5, 4, 4.5
 
@@ -94,22 +93,12 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
 
   const types = ['all', ...new Set(restaurants.map(r => r.type).filter(Boolean))]
 
+  // Vérifier si on a une recherche active sans résultats
+  const hasSearch = searchTerm.trim().length > 0
+  const noResults = hasSearch && filteredRestaurants.length === 0
+
   return (
     <div className="restaurant-list">
-      {/* Barre de filtres */}
-      <div className="search-bar">
-        <button 
-          className={`filter-toggle-btn ${showFilters ? 'active' : ''} ${hasActiveFilters ? 'has-active-filters' : ''}`}
-          onClick={() => setShowFilters(!showFilters)}
-          title="Filtres"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
-          </svg>
-          <span>Filtres</span>
-        </button>
-      </div>
-
       {/* Panneau de filtres déroulant */}
       {showFilters && (
         <div className="filters-panel pop-in">
@@ -182,7 +171,26 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
 
       {/* Liste des restaurants */}
       <div className="list-container">
-        {filteredRestaurants.length === 0 ? (
+        {noResults ? (
+          /* Prompt pour ajouter le restaurant recherché */
+          <div className="no-results-prompt">
+            <div className="prompt-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="#adb5bd">
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              </svg>
+            </div>
+            <p className="prompt-title">Aucun résultat pour "{searchTerm}"</p>
+            <p className="prompt-subtitle">Ce restaurant n'est pas encore dans la base</p>
+            {canAddRestaurant && (
+              <button className="btn-add-searched-restaurant" onClick={onOpenAddForm}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                Ajouter "{searchTerm}"
+              </button>
+            )}
+          </div>
+        ) : filteredRestaurants.length === 0 ? (
           <p className="no-results">Aucun restaurant trouvé</p>
         ) : (
           filteredRestaurants.map(restaurant => {
