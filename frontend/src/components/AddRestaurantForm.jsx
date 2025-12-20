@@ -1,5 +1,21 @@
 import { useState, useEffect } from 'react'
 
+// Spinner de chargement SVG
+const LoadingSpinner = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
+    <circle cx="12" cy="12" r="10" opacity="0.25"/>
+    <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round">
+      <animateTransform
+        attributeName="transform"
+        type="rotate"
+        from="0 12 12"
+        to="360 12 12"
+        dur="1s"
+        repeatCount="indefinite"/>
+    </path>
+  </svg>
+)
+
 function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFound, showToast, initialName = '' }) {
   const [formData, setFormData] = useState({
     name: initialName,
@@ -193,7 +209,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
       }
       
       showToast(
-        `L'établissement "${existingRestaurant.name}" existe déjà dans la base.`,
+        `L'\u00e9tablissement "${existingRestaurant.name}" existe déjà dans la base.`,
         'warning',
         7000, // Durée plus longue pour laisser le temps de cliquer
         'Voir la fiche',
@@ -279,15 +295,47 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
   const StatusBadge = ({ status, type = 'geocode' }) => {
     const badges = {
       geocode: {
-        validating: { icon: '🔄', title: 'Recherche en cours...', color: '#6c757d' },
-        success: { icon: '✓', title: 'Adresse trouvée', color: '#28a745' },
-        error: { icon: '⚠', title: 'Établissement non trouvé', color: '#dc3545' }
+        validating: { icon: <LoadingSpinner />, title: 'Recherche en cours...', color: '#6c757d' },
+        success: { 
+          icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          ), 
+          title: 'Adresse trouvée', 
+          color: '#28a745' 
+        },
+        error: { 
+          icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+              <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+            </svg>
+          ), 
+          title: 'Établissement non trouvé', 
+          color: '#dc3545' 
+        }
       },
       address: {
-        success: { icon: '✓', title: 'Adresse validée', color: '#28a745' }
+        success: { 
+          icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          ), 
+          title: 'Adresse validée', 
+          color: '#28a745' 
+        }
       },
       type: {
-        auto: { icon: '🤖', title: 'Type détecté automatiquement', color: '#17a2b8' }
+        auto: { 
+          icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+              <path d="M20,4C21.11,4 22,4.89 22,6V18C22,19.11 21.11,20 20,20H4C2.89,20 2,19.11 2,18V6C2,4.89 2.89,4 4,4H20M8.5,15V9H7.25V12.5L4.75,9H3.5V15H4.75V11.5L7.3,15H8.5M13.5,10.26V9H9.5V15H13.5V13.75H11V12.64H13.5V11.38H11V10.26H13.5M20.5,14V9H19.25V13.5H18.13V10H16.88V13.5H15.75V9H14.5V14A1,1 0 0,0 15.5,15H19.5A1,1 0 0,0 20.5,14Z" />
+            </svg>
+          ), 
+          title: 'Type détecté automatiquement', 
+          color: '#17a2b8' 
+        }
       }
     }
 
@@ -303,13 +351,13 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
         title={config.title}
         style={{
           position: 'absolute',
-          right: '8px',
+          right: '12px',
           top: '50%',
           transform: 'translateY(-50%)',
           backgroundColor: config.color,
           color: 'white',
-          width: '22px',
-          height: '22px',
+          width: '24px',
+          height: '24px',
           borderRadius: '50%',
           display: 'flex',
           alignItems: 'center',
@@ -343,7 +391,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
               required
               placeholder="Le Petit Bistrot"
               className={geocodeStatus === 'success' ? 'input-success' : geocodeStatus === 'error' ? 'input-error' : ''}
-              style={{ paddingRight: geocodeStatus !== 'idle' && geocodeStatus !== 'success' ? '40px' : undefined }}
+              style={{ paddingRight: geocodeStatus !== 'idle' && geocodeStatus !== 'success' ? '45px' : undefined }}
             />
             {geocodeStatus !== 'idle' && geocodeStatus !== 'success' && <StatusBadge status={geocodeStatus} type="geocode" />}
           </div>
@@ -360,7 +408,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
               required
               placeholder="Lyon"
               className={geocodeStatus === 'success' ? 'input-success' : geocodeStatus === 'error' ? 'input-error' : ''}
-              style={{ paddingRight: geocodeStatus !== 'idle' ? '40px' : undefined }}
+              style={{ paddingRight: geocodeStatus !== 'idle' ? '45px' : undefined }}
             />
             {geocodeStatus !== 'idle' && <StatusBadge status={geocodeStatus} type="geocode" />}
           </div>
@@ -381,7 +429,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
                 backgroundColor: geocodeStatus === 'success' ? '#f5f5f5' : 'white',
                 cursor: geocodeStatus === 'success' ? 'not-allowed' : 'text',
                 color: geocodeStatus === 'success' ? '#6c757d' : 'inherit',
-                paddingRight: geocodeStatus === 'success' ? '40px' : undefined
+                paddingRight: geocodeStatus === 'success' ? '45px' : undefined
               }}
             />
             {geocodeStatus === 'success' && <StatusBadge status="success" type="address" />}
@@ -396,7 +444,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
               value={formData.type}
               onChange={handleChange}
               required
-              style={{ paddingRight: formData.type && typeAutoFilled ? '40px' : undefined }}
+              style={{ paddingRight: formData.type && typeAutoFilled ? '45px' : undefined }}
             >
               <option value="">Choisir un type</option>
               <option value="Français">Français</option>
