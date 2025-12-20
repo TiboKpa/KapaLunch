@@ -42,6 +42,17 @@
   }
 }
 
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* ========== ÉTOILES SVG ========== */
 .star-rating-display {
   display: inline-flex;
@@ -712,38 +723,39 @@
   margin-bottom: 1rem;
 }
 
-/* Détail restaurant modal */
+/* Détail restaurant modal - POSITIONNÉ À DROITE */
 .restaurant-detail-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.5);
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-end; /* Aligné à droite */
+  align-items: stretch;
   z-index: 2000;
-  padding: 2rem;
+  padding: 0;
 }
 
 .restaurant-detail {
   background: white;
-  border-radius: 12px;
-  width: 100%;
+  border-radius: 0;
+  width: 45%; /* 45% de la largeur de l'écran */
   max-width: 700px;
-  max-height: 90vh;
+  min-width: 400px;
+  height: 100vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  padding-bottom: 5rem; /* Espace pour le bouton supprimer en bas */
+  box-shadow: -5px 0 25px rgba(0,0,0,0.3);
+  animation: slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  padding-bottom: 5rem;
 }
 
 .restaurant-header {
   padding: 2rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  border-radius: 12px 12px 0 0;
 }
 
 .restaurant-header h2 {
@@ -845,11 +857,14 @@
 /* Responsive */
 @media (max-width: 768px) {
   .restaurant-detail-overlay {
-    padding: 1rem;
+    justify-content: center;
+    padding: 0;
   }
 
   .restaurant-detail {
+    width: 100%;
     max-width: 100%;
+    min-width: 100%;
   }
 
   .restaurant-header,
