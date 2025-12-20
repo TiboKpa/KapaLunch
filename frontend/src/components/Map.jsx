@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 
 const restaurantIcon = L.icon({
@@ -13,14 +13,26 @@ const restaurantIcon = L.icon({
 function Map({ restaurants, selectedRestaurant, onSelectRestaurant }) {
   const mapRef = useRef(null)
   const markersRef = useRef([])
+  const layersRef = useRef({})
+  const [mapType, setMapType] = useState('map') // 'map' ou 'satellite'
 
   useEffect(() => {
     if (!mapRef.current) {
       mapRef.current = L.map('map').setView([46.603354, 1.888334], 6)
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      
+      // Création des deux couches
+      layersRef.current.map = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
         maxZoom: 19
-      }).addTo(mapRef.current)
+      })
+      
+      layersRef.current.satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '© Esri, Maxar, Earthstar Geographics',
+        maxZoom: 19
+      })
+      
+      // Ajouter la couche par défaut
+      layersRef.current.map.addTo(mapRef.current)
     }
 
     return () => {
@@ -30,6 +42,19 @@ function Map({ restaurants, selectedRestaurant, onSelectRestaurant }) {
       }
     }
   }, [])
+
+  // Changer de couche quand mapType change
+  useEffect(() => {
+    if (!mapRef.current || !layersRef.current.map || !layersRef.current.satellite) return
+
+    if (mapType === 'map') {
+      layersRef.current.satellite.remove()
+      layersRef.current.map.addTo(mapRef.current)
+    } else {
+      layersRef.current.map.remove()
+      layersRef.current.satellite.addTo(mapRef.current)
+    }
+  }, [mapType])
 
   useEffect(() => {
     if (!mapRef.current) return
@@ -74,7 +99,33 @@ function Map({ restaurants, selectedRestaurant, onSelectRestaurant }) {
     }
   }, [selectedRestaurant])
 
-  return <div id="map" style={{ width: '100%', height: '100%' }}></div>
+  return (
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+      {/* Sélecteur de type de carte */}
+      <div className="map-type-selector">
+        <button 
+          className={`map-type-btn ${mapType === 'map' ? 'active' : ''}`}
+          onClick={() => setMapType('map')}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/>
+          </svg>
+          <span>Carte</span>
+        </button>
+        <button 
+          className={`map-type-btn ${mapType === 'satellite' ? 'active' : ''}`}
+          onClick={() => setMapType('satellite')}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          <span>Satellite</span>
+        </button>
+      </div>
+      
+      <div id="map" style={{ width: '100%', height: '100%' }}></div>
+    </div>
+  )
 }
 
 export default Map
