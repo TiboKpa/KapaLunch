@@ -54,6 +54,9 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant })
   const [sortOrder, setSortOrder] = useState('desc') // 'asc', 'desc'
   const [minRating, setMinRating] = useState(0) // 0, 3.5, 4, 4.5
 
+  // Vérifier si des filtres sont actifs (différents des valeurs par défaut)
+  const hasActiveFilters = filterType !== 'all' || minRating > 0
+
   // Filtrage
   let filteredRestaurants = restaurants.filter(restaurant => {
     const matchesSearch = restaurant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -84,7 +87,11 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant })
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <button 
-            className={`filter-toggle-btn ${showFilters ? 'active' : ''}`}
+            className={`filter-toggle-btn ${
+              showFilters ? 'active' : ''
+            } ${
+              hasActiveFilters ? 'has-active-filters' : ''
+            }`}
             onClick={() => setShowFilters(!showFilters)}
             title="Filtres"
           >
