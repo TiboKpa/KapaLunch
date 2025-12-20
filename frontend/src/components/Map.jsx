@@ -53,7 +53,18 @@ function Map({ restaurants, selectedRestaurant, onSelectRestaurant }) {
 
   useEffect(() => {
     if (selectedRestaurant && mapRef.current) {
-      mapRef.current.setView([selectedRestaurant.lat, selectedRestaurant.lon], 15, { animate: true })
+      // Calculer l'offset pour centrer le point dans l'espace disponible à gauche
+      // La popup prend ~45% de la largeur, donc on centre dans les 55% restants
+      const map = mapRef.current
+      const targetPoint = map.project([selectedRestaurant.lat, selectedRestaurant.lon], map.getZoom())
+      
+      // Décaler vers la droite pour compenser la popup (environ 25% de la largeur)
+      const offsetX = map.getSize().x * 0.25
+      targetPoint.x += offsetX
+      
+      const targetLatLng = map.unproject(targetPoint, map.getZoom())
+      
+      map.setView(targetLatLng, 15, { animate: true })
     }
   }, [selectedRestaurant])
 
