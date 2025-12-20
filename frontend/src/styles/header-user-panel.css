@@ -329,7 +329,7 @@
 .user-panel-action-btn:hover {
   background: #f8f9fa;
   border-color: #667eea;
-  transform: translateX(4px);
+  transform: scale(1.02);
 }
 
 .user-panel-action-btn svg:first-child {
@@ -366,8 +366,11 @@
 }
 
 .user-panel-action-btn:hover .action-btn-chevron {
-  transform: translateX(4px);
   color: #667eea;
+}
+
+.user-panel-action-btn:hover .action-btn-chevron:not(.rotate-down) {
+  transform: translateX(4px);
 }
 
 .user-panel-action-btn:hover .action-btn-chevron.rotate-down {
@@ -417,7 +420,7 @@
     transform: translateY(-10px);
   }
   to {
-    max-height: 500px;
+    max-height: 800px;
     opacity: 1;
     transform: translateY(0);
   }
@@ -426,7 +429,7 @@
 /* Animation de fermeture dropdown (REVERSE) */
 @keyframes slideUp {
   from {
-    max-height: 500px;
+    max-height: 800px;
     opacity: 1;
     transform: translateY(0);
   }
@@ -470,6 +473,17 @@
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Admin section dans le dropdown */
+.dropdown-content .admin-section {
+  margin: 0;
+}
+
+.dropdown-content .admin-section h4 {
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  font-size: 1rem;
 }
 
 /* ===== FORMULAIRE AUTH ===== */

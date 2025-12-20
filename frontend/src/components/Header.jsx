@@ -3,8 +3,9 @@ import axios from 'axios'
 
 function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel, userPanelRef, onLogoClick, searchTerm, setSearchTerm, canAddRestaurant, showFilters, setShowFilters, onResetFilters }) {
   // États des différentes sections du panneau
-  const [panelView, setPanelView] = useState('menu') // 'menu', 'login', 'admin'
+  const [panelView, setPanelView] = useState('menu') // 'menu', 'login'
   const [showPasswordDropdown, setShowPasswordDropdown] = useState(false)
+  const [showAdminDropdown, setShowAdminDropdown] = useState(false)
   
   // États login/signup
   const [isSignup, setIsSignup] = useState(false)
@@ -40,12 +41,12 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
     )
   }
 
-  // Charger les lurkers quand on ouvre le panneau admin
+  // Charger les lurkers quand on ouvre le dropdown admin
   useEffect(() => {
-    if (panelView === 'admin' && user?.role === 'admin') {
+    if (showAdminDropdown && user?.role === 'admin') {
       fetchLurkers()
     }
-  }, [panelView, user])
+  }, [showAdminDropdown, user])
 
   const fetchLurkers = async () => {
     setAdminLoading(true)
@@ -174,6 +175,7 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
     setShowUserPanel(false)
     setPanelView('menu')
     setShowPasswordDropdown(false)
+    setShowAdminDropdown(false)
     setFormData({ email: '', password: '', name: '' })
     setAuthError('')
     setCurrentPassword('')
@@ -186,7 +188,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
 
   const getPanelTitle = () => {
     if (panelView === 'login') return isSignup ? 'Créer un compte' : 'Se connecter'
-    if (panelView === 'admin') return 'Panneau Admin'
     return 'Mon compte'
   }
 
@@ -361,20 +362,78 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
                 </div>
 
                 <div className="user-panel-actions">
-                  {/* Panneau admin */}
+                  {/* Panneau admin avec dropdown */}
                   {user.role === 'admin' && (
-                    <button className="user-panel-action-btn" onClick={() => setPanelView('admin')}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                      </svg>
-                      <div className="action-btn-content">
-                        <span className="action-btn-title">Panneau Admin</span>
-                        <span className="action-btn-description">Gérer les utilisateurs</span>
-                      </div>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="action-btn-chevron">
-                        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                      </svg>
-                    </button>
+                    <div className="dropdown-section">
+                      <button 
+                        className="user-panel-action-btn"
+                        onClick={() => setShowAdminDropdown(!showAdminDropdown)}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                        <div className="action-btn-content">
+                          <span className="action-btn-title">Panneau Admin</span>
+                          <span className="action-btn-description">Gérer les utilisateurs</span>
+                        </div>
+                        <svg 
+                          width="20" 
+                          height="20" 
+                          viewBox="0 0 24 24" 
+                          fill="currentColor" 
+                          className={`action-btn-chevron ${showAdminDropdown ? 'rotate-down' : ''}`}
+                        >
+                          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                      </button>
+
+                      {/* Dropdown admin animé */}
+                      {showAdminDropdown && (
+                        <div className="dropdown-content">
+                          <div className="admin-section">
+                            <h4>Utilisateurs en attente ({lurkers.length})</h4>
+
+                            {adminLoading && <p>Chargement...</p>}
+                            {adminError && <div className="error-message">{adminError}</div>}
+                            {adminSuccess && <div className="success-message">{adminSuccess}</div>}
+
+                            {!adminLoading && lurkers.length === 0 && (
+                              <p className="empty-message">✅ Aucun utilisateur en attente</p>
+                            )}
+
+                            {lurkers.length > 0 && (
+                              <div className="lurkers-list">
+                                {lurkers.map((lurker) => (
+                                  <div key={lurker.id} className="lurker-card">
+                                    <div className="lurker-info">
+                                      <strong>{lurker.name}</strong>
+                                      <span className="lurker-email">{lurker.email}</span>
+                                      <span className="lurker-date">
+                                        {new Date(lurker.createdAt).toLocaleDateString('fr-FR')}
+                                      </span>
+                                    </div>
+                                    <div className="lurker-actions">
+                                      <button
+                                        onClick={() => handleValidateLurker(lurker.id, lurker.name)}
+                                        className="btn-validate"
+                                      >
+                                        ✓ Valider
+                                      </button>
+                                      <button
+                                        onClick={() => handleRejectLurker(lurker.id, lurker.name)}
+                                        className="btn-reject"
+                                      >
+                                        ✕ Rejeter
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   )}
 
                   {/* Changer mot de passe avec dropdown */}
@@ -468,60 +527,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
                   </button>
                 </div>
               </>
-            )}
-
-            {/* VUE PANNEAU ADMIN */}
-            {panelView === 'admin' && user?.role === 'admin' && (
-              <div className="admin-panel-view">
-                <button className="back-button" onClick={() => setPanelView('menu')}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-                  </svg>
-                  Retour
-                </button>
-
-                <div className="admin-section">
-                  <h4>Utilisateurs en attente ({lurkers.length})</h4>
-
-                  {adminLoading && <p>Chargement...</p>}
-                  {adminError && <div className="error-message">{adminError}</div>}
-                  {adminSuccess && <div className="success-message">{adminSuccess}</div>}
-
-                  {!adminLoading && lurkers.length === 0 && (
-                    <p className="empty-message">✅ Aucun utilisateur en attente</p>
-                  )}
-
-                  {lurkers.length > 0 && (
-                    <div className="lurkers-list">
-                      {lurkers.map((lurker) => (
-                        <div key={lurker.id} className="lurker-card">
-                          <div className="lurker-info">
-                            <strong>{lurker.name}</strong>
-                            <span className="lurker-email">{lurker.email}</span>
-                            <span className="lurker-date">
-                              {new Date(lurker.createdAt).toLocaleDateString('fr-FR')}
-                            </span>
-                          </div>
-                          <div className="lurker-actions">
-                            <button
-                              onClick={() => handleValidateLurker(lurker.id, lurker.name)}
-                              className="btn-validate"
-                            >
-                              ✓ Valider
-                            </button>
-                            <button
-                              onClick={() => handleRejectLurker(lurker.id, lurker.name)}
-                              className="btn-reject"
-                            >
-                              ✕ Rejeter
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
             )}
           </div>
         </div>
