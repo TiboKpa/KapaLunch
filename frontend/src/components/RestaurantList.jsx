@@ -63,13 +63,23 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
   // Vérifier si des filtres sont actifs (différents des valeurs par défaut)
   const hasActiveFilters = filterType !== 'all' || filterCity !== 'all' || minRating > 0
 
-  // Extraire la ville de l'adresse
+  // Extraire le code postal + ville pour la liste (sidebar)
   // Format OSM: "Nom, Rue, Code Postal Ville, Pays"
+  const extractPostalCodeAndCity = (address) => {
+    if (!address) return ''
+    const parts = address.split(',')
+    if (parts.length >= 2) {
+      // Prendre l'avant-dernière partie (code postal + ville)
+      return parts[parts.length - 2].trim()
+    }
+    return parts[parts.length - 1].trim()
+  }
+
+  // Extraire uniquement la ville (pour le filtre)
   const extractCity = (address) => {
     if (!address) return ''
     const parts = address.split(',')
     if (parts.length >= 2) {
-      // Prendre l'avant-dernière partie (la ville)
       const cityPart = parts[parts.length - 2].trim()
       // Extraire uniquement le nom de la ville (après le code postal si présent)
       const cityMatch = cityPart.match(/\d+\s+(.+)/) // Match "69001 Lyon" -> "Lyon"
@@ -78,7 +88,7 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
     return parts[parts.length - 1].trim()
   }
 
-  // Obtenir la liste des villes uniques
+  // Obtenir la liste des villes uniques (pour le filtre)
   const cities = ['all', ...new Set(restaurants.map(r => extractCity(r.address)).filter(Boolean))].sort()
 
   // Filtrage
@@ -202,7 +212,7 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
           <p className="no-results">Aucun restaurant trouvé</p>
         ) : (
           filteredRestaurants.map(restaurant => {
-            const city = extractCity(restaurant.address)
+            const postalCodeAndCity = extractPostalCodeAndCity(restaurant.address)
             
             return (
               <div
@@ -221,13 +231,13 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
                   )}
                 </div>
 
-                {/* Ligne 2: Type + Ville */}
+                {/* Ligne 2: Type + Code Postal + Ville */}
                 <div className="restaurant-info-line">
                   {restaurant.type && <span className="type-badge">{restaurant.type}</span>}
-                  {city && (
+                  {postalCodeAndCity && (
                     <div className="city-info">
                       <LocationPin />
-                      <span>{city}</span>
+                      <span>{postalCodeAndCity}</span>
                     </div>
                   )}
                 </div>
