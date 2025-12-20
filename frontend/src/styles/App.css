@@ -282,6 +282,44 @@ body {
   background: white;
   padding: 1rem;
   border-bottom: 1px solid #dee2e6;
+  animation: slideDownPanel 0.3s ease;
+  overflow: hidden;
+}
+
+/* Animation d'ouverture panneau filtres */
+@keyframes slideDownPanel {
+  from {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  to {
+    max-height: 500px;
+    opacity: 1;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+/* Animation de fermeture panneau filtres */
+@keyframes slideUpPanel {
+  from {
+    max-height: 500px;
+    opacity: 1;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+.filters-panel.closing {
+  animation: slideUpPanel 0.3s ease forwards;
 }
 
 /* Ligne de filtres côte à côte */
@@ -525,6 +563,44 @@ body {
   padding: 1.5rem;
   border-bottom: 2px solid #dee2e6;
   margin-bottom: 0.5rem;
+  animation: slideDownForm 0.3s ease;
+  overflow: hidden;
+}
+
+/* Animation d'ouverture formulaire */
+@keyframes slideDownForm {
+  from {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  to {
+    max-height: 1000px;
+    opacity: 1;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+}
+
+/* Animation de fermeture formulaire */
+@keyframes slideUpForm {
+  from {
+    max-height: 1000px;
+    opacity: 1;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+.add-restaurant-form.closing {
+  animation: slideUpForm 0.3s ease forwards;
 }
 
 .add-restaurant-form h2 {
