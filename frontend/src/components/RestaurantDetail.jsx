@@ -66,6 +66,7 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted }) =>
   const [editingReviewId, setEditingReviewId] = useState(null)
   const [editFormData, setEditFormData] = useState({ rating: 5, comment: '' })
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, type: null, id: null })
+  const [userHasReview, setUserHasReview] = useState(false)
 
   useEffect(() => {
     if (restaurant) {
@@ -81,6 +82,12 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted }) =>
       )
       const reviewsData = response.data.data
       setReviews(reviewsData)
+
+      // Vérifier si l'utilisateur a déjà laissé un avis
+      if (user) {
+        const hasReview = reviewsData.some(review => review.authorId === user.id)
+        setUserHasReview(hasReview)
+      }
 
       if (reviewsData.length > 0) {
         const avg = reviewsData.reduce((sum, r) => sum + r.rating, 0) / reviewsData.length
@@ -169,6 +176,16 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted }) =>
     setDeleteConfirm({ show: true, type, id })
   }
 
+  const getGoogleMapsUrl = () => {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.address)}`
+  }
+
+  const getCityFromAddress = (address) => {
+    // Extraire la ville de l'adresse (dernière partie après la virgule)
+    const parts = address.split(',')
+    return parts[parts.length - 1].trim()
+  }
+
   if (!restaurant) return null
 
   return (
@@ -181,34 +198,37 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted }) =>
         </button>
 
         <div className="restaurant-header">
-          <div className="restaurant-header-top">
-            <div>
-              <h2>{restaurant.name}</h2>
-              {restaurant.type && <span className="restaurant-type">{restaurant.type}</span>}
-            </div>
+          <h2>{restaurant.name}</h2>
+          
+          {/* Ligne unique avec Type, Ville, Note */}
+          <div className="restaurant-info-line">
+            {restaurant.type && (
+              <span className="info-item">
+                <span className="info-label">Type:</span>
+                <span className="restaurant-type">{restaurant.type}</span>
+              </span>
+            )}
             
-            {canDeleteRestaurant() && (
-              <button 
-                className="btn-delete-restaurant"
-                onClick={() => showDeleteConfirm('restaurant')}
-                title="Supprimer le restaurant"
+            <span className="info-item">
+              <span className="info-icon">📍</span>
+              <a 
+                href={getGoogleMapsUrl()} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="city-link"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                </svg>
-              </button>
+                {getCityFromAddress(restaurant.address)}
+              </a>
+            </span>
+
+            {averageRating > 0 && (
+              <span className="info-item rating-inline">
+                <StarRating rating={averageRating} />
+                <span className="rating-value">{averageRating.toFixed(1)}/5</span>
+                <span className="review-count">({reviews.length} avis)</span>
+              </span>
             )}
           </div>
-
-          <p className="restaurant-address">{restaurant.address}</p>
-
-          {averageRating > 0 && (
-            <div className="restaurant-rating">
-              <StarRating rating={averageRating} />
-              <span className="rating-value">{averageRating.toFixed(1)}/5</span>
-              <span className="review-count">({reviews.length} avis)</span>
-            </div>
-          )}
 
           {restaurant.description && (
             <p className="restaurant-description">{restaurant.description}</p>
@@ -216,11 +236,14 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted }) =>
         </div>
 
         <div className="restaurant-content">
-          <AddReviewForm
-            restaurantId={restaurant.id}
-            onReviewAdded={fetchReviews}
-            user={user}
-          />
+          {/* Afficher le formulaire uniquement si l'utilisateur n'a pas déjà laissé un avis */}
+          {!userHasReview && (
+            <AddReviewForm
+              restaurantId={restaurant.id}
+              onReviewAdded={fetchReviews}
+              user={user}
+            />
+          )}
 
           <div className="reviews-section">
             {loading ? (
@@ -319,6 +342,20 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted }) =>
             )}
           </div>
         </div>
+
+        {/* Bouton supprimer restaurant en bas à gauche */}
+        {canDeleteRestaurant() && (
+          <button 
+            className="btn-delete-restaurant-bottom"
+            onClick={() => showDeleteConfirm('restaurant')}
+            title="Supprimer le restaurant"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+            </svg>
+            <span>Supprimer le restaurant</span>
+          </button>
+        )}
 
         {deleteConfirm.show && (
           <div className="confirm-overlay" onClick={() => setDeleteConfirm({ show: false, type: null, id: null })}>
