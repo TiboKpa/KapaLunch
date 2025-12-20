@@ -387,56 +387,54 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
                         </svg>
                       </button>
 
-                      {/* Dropdown admin animé */}
-                      {showAdminDropdown && (
-                        <div className="dropdown-content">
-                          <div className="admin-section">
-                            <h4>Utilisateurs en attente ({lurkers.length})</h4>
+                      {/* Dropdown admin animé avec classe .open */}
+                      <div className={`dropdown-content ${showAdminDropdown ? 'open' : ''}`}>
+                        <div className="admin-section">
+                          <h4>Utilisateurs en attente ({lurkers.length})</h4>
 
-                            {adminLoading && <p>Chargement...</p>}
-                            {adminError && <div className="error-message">{adminError}</div>}
-                            {adminSuccess && <div className="success-message">{adminSuccess}</div>}
+                          {adminLoading && <p>Chargement...</p>}
+                          {adminError && <div className="error-message">{adminError}</div>}
+                          {adminSuccess && <div className="success-message">{adminSuccess}</div>}
 
-                            {!adminLoading && lurkers.length === 0 && (
-                              <p className="empty-message">✅ Aucun utilisateur en attente</p>
-                            )}
+                          {!adminLoading && lurkers.length === 0 && (
+                            <p className="empty-message">✅ Aucun utilisateur en attente</p>
+                          )}
 
-                            {lurkers.length > 0 && (
-                              <div className="lurkers-list">
-                                {lurkers.map((lurker) => (
-                                  <div key={lurker.id} className="lurker-card">
-                                    <div className="lurker-info">
-                                      <strong>{lurker.name}</strong>
-                                      <span className="lurker-email">{lurker.email}</span>
-                                      <span className="lurker-date">
-                                        {new Date(lurker.createdAt).toLocaleDateString('fr-FR')}
-                                      </span>
-                                    </div>
-                                    <div className="lurker-actions">
-                                      <button
-                                        onClick={() => handleValidateLurker(lurker.id, lurker.name)}
-                                        className="btn-validate"
-                                      >
-                                        ✓ Valider
-                                      </button>
-                                      <button
-                                        onClick={() => handleRejectLurker(lurker.id, lurker.name)}
-                                        className="btn-reject"
-                                      >
-                                        ✕ Rejeter
-                                      </button>
-                                    </div>
+                          {lurkers.length > 0 && (
+                            <div className="lurkers-list">
+                              {lurkers.map((lurker) => (
+                                <div key={lurker.id} className="lurker-card">
+                                  <div className="lurker-info">
+                                    <strong>{lurker.name}</strong>
+                                    <span className="lurker-email">{lurker.email}</span>
+                                    <span className="lurker-date">
+                                      {new Date(lurker.createdAt).toLocaleDateString('fr-FR')}
+                                    </span>
                                   </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                                  <div className="lurker-actions">
+                                    <button
+                                      onClick={() => handleValidateLurker(lurker.id, lurker.name)}
+                                      className="btn-validate"
+                                    >
+                                      ✓ Valider
+                                    </button>
+                                    <button
+                                      onClick={() => handleRejectLurker(lurker.id, lurker.name)}
+                                      className="btn-reject"
+                                    >
+                                      ✕ Rejeter
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      )}
+                      </div>
                     </div>
                   )}
 
-                  {/* Changer mot de passe avec dropdown */}
+                  {/* Changer mot de passe avec dropdown et classe .open */}
                   <div className="dropdown-section">
                     <button 
                       className="user-panel-action-btn"
@@ -461,47 +459,45 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
                       </svg>
                     </button>
 
-                    {/* Dropdown animé */}
-                    {showPasswordDropdown && (
-                      <div className="dropdown-content">
-                        <form onSubmit={handlePasswordSubmit}>
-                          <div className="form-group">
-                            <label>Mot de passe actuel</label>
-                            <input
-                              type="password"
-                              value={currentPassword}
-                              onChange={(e) => setCurrentPassword(e.target.value)}
-                              required
-                            />
-                          </div>
-                          <div className="form-group">
-                            <label>Nouveau mot de passe</label>
-                            <input
-                              type="password"
-                              value={newPassword}
-                              onChange={(e) => setNewPassword(e.target.value)}
-                              required
-                              minLength={6}
-                            />
-                          </div>
-                          <div className="form-group">
-                            <label>Confirmer</label>
-                            <input
-                              type="password"
-                              value={confirmPassword}
-                              onChange={(e) => setConfirmPassword(e.target.value)}
-                              required
-                              minLength={6}
-                            />
-                          </div>
-                          {passwordError && <div className="error-message">{passwordError}</div>}
-                          {passwordSuccess && <div className="success-message">{passwordSuccess}</div>}
-                          <button type="submit" className="btn btn-primary btn-block" disabled={passwordLoading}>
-                            {passwordLoading ? 'Changement...' : 'Changer'}
-                          </button>
-                        </form>
-                      </div>
-                    )}
+                    {/* Dropdown animé avec classe .open */}
+                    <div className={`dropdown-content ${showPasswordDropdown ? 'open' : ''}`}>
+                      <form onSubmit={handlePasswordSubmit}>
+                        <div className="form-group">
+                          <label>Mot de passe actuel</label>
+                          <input
+                            type="password"
+                            value={currentPassword}
+                            onChange={(e) => setCurrentPassword(e.target.value)}
+                            required
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Nouveau mot de passe</label>
+                          <input
+                            type="password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            required
+                            minLength={6}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Confirmer</label>
+                          <input
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                            minLength={6}
+                          />
+                        </div>
+                        {passwordError && <div className="error-message">{passwordError}</div>}
+                        {passwordSuccess && <div className="success-message">{passwordSuccess}</div>}
+                        <button type="submit" className="btn btn-primary btn-block" disabled={passwordLoading}>
+                          {passwordLoading ? 'Changement...' : 'Changer'}
+                        </button>
+                      </form>
+                    </div>
                   </div>
 
                   {/* Déconnexion */}
