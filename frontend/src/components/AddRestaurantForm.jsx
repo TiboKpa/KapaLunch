@@ -333,7 +333,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
       
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Nom de l'établissement *</label>
+          <label>Nom de l&apos;établissement *</label>
           <div style={{ position: 'relative' }}>
             <input
               type="text"
@@ -441,7 +441,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
           className="btn btn-primary btn-block"
           disabled={loading || (geocodeStatus !== 'success' && !foundAddress)}
         >
-          {loading ? 'Ajout en cours...' : 'Ajouter l\''établissement'}
+          {loading ? 'Ajout en cours...' : "Ajouter l'établissement"}
         </button>
       </form>
     </div>
