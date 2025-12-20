@@ -310,7 +310,17 @@
 .user-panel-actions {
   display: flex;
   flex-direction: column;
-  gap: 0; /* RETRAIT DU GAP - l'espacement est géré par les enfants */
+  gap: 0;
+}
+
+/* TOUS les enfants directs (sections ET boutons) ont le même espacement */
+.user-panel-actions > * {
+  margin-bottom: 0.75rem;
+}
+
+/* Sauf le dernier */
+.user-panel-actions > *:last-child {
+  margin-bottom: 0;
 }
 
 .user-panel-action-btn {
@@ -395,25 +405,10 @@
   color: #dc3545;
 }
 
-/* ===== DROPDOWN ANIMÉ (FIX ESPACEMENT UNIQUE) ===== */
+/* ===== DROPDOWN ANIMÉ ===== */
 .dropdown-section {
   display: flex;
   flex-direction: column;
-  margin-bottom: 0.75rem; /* Espacement unique entre les sections */
-}
-
-/* Retire le margin-bottom du dernier élément */
-.dropdown-section:last-child {
-  margin-bottom: 0;
-}
-
-/* Pour les boutons sans dropdown (comme Déconnexion) */
-.user-panel-actions > .user-panel-action-btn {
-  margin-bottom: 0.75rem;
-}
-
-.user-panel-actions > .user-panel-action-btn:last-child {
-  margin-bottom: 0;
 }
 
 .dropdown-content {
