@@ -131,6 +131,11 @@ function App() {
     setShowAddForm(true)
   }
 
+  // Fonction pour réinitialiser la recherche ET les filtres
+  const handleResetFilters = () => {
+    setSearchTerm('')
+  }
+
   // Fonction wrapper pour showToast compatible avec AddRestaurantForm
   const showToast = (message, type = 'info', duration = 5000, actionLabel = null, onAction = null) => {
     setToast({
@@ -163,6 +168,7 @@ function App() {
         canAddRestaurant={canAddRestaurant}
         showFilters={showFilters}
         setShowFilters={setShowFilters}
+        onResetFilters={handleResetFilters}
       />
 
       <div className="main-container">
@@ -212,6 +218,7 @@ function App() {
             setShowFilters={setShowFilters}
             canAddRestaurant={canAddRestaurant}
             onOpenAddForm={handleToggleAddFormWithSearch}
+            onResetFilters={handleResetFilters}
           />
         </div>
       </div>
