@@ -64,7 +64,8 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
   const hasActiveFilters = filterType !== 'all' || filterCity !== 'all' || minRating > 0
 
   // Extraire le code postal + ville pour la liste (sidebar)
-  // Format OSM: "Nom, Rue, Code Postal Ville, Pays"
+  // Format: "Nom, Rue, Code Postal Ville, Pays"
+  // On veut: "69660 Collonges-au-Mont-d'Or" (avant-dernière partie)
   const extractPostalCodeAndCity = (address) => {
     if (!address) return ''
     const parts = address.split(',')
@@ -82,7 +83,7 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
     if (parts.length >= 2) {
       const cityPart = parts[parts.length - 2].trim()
       // Extraire uniquement le nom de la ville (après le code postal si présent)
-      const cityMatch = cityPart.match(/\d+\s+(.+)/) // Match "69001 Lyon" -> "Lyon"
+      const cityMatch = cityPart.match(/\d+\s+(.+)/) // Match "69660 Collonges-au-Mont-d'Or" -> "Collonges-au-Mont-d'Or"
       return cityMatch ? cityMatch[1] : cityPart
     }
     return parts[parts.length - 1].trim()
