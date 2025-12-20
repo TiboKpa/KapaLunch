@@ -47,14 +47,23 @@ function LoginModal({ onClose, onLogin }) {
       } else {
         // Déclencher l'animation shake
         setShake(true)
-        setTimeout(() => setShake(false), 650)
-        setError(data.message || 'Email ou mot de passe incorrect')
+        setTimeout(() => setShake(false), 400)
+        
+        // Message d'erreur depuis le backend
+        setError(data.message || 'Erreur lors de la connexion')
       }
     } catch (err) {
-      // Déclencher l'animation shake
+      // Erreur réseau (backend non démarré ou problème de connexion)
       setShake(true)
-      setTimeout(() => setShake(false), 650)
-      setError('Impossible de se connecter au serveur. Vérifiez que le backend est démarré.')
+      setTimeout(() => setShake(false), 400)
+      
+      console.error('Erreur réseau:', err)
+      
+      if (err.name === 'TypeError' && err.message.includes('fetch')) {
+        setError('Le serveur backend ne répond pas. Vérifiez qu\'il est bien démarré sur le port 5000.')
+      } else {
+        setError('Erreur de connexion. Vérifiez votre connexion internet.')
+      }
     } finally {
       setLoading(false)
     }
