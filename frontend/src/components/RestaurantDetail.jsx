@@ -184,8 +184,13 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted, pend
   }
 
   const getGoogleMapsUrl = () => {
-    // Utiliser uniquement l'adresse (sans le nom) pour éviter le doublon
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.address)}`
+    // Utiliser les coordonnées GPS pour éviter les problèmes d'encodage
+    if (restaurant.lat && restaurant.lon) {
+      return `https://www.google.com/maps/search/?api=1&query=${restaurant.lat},${restaurant.lon}`
+    }
+    // Fallback: utiliser l'adresse nettoyée (sans le nom du restaurant)
+    const addressWithoutName = restaurant.address.split(',').slice(1).join(',').trim()
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressWithoutName || restaurant.address)}`
   }
 
   const getCityFromAddress = (address) => {
