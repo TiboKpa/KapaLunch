@@ -3,7 +3,8 @@ import Header from './components/Header'
 import Map from './components/Map'
 import RestaurantList from './components/RestaurantList'
 import AddRestaurantForm from './components/AddRestaurantForm'
-import RestaurantDetail from './components/RestaurantDetail'
+importRestaurantDetail from './components/RestaurantDetail'
+import Toast from './components/Toast'
 import './styles/App.css'
 import './styles/features.css'
 import './styles/header-user-panel.css'
@@ -16,6 +17,7 @@ function App() {
   const [showRestaurantDetail, setShowRestaurantDetail] = useState(false)
   const [showUserPanel, setShowUserPanel] = useState(false)
   const [pendingReview, setPendingReview] = useState(null) // Pour stocker avis en attente
+  const [toast, setToast] = useState(null) // Pour afficher les toasts
   const userPanelRef = useRef(null)
   const mapRef = useRef(null)
 
@@ -124,8 +126,10 @@ function App() {
     setSelectedRestaurant(null)
     setShowRestaurantDetail(false)
     
-    // TODO: Zoom out sur la carte pour vue globale
-    // Sera implémenté dans Map.jsx avec une méthode exposée
+    // Zoom out sur la carte pour vue globale
+    if (mapRef.current && mapRef.current.resetView) {
+      mapRef.current.resetView()
+    }
   }
 
   const canAddRestaurant = user && (user.role === 'user' || user.role === 'admin')
@@ -177,6 +181,7 @@ function App() {
               onSubmit={handleAddRestaurant}
               restaurants={restaurants}
               onExistingRestaurantFound={handleSelectRestaurant}
+              onShowToast={setToast}
             />
           )}
 
@@ -187,6 +192,18 @@ function App() {
           />
         </div>
       </div>
+
+      {/* Toast notifications */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+          duration={toast.duration}
+          actionLabel={toast.actionLabel}
+          onAction={toast.onAction}
+        />
+      )}
     </div>
   )
 }
