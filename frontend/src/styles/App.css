@@ -18,6 +18,7 @@ body {
   flex-direction: column;
 }
 
+/* ===== HEADER ===== */
 .header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -36,12 +37,7 @@ body {
 .header-left h1 {
   font-size: 1.8rem;
   margin: 0;
-}
-
-.subtitle {
-  font-size: 0.9rem;
-  opacity: 0.9;
-  margin-top: 0.2rem;
+  font-weight: 600;
 }
 
 .header-right {
@@ -50,28 +46,100 @@ body {
   gap: 1rem;
 }
 
-.user-name {
-  font-weight: 500;
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
 }
 
+.user-name {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.role-badge {
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: white;
+}
+
+/* Boutons généraux */
 .btn {
   padding: 0.6rem 1.2rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .btn-primary {
   background: white;
   color: #667eea;
+  padding: 0.65rem 1.5rem;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Bouton Ajouter un resto */
+.btn-add {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+}
+
+.btn-add:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-add .btn-icon {
+  font-size: 0.85rem;
+}
+
+/* Actions utilisateur avec icônes */
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-icon-only {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-icon-only:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-icon-only svg {
+  display: block;
 }
 
 .btn-secondary {
@@ -93,6 +161,7 @@ body {
   cursor: not-allowed;
 }
 
+/* ===== MAIN CONTAINER ===== */
 .main-container {
   flex: 1;
   display: flex;
@@ -381,6 +450,13 @@ body {
   .header-right {
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .user-info {
+    order: -1;
+    width: 100%;
+    justify-content: center;
   }
 }
 
