@@ -63,30 +63,47 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
   // Vérifier si des filtres sont actifs (différents des valeurs par défaut)
   const hasActiveFilters = filterType !== 'all' || filterCity !== 'all' || minRating > 0
 
-  // Extraire le code postal + ville pour la liste (sidebar)
-  // Format: "Nom, Rue, Code Postal Ville, Pays"
-  // On veut: "69660 Collonges-au-Mont-d'Or" (avant-dernière partie)
+  // Extraire code postal + ville de l'adresse
+  // Formats possibles:
+  // "Davrey, Troyes, Aube, Grand Est, France métropolitaine, 10130" -> "10130 Troyes"
+  // "Paul Bocuse, 40 Quai de la Plage, 69660 Collonges-au-Mont-d'Or, France" -> "69660 Collonges-au-Mont-d'Or"
   const extractPostalCodeAndCity = (address) => {
     if (!address) return ''
+    
+    // Chercher le code postal (5 chiffres)
+    const postalCodeMatch = address.match(/\b(\d{5})\b/)
+    if (!postalCodeMatch) return ''
+    
+    const postalCode = postalCodeMatch[1]
     const parts = address.split(',')
-    if (parts.length >= 2) {
-      // Prendre l'avant-dernière partie (code postal + ville)
-      return parts[parts.length - 2].trim()
+    
+    // Chercher la ville (partie juste avant ou après le code postal)
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i].trim()
+      if (part.includes(postalCode)) {
+        // Le code postal est dans cette partie, extraire la ville
+        const cityMatch = part.match(/\d{5}\s+(.+)/)
+        if (cityMatch) {
+          return `${postalCode} ${cityMatch[1]}`
+        }
+      }
     }
-    return parts[parts.length - 1].trim()
+    
+    // Si le code postal est seul, chercher la ville dans les parties précédentes
+    const postalIndex = parts.findIndex(p => p.trim() === postalCode)
+    if (postalIndex > 0) {
+      const city = parts[postalIndex - 1].trim()
+      return `${postalCode} ${city}`
+    }
+    
+    return postalCode
   }
 
   // Extraire uniquement la ville (pour le filtre)
   const extractCity = (address) => {
-    if (!address) return ''
-    const parts = address.split(',')
-    if (parts.length >= 2) {
-      const cityPart = parts[parts.length - 2].trim()
-      // Extraire uniquement le nom de la ville (après le code postal si présent)
-      const cityMatch = cityPart.match(/\d+\s+(.+)/) // Match "69660 Collonges-au-Mont-d'Or" -> "Collonges-au-Mont-d'Or"
-      return cityMatch ? cityMatch[1] : cityPart
-    }
-    return parts[parts.length - 1].trim()
+    const postalAndCity = extractPostalCodeAndCity(address)
+    // Enlever le code postal pour garder que la ville
+    return postalAndCity.replace(/^\d{5}\s*/, '')
   }
 
   // Obtenir la liste des villes uniques (pour le filtre)
