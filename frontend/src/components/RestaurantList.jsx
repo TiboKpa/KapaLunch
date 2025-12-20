@@ -40,11 +40,18 @@ const StarRating = ({ rating }) => {
   return <div className="star-rating-display">{stars}</div>
 }
 
+// Icône étoile pour les boutons de filtres
+const StarIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '4px' }}>
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+  </svg>
+)
+
 function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
-  const [sortOrder, setSortOrder] = useState('none') // 'none', 'asc', 'desc'
+  const [sortOrder, setSortOrder] = useState('desc') // 'asc', 'desc'
   const [minRating, setMinRating] = useState(0) // 0, 3.5, 4, 4.5
 
   // Filtrage
@@ -56,14 +63,12 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant })
     return matchesSearch && matchesType && matchesRating
   })
 
-  // Tri par note
-  if (sortOrder !== 'none') {
-    filteredRestaurants = [...filteredRestaurants].sort((a, b) => {
-      const ratingA = a.averageRating || 0
-      const ratingB = b.averageRating || 0
-      return sortOrder === 'asc' ? ratingA - ratingB : ratingB - ratingA
-    })
-  }
+  // Tri par note (toujours actif)
+  filteredRestaurants = [...filteredRestaurants].sort((a, b) => {
+    const ratingA = a.averageRating || 0
+    const ratingB = b.averageRating || 0
+    return sortOrder === 'asc' ? ratingA - ratingB : ratingB - ratingA
+  })
 
   const types = ['all', ...new Set(restaurants.map(r => r.type).filter(Boolean))]
 
@@ -94,47 +99,45 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant })
       {/* Panneau de filtres déroulant */}
       {showFilters && (
         <div className="filters-panel pop-in">
-          <div className="filter-group">
-            <label>Type de restaurant</label>
-            <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-              {types.map(type => (
-                <option key={type} value={type}>
-                  {type === 'all' ? 'Tous les types' : type}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Ligne 1: Type et Tri côte à côte */}
+          <div className="filter-row">
+            <div className="filter-group">
+              <label>Type de restaurant</label>
+              <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+                {types.map(type => (
+                  <option key={type} value={type}>
+                    {type === 'all' ? 'Tous les types' : type}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <div className="filter-group">
-            <label>Tri par note</label>
-            <div className="sort-buttons">
-              <button 
-                className={`sort-btn ${sortOrder === 'none' ? 'active' : ''}`}
-                onClick={() => setSortOrder('none')}
-              >
-                Aucun tri
-              </button>
-              <button 
-                className={`sort-btn ${sortOrder === 'desc' ? 'active' : ''}`}
-                onClick={() => setSortOrder('desc')}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M7 14l5-5 5 5z"/>
-                </svg>
-                Décroissant
-              </button>
-              <button 
-                className={`sort-btn ${sortOrder === 'asc' ? 'active' : ''}`}
-                onClick={() => setSortOrder('asc')}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M7 10l5 5 5-5z"/>
-                </svg>
-                Croissant
-              </button>
+            <div className="filter-group">
+              <label>Tri par note</label>
+              <div className="sort-buttons">
+                <button 
+                  className={`sort-btn ${sortOrder === 'desc' ? 'active' : ''}`}
+                  onClick={() => setSortOrder('desc')}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 14l5-5 5 5z"/>
+                  </svg>
+                  Décroissant
+                </button>
+                <button 
+                  className={`sort-btn ${sortOrder === 'asc' ? 'active' : ''}`}
+                  onClick={() => setSortOrder('asc')}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 10l5 5 5-5z"/>
+                  </svg>
+                  Croissant
+                </button>
+              </div>
             </div>
           </div>
 
+          {/* Ligne 2: Note minimum */}
           <div className="filter-group">
             <label>Note minimum</label>
             <div className="rating-filter-buttons">
@@ -148,19 +151,19 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant })
                 className={`rating-btn ${minRating === 3.5 ? 'active' : ''}`}
                 onClick={() => setMinRating(3.5)}
               >
-                ⭐ 3.5+
+                <StarIcon /> 3.5+
               </button>
               <button 
                 className={`rating-btn ${minRating === 4 ? 'active' : ''}`}
                 onClick={() => setMinRating(4)}
               >
-                ⭐ 4.0+
+                <StarIcon /> 4.0+
               </button>
               <button 
                 className={`rating-btn ${minRating === 4.5 ? 'active' : ''}`}
                 onClick={() => setMinRating(4.5)}
               >
-                ⭐ 4.5+
+                <StarIcon /> 4.5+
               </button>
             </div>
           </div>
