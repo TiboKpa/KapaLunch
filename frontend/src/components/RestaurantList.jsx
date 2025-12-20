@@ -89,11 +89,29 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
       }
     }
     
-    // Si le code postal est seul, chercher la ville dans les parties précédentes
+    // Si le code postal est seul à la fin, chercher la ville dans les parties précédentes
+    // Ignorer "France", "France métropolitaine", pays
     const postalIndex = parts.findIndex(p => p.trim() === postalCode)
-    if (postalIndex > 0) {
-      const city = parts[postalIndex - 1].trim()
-      return `${postalCode} ${city}`
+    if (postalIndex >= 0) {
+      // Chercher la vraie ville (pas le pays)
+      for (let i = postalIndex - 1; i >= 0; i--) {
+        const potentialCity = parts[i].trim()
+        // Ignorer les pays et régions communes
+        if (!potentialCity.toLowerCase().includes('france') && 
+            !potentialCity.toLowerCase().includes('grand est') &&
+            !potentialCity.toLowerCase().includes('auvergne') &&
+            !potentialCity.toLowerCase().includes('nouvelle-aquitaine') &&
+            !potentialCity.toLowerCase().includes('occitanie') &&
+            !potentialCity.toLowerCase().includes('bretagne') &&
+            !potentialCity.toLowerCase().includes('normandie') &&
+            !potentialCity.toLowerCase().includes('pays de la loire') &&
+            !potentialCity.toLowerCase().includes('centre-val de loire') &&
+            !potentialCity.toLowerCase().includes('bourgogne') &&
+            !potentialCity.toLowerCase().includes('hauts-de-france') &&
+            potentialCity.length > 0) {
+          return `${postalCode} ${potentialCity}`
+        }
+      }
     }
     
     return postalCode
