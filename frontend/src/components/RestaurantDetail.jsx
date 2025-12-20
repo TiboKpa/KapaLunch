@@ -59,6 +59,32 @@ const EditableStars = ({ rating, onChange }) => {
   )
 }
 
+// Icône pin de localisation (rouge)
+const LocationPin = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="#e74c3c" style={{ marginRight: '4px' }}>
+    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+  </svg>
+)
+
+// Spinner de chargement
+const LoadingSpinner = () => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" opacity="0.25"/>
+      <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round">
+        <animateTransform
+          attributeName="transform"
+          type="rotate"
+          from="0 12 12"
+          to="360 12 12"
+          dur="1s"
+          repeatCount="indefinite"/>
+      </path>
+    </svg>
+    <span>Chargement des avis...</span>
+  </div>
+)
+
 const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted, pendingReview, onReviewSubmitted }) => {
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
@@ -245,7 +271,7 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted, pend
             )}
             
             <span className="info-item">
-              <span className="info-icon">📍</span>
+              <LocationPin />
               <a 
                 href={getGoogleMapsUrl()} 
                 target="_blank" 
@@ -285,7 +311,7 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted, pend
 
           <div className="reviews-section">
             {loading ? (
-              <p>Chargement des avis...</p>
+              <LoadingSpinner />
             ) : reviews.length === 0 ? (
               <div className="reviews-empty">
                 <p>Aucun avis pour le moment</p>
