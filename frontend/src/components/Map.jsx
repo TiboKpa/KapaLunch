@@ -36,6 +36,9 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
         duration: 1.5,
         easeLinearity: 0.15
       })
+
+      // Réinitialiser la référence du restaurant précédent
+      prevSelectedRef.current = null
     }
   }))
 
