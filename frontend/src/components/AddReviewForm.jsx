@@ -44,7 +44,7 @@ const AddReviewForm = ({ restaurantId, onReviewAdded, user }) => {
 
   const renderStars = () => {
     return (
-      <div className="star-selector">
+      <div className="star-selector-inline">
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
@@ -52,12 +52,12 @@ const AddReviewForm = ({ restaurantId, onReviewAdded, user }) => {
             onClick={() => setRating(star)}
             className={`star-btn-svg ${rating >= star ? 'active' : ''}`}
           >
-            <svg width="32" height="32" viewBox="0 0 24 24" fill={rating >= star ? '#ffc107' : '#e0e0e0'}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill={rating >= star ? '#ffc107' : '#e0e0e0'}>
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
           </button>
         ))}
-        <span className="rating-text">{rating}/5</span>
+        <span className="rating-text-inline">{rating}/5</span>
       </div>
     )
   }
@@ -73,21 +73,19 @@ const AddReviewForm = ({ restaurantId, onReviewAdded, user }) => {
 
   return (
     <div className="add-review-form compact">
-      <h3>Laisser un avis</h3>
+      <div className="review-form-header">
+        <h3>Laisser un avis</h3>
+        {renderStars()}
+      </div>
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Note</label>
-          {renderStars()}
-        </div>
-
-        <div className="form-group">
-          <label>Commentaire (optionnel)</label>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="Partagez votre expérience..."
+            placeholder="Commentaire (optionnel)..."
             maxLength={500}
-            rows={3}
+            rows={2}
           />
           <small>{comment.length}/500 caractères</small>
         </div>
@@ -95,8 +93,8 @@ const AddReviewForm = ({ restaurantId, onReviewAdded, user }) => {
         {error && <div className="error-message">{error}</div>}
         {success && <div className="success-message">{success}</div>}
 
-        <button type="submit" className="btn-primary" disabled={loading}>
-          {loading ? 'Envoi...' : 'Publier l\'avis'}
+        <button type="submit" className="btn-primary btn-sm" disabled={loading}>
+          {loading ? 'Envoi...' : 'Publier'}
         </button>
       </form>
     </div>
