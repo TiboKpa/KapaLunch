@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel }) {
+function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel, userPanelRef }) {
   // États des différentes sections du panneau
   const [panelView, setPanelView] = useState('menu') // 'menu', 'login', 'admin'
   const [showPasswordDropdown, setShowPasswordDropdown] = useState(false)
@@ -231,7 +231,7 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
 
       {/* Panneau latéral */}
       {showUserPanel && (
-        <div className="user-panel">
+        <div className="user-panel" ref={userPanelRef}>
           <div className="user-panel-header">
             <h3>{getPanelTitle()}</h3>
             <button className="user-panel-close" onClick={handleClosePanel}>
