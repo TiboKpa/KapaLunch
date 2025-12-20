@@ -90,11 +90,24 @@
   margin: 0.5rem 0;
 }
 
+.star-selector-inline {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
 .rating-text {
   margin-left: 0.5rem;
   font-weight: 600;
   color: #495057;
   font-size: 1rem;
+}
+
+.rating-text-inline {
+  margin-left: 0.5rem;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.9rem;
 }
 
 .rating-number {
@@ -160,21 +173,35 @@
 
 /* ========== FORMULAIRE COMPACT ========== */
 .add-review-form.compact {
-  padding: 1.2rem;
+  padding: 1rem;
   margin-bottom: 1.2rem;
 }
 
-.add-review-form.compact h3 {
+.review-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.review-form-header h3 {
+  margin: 0;
   font-size: 1rem;
-  margin-bottom: 0.8rem;
+  font-weight: 600;
+  color: #2c3e50;
 }
 
 .add-review-form.compact .form-group {
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.75rem;
 }
 
 .add-review-form.compact textarea {
   font-size: 0.9rem;
+  padding: 0.7rem;
+}
+
+.add-review-form.compact small {
+  font-size: 0.75rem;
 }
 
 /* ========== BOUTON FERMER MODAL ========== */
@@ -956,5 +983,11 @@
 
   .confirm-actions button {
     width: 100%;
+  }
+
+  .review-form-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 }
