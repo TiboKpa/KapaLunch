@@ -43,37 +43,131 @@ const StarRating = ({ rating }) => {
 function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState('all')
+  const [showFilters, setShowFilters] = useState(false)
+  const [sortOrder, setSortOrder] = useState('none') // 'none', 'asc', 'desc'
+  const [minRating, setMinRating] = useState(0) // 0, 3.5, 4, 4.5
 
-  const filteredRestaurants = restaurants.filter(restaurant => {
+  // Filtrage
+  let filteredRestaurants = restaurants.filter(restaurant => {
     const matchesSearch = restaurant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          restaurant.address.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesType = filterType === 'all' || restaurant.type === filterType
-    return matchesSearch && matchesType
+    const matchesRating = !restaurant.averageRating || restaurant.averageRating >= minRating
+    return matchesSearch && matchesType && matchesRating
   })
+
+  // Tri par note
+  if (sortOrder !== 'none') {
+    filteredRestaurants = [...filteredRestaurants].sort((a, b) => {
+      const ratingA = a.averageRating || 0
+      const ratingB = b.averageRating || 0
+      return sortOrder === 'asc' ? ratingA - ratingB : ratingB - ratingA
+    })
+  }
 
   const types = ['all', ...new Set(restaurants.map(r => r.type).filter(Boolean))]
 
   return (
     <div className="restaurant-list">
+      {/* Barre de recherche avec bouton Filtres */}
       <div className="search-bar">
-        <input
-          type="text"
-          placeholder="Rechercher un restaurant..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <div className="search-input-wrapper">
+          <input
+            type="text"
+            placeholder="Rechercher un restaurant..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button 
+            className={`filter-toggle-btn ${showFilters ? 'active' : ''}`}
+            onClick={() => setShowFilters(!showFilters)}
+            title="Filtres"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
+            </svg>
+            <span>Filtres</span>
+          </button>
+        </div>
       </div>
 
-      <div className="filter-bar">
-        <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-          {types.map(type => (
-            <option key={type} value={type}>
-              {type === 'all' ? 'Tous les types' : type}
-            </option>
-          ))}
-        </select>
-      </div>
+      {/* Panneau de filtres déroulant */}
+      {showFilters && (
+        <div className="filters-panel pop-in">
+          <div className="filter-group">
+            <label>Type de restaurant</label>
+            <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+              {types.map(type => (
+                <option key={type} value={type}>
+                  {type === 'all' ? 'Tous les types' : type}
+                </option>
+              ))}
+            </select>
+          </div>
 
+          <div className="filter-group">
+            <label>Tri par note</label>
+            <div className="sort-buttons">
+              <button 
+                className={`sort-btn ${sortOrder === 'none' ? 'active' : ''}`}
+                onClick={() => setSortOrder('none')}
+              >
+                Aucun tri
+              </button>
+              <button 
+                className={`sort-btn ${sortOrder === 'desc' ? 'active' : ''}`}
+                onClick={() => setSortOrder('desc')}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M7 14l5-5 5 5z"/>
+                </svg>
+                Décroissant
+              </button>
+              <button 
+                className={`sort-btn ${sortOrder === 'asc' ? 'active' : ''}`}
+                onClick={() => setSortOrder('asc')}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M7 10l5 5 5-5z"/>
+                </svg>
+                Croissant
+              </button>
+            </div>
+          </div>
+
+          <div className="filter-group">
+            <label>Note minimum</label>
+            <div className="rating-filter-buttons">
+              <button 
+                className={`rating-btn ${minRating === 0 ? 'active' : ''}`}
+                onClick={() => setMinRating(0)}
+              >
+                Tous
+              </button>
+              <button 
+                className={`rating-btn ${minRating === 3.5 ? 'active' : ''}`}
+                onClick={() => setMinRating(3.5)}
+              >
+                ⭐ 3.5+
+              </button>
+              <button 
+                className={`rating-btn ${minRating === 4 ? 'active' : ''}`}
+                onClick={() => setMinRating(4)}
+              >
+                ⭐ 4.0+
+              </button>
+              <button 
+                className={`rating-btn ${minRating === 4.5 ? 'active' : ''}`}
+                onClick={() => setMinRating(4.5)}
+              >
+                ⭐ 4.5+
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Liste des restaurants */}
       <div className="list-container">
         {filteredRestaurants.length === 0 ? (
           <p className="no-results">Aucun restaurant trouvé</p>
