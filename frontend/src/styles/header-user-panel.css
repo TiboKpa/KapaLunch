@@ -1,7 +1,7 @@
 /* ===== HEADER 3 COLONNES ===== */
 .header-content {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 2rem;
   max-width: 1600px;
@@ -15,10 +15,83 @@
 
 .header-center {
   justify-self: center;
+  width: 100%;
+  max-width: 600px;
 }
 
 .header-right {
   justify-self: end;
+}
+
+/* ===== BARRE DE RECHERCHE DANS LE HEADER ===== */
+.search-bar-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 24px;
+  padding: 0 0.5rem;
+  transition: all 0.3s ease;
+  height: 40px;
+}
+
+.search-bar-header:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.search-bar-header:focus-within {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+.search-icon {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0.5rem;
+  flex-shrink: 0;
+}
+
+.search-input-header {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 0.95rem;
+  padding: 0.5rem 0;
+  min-width: 0;
+}
+
+.search-input-header::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.btn-add-header {
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+  flex-shrink: 0;
+  margin-left: 0.25rem;
+}
+
+.btn-add-header:hover {
+  background: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.7);
+  transform: scale(1.1) rotate(90deg);
+}
+
+.btn-add-header svg {
+  display: block;
 }
 
 /* ===== BOUTONS HEADER (même hauteur) ===== */
@@ -605,6 +678,10 @@
   .header-center,
   .header-right {
     justify-self: center;
+  }
+
+  .header-center {
+    width: 100%;
   }
 
   .btn-add span,
