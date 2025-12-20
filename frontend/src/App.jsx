@@ -81,6 +81,12 @@ function App() {
     setShowRestaurantDetail(true)
   }
 
+  const handleRestaurantDeleted = () => {
+    loadRestaurants()
+    setSelectedRestaurant(null)
+    setShowRestaurantDetail(false)
+  }
+
   const canAddRestaurant = user && (user.role === 'user' || user.role === 'admin')
 
   return (
@@ -114,7 +120,6 @@ function App() {
         </div>
       </div>
 
-      {/* Modal détails restaurant avec avis */}
       {showRestaurantDetail && selectedRestaurant && (
         <RestaurantDetail
           restaurant={selectedRestaurant}
@@ -123,6 +128,7 @@ function App() {
             setSelectedRestaurant(null)
           }}
           user={user}
+          onRestaurantDeleted={handleRestaurantDeleted}
         />
       )}
     </div>
