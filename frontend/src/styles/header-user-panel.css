@@ -68,6 +68,33 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+/* Bouton croix pour effacer */
+.btn-clear-search {
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.7);
+  flex-shrink: 0;
+  margin: 0 0.25rem;
+}
+
+.btn-clear-search:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  transform: scale(1.1);
+}
+
+.btn-clear-search svg {
+  display: block;
+}
+
 /* Bouton Filtres dans le header */
 .btn-filter-header {
   background: rgba(255, 255, 255, 0.25);
