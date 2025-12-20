@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react'
 import L from 'leaflet'
 
 const restaurantIcon = L.icon({
@@ -10,12 +10,34 @@ const restaurantIcon = L.icon({
   shadowSize: [41, 41]
 })
 
-function Map({ restaurants, selectedRestaurant, onSelectRestaurant, showUserPanel, showRestaurantDetail }) {
+const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, showUserPanel, showRestaurantDetail }, ref) => {
   const mapRef = useRef(null)
   const markersRef = useRef([])
   const layersRef = useRef({})
   const [mapType, setMapType] = useState('map') // 'map' ou 'satellite'
   const prevSelectedRef = useRef(null) // Pour détecter le changement de restaurant
+
+  // Exposer la méthode resetView au parent via ref
+  useImperativeHandle(ref, () => ({
+    resetView: () => {
+      if (!mapRef.current || !restaurants.length) return
+
+      // Créer un groupe de tous les markers pour calculer les bounds
+      const bounds = L.latLngBounds(
+        restaurants
+          .filter(r => r.lat && r.lon)
+          .map(r => [r.lat, r.lon])
+      )
+
+      // Zoomer pour afficher tous les restaurants avec padding
+      mapRef.current.flyToBounds(bounds, {
+        padding: [50, 50],
+        maxZoom: 12,
+        duration: 1.5,
+        easeLinearity: 0.15
+      })
+    }
+  }))
 
   useEffect(() => {
     if (!mapRef.current) {
@@ -151,6 +173,8 @@ function Map({ restaurants, selectedRestaurant, onSelectRestaurant, showUserPane
       <div id="map" style={{ width: '100%', height: '100%' }}></div>
     </div>
   )
-}
+})
+
+Map.displayName = 'Map'
 
 export default Map
