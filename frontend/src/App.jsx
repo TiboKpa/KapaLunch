@@ -18,7 +18,8 @@ function App() {
   const [showUserPanel, setShowUserPanel] = useState(false)
   const [pendingReview, setPendingReview] = useState(null)
   const [toast, setToast] = useState(null)
-  const [searchTerm, setSearchTerm] = useState('') // État de recherche au niveau App
+  const [searchTerm, setSearchTerm] = useState('')
+  const [showFilters, setShowFilters] = useState(false) // État du panneau de filtres
   const userPanelRef = useRef(null)
   const mapRef = useRef(null)
 
@@ -125,6 +126,11 @@ function App() {
     }
   }
 
+  // Handler pour ouvrir le formulaire d'ajout avec le searchTerm pré-rempli
+  const handleToggleAddFormWithSearch = () => {
+    setShowAddForm(true)
+  }
+
   // Fonction wrapper pour showToast compatible avec AddRestaurantForm
   const showToast = (message, type = 'info', duration = 5000, actionLabel = null, onAction = null) => {
     setToast({
@@ -155,6 +161,8 @@ function App() {
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         canAddRestaurant={canAddRestaurant}
+        showFilters={showFilters}
+        setShowFilters={setShowFilters}
       />
 
       <div className="main-container">
@@ -191,6 +199,7 @@ function App() {
               restaurants={restaurants}
               onExistingRestaurantFound={handleSelectRestaurant}
               showToast={showToast}
+              initialName={searchTerm}
             />
           )}
 
@@ -199,6 +208,10 @@ function App() {
             selectedRestaurant={selectedRestaurant}
             onSelectRestaurant={handleSelectRestaurant}
             searchTerm={searchTerm}
+            showFilters={showFilters}
+            setShowFilters={setShowFilters}
+            canAddRestaurant={canAddRestaurant}
+            onOpenAddForm={handleToggleAddFormWithSearch}
           />
         </div>
       </div>
