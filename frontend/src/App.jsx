@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Header from './components/Header'
 import Map from './components/Map'
 import RestaurantList from './components/RestaurantList'
@@ -15,11 +15,30 @@ function App() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [showRestaurantDetail, setShowRestaurantDetail] = useState(false)
   const [showUserPanel, setShowUserPanel] = useState(false)
+  const userPanelRef = useRef(null)
 
   useEffect(() => {
     loadRestaurants()
     checkUserSession()
   }, [])
+
+  // Fermer le panneau utilisateur au clic en dehors
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showUserPanel && userPanelRef.current && !userPanelRef.current.contains(event.target)) {
+        // Vérifier aussi que le clic n'est pas sur le bouton d'ouverture
+        const isUserMenuButton = event.target.closest('.user-menu-trigger')
+        if (!isUserMenuButton) {
+          setShowUserPanel(false)
+        }
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showUserPanel])
 
   const loadRestaurants = async () => {
     try {
@@ -99,6 +118,7 @@ function App() {
         onToggleAddForm={() => setShowAddForm(!showAddForm)}
         showUserPanel={showUserPanel}
         setShowUserPanel={setShowUserPanel}
+        userPanelRef={userPanelRef}
       />
 
       <div className="main-container">
@@ -107,6 +127,8 @@ function App() {
             restaurants={restaurants}
             selectedRestaurant={selectedRestaurant}
             onSelectRestaurant={handleSelectRestaurant}
+            showUserPanel={showUserPanel}
+            showRestaurantDetail={showRestaurantDetail}
           />
           
           {/* Popup RestaurantDetail dans la carte */}
