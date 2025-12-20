@@ -191,33 +191,89 @@ body {
   flex-direction: column;
 }
 
+/* ===== BARRE DE RECHERCHE AVEC BOUTON FILTRES ===== */
 .search-bar {
   padding: 1rem;
   background: white;
   border-bottom: 1px solid #dee2e6;
 }
 
-.search-bar input {
-  width: 100%;
-  padding: 0.8rem;
-  border: 1px solid #ced4da;
-  border-radius: 6px;
-  font-size: 0.95rem;
+.search-input-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
 
-.search-bar input:focus {
+.search-input-wrapper input {
+  flex: 1;
+  padding: 0.8rem;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.search-input-wrapper input:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.filter-bar {
-  padding: 0.5rem 1rem;
+.filter-toggle-btn {
   background: white;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #495057;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.filter-toggle-btn:hover {
+  background: #f8f9fa;
+  border-color: #667eea;
+}
+
+.filter-toggle-btn.active {
+  background: #667eea;
+  border-color: #667eea;
+  color: white;
+}
+
+.filter-toggle-btn svg {
+  flex-shrink: 0;
+}
+
+/* ===== PANNEAU DE FILTRES ===== */
+.filters-panel {
+  background: white;
+  padding: 1rem;
   border-bottom: 1px solid #dee2e6;
 }
 
-.filter-bar select {
+.filter-group {
+  margin-bottom: 1rem;
+}
+
+.filter-group:last-child {
+  margin-bottom: 0;
+}
+
+.filter-group label {
+  display: block;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.filter-group select {
   width: 100%;
   padding: 0.6rem;
   border: 1px solid #ced4da;
@@ -225,6 +281,89 @@ body {
   font-size: 0.9rem;
   background: white;
   cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Boutons de tri */
+.sort-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.sort-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background: white;
+  color: #495057;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.sort-btn:hover {
+  background: #f8f9fa;
+  border-color: #667eea;
+}
+
+.sort-btn.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.sort-btn svg {
+  flex-shrink: 0;
+}
+
+/* Boutons de filtrage par note */
+.rating-filter-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.rating-btn {
+  padding: 0.6rem 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background: white;
+  color: #495057;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.rating-btn:hover {
+  background: #fff3cd;
+  border-color: #ffc107;
+}
+
+.rating-btn.active {
+  background: #ffc107;
+  color: white;
+  border-color: #ffc107;
+}
+
+/* ===== ANCIENNE BARRE DE FILTRES (supprimée) ===== */
+.filter-bar {
+  display: none;
 }
 
 .list-container {
@@ -457,6 +596,18 @@ body {
     order: -1;
     width: 100%;
     justify-content: center;
+  }
+
+  .rating-filter-buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sort-buttons {
+    flex-direction: column;
+  }
+
+  .sort-btn {
+    min-width: 100%;
   }
 }
 
