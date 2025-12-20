@@ -54,7 +54,7 @@ const LocationPin = () => (
 
 import { useState } from 'react'
 
-function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, searchTerm, showFilters, setShowFilters, canAddRestaurant, onOpenAddForm }) {
+function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, searchTerm, showFilters, setShowFilters, canAddRestaurant, onOpenAddForm, onResetFilters }) {
   const [filterType, setFilterType] = useState('all')
   const [filterCity, setFilterCity] = useState('all')
   const [sortOrder, setSortOrder] = useState('desc') // 'asc', 'desc'
@@ -62,6 +62,17 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
 
   // Vérifier si des filtres sont actifs (différents des valeurs par défaut)
   const hasActiveFilters = filterType !== 'all' || filterCity !== 'all' || minRating > 0
+
+  // Fonction pour réinitialiser tous les filtres
+  const resetFilters = () => {
+    setFilterType('all')
+    setFilterCity('all')
+    setSortOrder('desc')
+    setMinRating(0)
+    if (onResetFilters) {
+      onResetFilters()
+    }
+  }
 
   // Liste des départements français à ignorer
   const FRENCH_DEPARTMENTS = [
@@ -239,6 +250,19 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
               </button>
             </div>
           </div>
+
+          {/* Bouton réinitialiser les filtres */}
+          {hasActiveFilters && (
+            <button 
+              className="btn-reset-filters"
+              onClick={resetFilters}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '6px' }}>
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+              </svg>
+              Réinitialiser les filtres
+            </button>
+          )}
         </div>
       )}
 
