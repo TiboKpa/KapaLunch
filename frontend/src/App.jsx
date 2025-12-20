@@ -16,6 +16,7 @@ function App() {
   const [showRestaurantDetail, setShowRestaurantDetail] = useState(false)
   const [showUserPanel, setShowUserPanel] = useState(false)
   const userPanelRef = useRef(null)
+  const mapRef = useRef(null)
 
   useEffect(() => {
     loadRestaurants()
@@ -110,6 +111,16 @@ function App() {
     setShowRestaurantDetail(false)
   }
 
+  // Handler pour le clic sur le logo - Retour à la carte globale
+  const handleLogoClick = () => {
+    // Désélectionner le restaurant
+    setSelectedRestaurant(null)
+    setShowRestaurantDetail(false)
+    
+    // TODO: Zoom out sur la carte pour vue globale
+    // Sera implémenté dans Map.jsx avec une méthode exposée
+  }
+
   const canAddRestaurant = user && (user.role === 'user' || user.role === 'admin')
 
   return (
@@ -122,11 +133,13 @@ function App() {
         showUserPanel={showUserPanel}
         setShowUserPanel={setShowUserPanel}
         userPanelRef={userPanelRef}
+        onLogoClick={handleLogoClick}
       />
 
       <div className="main-container">
         <div className="map-section">
           <Map 
+            ref={mapRef}
             restaurants={restaurants}
             selectedRestaurant={selectedRestaurant}
             onSelectRestaurant={handleSelectRestaurant}
