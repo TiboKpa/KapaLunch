@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel, userPanelRef, onLogoClick, searchTerm, setSearchTerm, canAddRestaurant, showFilters, setShowFilters }) {
+function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel, userPanelRef, onLogoClick, searchTerm, setSearchTerm, canAddRestaurant, showFilters, setShowFilters, onResetFilters }) {
   // États des différentes sections du panneau
   const [panelView, setPanelView] = useState('menu') // 'menu', 'login', 'admin'
   const [showPasswordDropdown, setShowPasswordDropdown] = useState(false)
@@ -190,6 +190,13 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
     return 'Mon compte'
   }
 
+  // Handler pour la croix de recherche - appelle onResetFilters
+  const handleClearSearch = () => {
+    if (onResetFilters) {
+      onResetFilters()
+    }
+  }
+
   return (
     <header className="header">
       <div className="header-content">
@@ -225,7 +232,7 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
             {searchTerm && (
               <button 
                 className="btn-clear-search"
-                onClick={() => setSearchTerm('')}
+                onClick={handleClearSearch}
                 title="Effacer la recherche"
                 type="button"
               >
