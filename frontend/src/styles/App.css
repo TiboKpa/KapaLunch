@@ -401,6 +401,11 @@ body {
   border-color: #ffc107;
 }
 
+/* Étoiles deviennent blanches quand le bouton est actif */
+.rating-btn.active svg {
+  fill: white;
+}
+
 /* ===== ANCIENNE BARRE DE FILTRES (supprimée) ===== */
 .filter-bar {
   display: none;
@@ -432,26 +437,81 @@ body {
   background: #f0f3ff;
 }
 
-.restaurant-item h3 {
-  font-size: 1.1rem;
-  color: #2c3e50;
-  margin-bottom: 0.3rem;
+/* Nouvelle disposition : Ligne 1 = Nom + Note */
+.restaurant-header-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  gap: 0.75rem;
 }
 
-.restaurant-item .address {
-  color: #6c757d;
+.restaurant-header-line h3 {
+  font-size: 1.1rem;
+  color: #2c3e50;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.restaurant-rating-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.restaurant-rating-inline .star-rating-display {
+  display: flex;
+  gap: 2px;
+}
+
+.restaurant-rating-inline .rating-number {
   font-size: 0.9rem;
-  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+/* Nouvelle disposition : Ligne 2 = Type + Ville */
+.restaurant-info-line {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .type-badge {
-  display: inline-block;
-  padding: 0.25rem 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
   background: #667eea;
   color: white;
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 500;
+}
+
+.city-info {
+  display: flex;
+  align-items: center;
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.city-info svg {
+  flex-shrink: 0;
+}
+
+/* Ancien affichage supprimé */
+.restaurant-item .address {
+  display: none;
+}
+
+.restaurant-rating-preview {
+  display: none;
 }
 
 .no-results {
