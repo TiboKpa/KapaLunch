@@ -20,10 +20,17 @@ router.get('/restaurant/:restaurantId', async (req, res) => {
       order: [['createdAt', 'DESC']]
     })
 
+    // Ajouter authorId pour compatibilité frontend
+    const reviewsWithAuthorId = reviews.map(review => {
+      const data = review.toJSON()
+      data.authorId = data.userId
+      return data
+    })
+
     res.json({
       success: true,
-      count: reviews.length,
-      data: reviews
+      count: reviewsWithAuthorId.length,
+      data: reviewsWithAuthorId
     })
 
   } catch (error) {
@@ -40,7 +47,7 @@ router.post('/', [
   protect,
   body('restaurantId').isInt().withMessage('ID restaurant invalide'),
   body('rating').isInt({ min: 1, max: 5 }).withMessage('La note doit être entre 1 et 5'),
-  body('comment').optional().isLength({ max: 1000 }).withMessage('Le commentaire ne peut pas dépasser 1000 caractères')
+  body('comment').optional().isLength({ max: 500 }).withMessage('Le commentaire ne peut pas dépasser 500 caractères')
 ], async (req, res) => {
   try {
     // Vérifier que l'utilisateur peut ajouter des avis (user ou admin)
@@ -102,10 +109,13 @@ router.post('/', [
       }]
     })
 
+    const data = reviewWithAuthor.toJSON()
+    data.authorId = data.userId
+
     res.status(201).json({
       success: true,
       message: 'Avis ajouté avec succès',
-      data: reviewWithAuthor
+      data: data
     })
 
   } catch (error) {
@@ -121,7 +131,7 @@ router.post('/', [
 router.put('/:id', [
   protect,
   body('rating').optional().isInt({ min: 1, max: 5 }).withMessage('La note doit être entre 1 et 5'),
-  body('comment').optional().isLength({ max: 1000 }).withMessage('Le commentaire ne peut pas dépasser 1000 caractères')
+  body('comment').optional().isLength({ max: 500 }).withMessage('Le commentaire ne peut pas dépasser 500 caractères')
 ], async (req, res) => {
   try {
     const errors = validationResult(req)
@@ -165,10 +175,13 @@ router.put('/:id', [
       }]
     })
 
+    const data = reviewWithAuthor.toJSON()
+    data.authorId = data.userId
+
     res.json({
       success: true,
       message: 'Avis modifié avec succès',
-      data: reviewWithAuthor
+      data: data
     })
 
   } catch (error) {
