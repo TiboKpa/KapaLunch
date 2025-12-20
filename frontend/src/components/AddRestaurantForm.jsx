@@ -293,22 +293,23 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
         title={config.title}
         style={{
           position: 'absolute',
-          right: '12px',
+          right: '8px',
           top: '50%',
           transform: 'translateY(-50%)',
           backgroundColor: config.color,
           color: 'white',
-          width: '24px',
-          height: '24px',
+          width: '22px',
+          height: '22px',
           borderRadius: '50%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '14px',
+          fontSize: '13px',
           fontWeight: 'bold',
           cursor: 'help',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          zIndex: 10
+          boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+          zIndex: 10,
+          pointerEvents: 'none'
         }}
       >
         {config.icon}
@@ -321,78 +322,90 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
       <h2>Ajouter un établissement</h2>
       
       <form onSubmit={handleSubmit}>
-        <div className="form-group" style={{ position: 'relative' }}>
+        <div className="form-group">
           <label>Nom de l'établissement *</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            placeholder="Le Petit Bistrot"
-            className={geocodeStatus === 'success' ? 'input-success' : geocodeStatus === 'error' ? 'input-error' : ''}
-          />
-          {geocodeStatus !== 'idle' && geocodeStatus !== 'success' && <StatusBadge status={geocodeStatus} type="geocode" />}
+          <div style={{ position: 'relative' }}>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              placeholder="Le Petit Bistrot"
+              className={geocodeStatus === 'success' ? 'input-success' : geocodeStatus === 'error' ? 'input-error' : ''}
+              style={{ paddingRight: geocodeStatus !== 'idle' && geocodeStatus !== 'success' ? '40px' : undefined }}
+            />
+            {geocodeStatus !== 'idle' && geocodeStatus !== 'success' && <StatusBadge status={geocodeStatus} type="geocode" />}
+          </div>
         </div>
 
-        <div className="form-group" style={{ position: 'relative' }}>
+        <div className="form-group">
           <label>Ville *</label>
-          <input
-            type="text"
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-            required
-            placeholder="Lyon"
-            className={geocodeStatus === 'success' ? 'input-success' : geocodeStatus === 'error' ? 'input-error' : ''}
-          />
-          {geocodeStatus !== 'idle' && <StatusBadge status={geocodeStatus} type="geocode" />}
+          <div style={{ position: 'relative' }}>
+            <input
+              type="text"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              required
+              placeholder="Lyon"
+              className={geocodeStatus === 'success' ? 'input-success' : geocodeStatus === 'error' ? 'input-error' : ''}
+              style={{ paddingRight: geocodeStatus !== 'idle' ? '40px' : undefined }}
+            />
+            {geocodeStatus !== 'idle' && <StatusBadge status={geocodeStatus} type="geocode" />}
+          </div>
         </div>
 
-        <div className="form-group" style={{ position: 'relative' }}>
+        <div className="form-group">
           <label>Adresse complète *</label>
-          <input
-            type="text"
-            name="fullAddress"
-            value={foundAddress}
-            onChange={handleAddressChange}
-            required
-            placeholder="Adresse complète de l'établissement"
-            disabled={geocodeStatus === 'success'}
-            style={{
-              backgroundColor: geocodeStatus === 'success' ? '#f5f5f5' : 'white',
-              cursor: geocodeStatus === 'success' ? 'not-allowed' : 'text',
-              color: geocodeStatus === 'success' ? '#6c757d' : 'inherit'
-            }}
-          />
-          {geocodeStatus === 'success' && <StatusBadge status="success" type="address" />}
+          <div style={{ position: 'relative' }}>
+            <input
+              type="text"
+              name="fullAddress"
+              value={foundAddress}
+              onChange={handleAddressChange}
+              required
+              placeholder="Adresse complète de l'établissement"
+              disabled={geocodeStatus === 'success'}
+              style={{
+                backgroundColor: geocodeStatus === 'success' ? '#f5f5f5' : 'white',
+                cursor: geocodeStatus === 'success' ? 'not-allowed' : 'text',
+                color: geocodeStatus === 'success' ? '#6c757d' : 'inherit',
+                paddingRight: geocodeStatus === 'success' ? '40px' : undefined
+              }}
+            />
+            {geocodeStatus === 'success' && <StatusBadge status="success" type="address" />}
+          </div>
         </div>
 
-        <div className="form-group" style={{ position: 'relative' }}>
+        <div className="form-group">
           <label>Type de cuisine *</label>
-          <select
-            name="type"
-            value={formData.type}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Choisir un type</option>
-            <option value="Français">Français</option>
-            <option value="Italien">Italien</option>
-            <option value="Japonais">Japonais</option>
-            <option value="Chinois">Chinois</option>
-            <option value="Coréen">Coréen</option>
-            <option value="Vietnamien">Vietnamien</option>
-            <option value="Asiatique">Asiatique</option>
-            <option value="Indien">Indien</option>
-            <option value="Thaïlandais">Thaïlandais</option>
-            <option value="Fast-food">Fast-food</option>
-            <option value="Pizza">Pizza</option>
-            <option value="Burger">Burger</option>
-            <option value="Mexicain">Mexicain</option>
-            <option value="Autre">Autre</option>
-          </select>
-          {formData.type && typeAutoFilled && <StatusBadge status="auto" type="type" />}
+          <div style={{ position: 'relative' }}>
+            <select
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+              required
+              style={{ paddingRight: formData.type && typeAutoFilled ? '40px' : undefined }}
+            >
+              <option value="">Choisir un type</option>
+              <option value="Français">Français</option>
+              <option value="Italien">Italien</option>
+              <option value="Japonais">Japonais</option>
+              <option value="Chinois">Chinois</option>
+              <option value="Coréen">Coréen</option>
+              <option value="Vietnamien">Vietnamien</option>
+              <option value="Asiatique">Asiatique</option>
+              <option value="Indien">Indien</option>
+              <option value="Thaïlandais">Thaïlandais</option>
+              <option value="Fast-food">Fast-food</option>
+              <option value="Pizza">Pizza</option>
+              <option value="Burger">Burger</option>
+              <option value="Mexicain">Mexicain</option>
+              <option value="Autre">Autre</option>
+            </select>
+            {formData.type && typeAutoFilled && <StatusBadge status="auto" type="type" />}
+          </div>
         </div>
 
         <div className="form-group">
