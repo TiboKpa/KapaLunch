@@ -7,6 +7,7 @@ import seedAdmin from './config/seed.js'
 import authRoutes from './routes/auth.js'
 import restaurantRoutes from './routes/restaurants.js'
 import geocodeRoutes from './routes/geocode.js'
+import osmGeocodeRoutes from './routes/osmGeocode.js'
 import userRoutes from './routes/users.js'
 import reviewRoutes from './routes/reviews.js'
 
@@ -35,6 +36,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes)
 app.use('/api/restaurants', restaurantRoutes)
 app.use('/api/geocode', geocodeRoutes)
+app.use('/api/osm', osmGeocodeRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/reviews', reviewRoutes)
 
