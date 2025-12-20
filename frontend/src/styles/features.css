@@ -64,11 +64,12 @@
   transition: transform 0.2s ease;
 }
 
+/* ÉTOILES CLIQUABLES - TAILLE RÉDUITE */
 .star-btn-svg {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  padding: 2px;
   transition: transform 0.2s ease;
   display: inline-flex;
   align-items: center;
@@ -80,13 +81,15 @@
 }
 
 .star-btn-svg svg {
+  width: 24px;
+  height: 24px;
   transition: fill 0.2s ease;
 }
 
 .star-selector {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   margin: 0.5rem 0;
 }
 
@@ -100,7 +103,7 @@
   margin-left: 0.5rem;
   font-weight: 600;
   color: #495057;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
 .rating-text-inline {
@@ -708,6 +711,9 @@
 .review-author strong {
   color: #2c3e50;
   font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .review-date {
@@ -764,7 +770,7 @@
   margin-bottom: 1rem;
 }
 
-/* Détail restaurant modal - FENÊtre FLOTTANTE DANS LA CARTE */
+/* Détail restaurant modal - FENÊTRE FLOTTANTE DANS LA CARTE */
 .restaurant-detail-overlay {
   position: absolute;
   top: 0;
@@ -797,8 +803,9 @@
   flex-direction: column;
 }
 
+/* HEADER FICHE RESTO - TAILLE RÉDUITE */
 .restaurant-header {
-  padding: 2rem;
+  padding: 1.25rem 1.5rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border-radius: 12px 12px 0 0;
@@ -807,7 +814,7 @@
 
 .restaurant-header h2 {
   margin: 0 0 0.5rem 0;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
 }
 
 .restaurant-type {
@@ -847,9 +854,9 @@
 }
 
 .restaurant-description {
-  margin-top: 1rem;
+  margin-top: 0.75rem;
   line-height: 1.6;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .restaurant-content {
