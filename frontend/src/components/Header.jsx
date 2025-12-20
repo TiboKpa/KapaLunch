@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel, userPanelRef }) {
+function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel, userPanelRef, onLogoClick }) {
   // États des différentes sections du panneau
   const [panelView, setPanelView] = useState('menu') // 'menu', 'login', 'admin'
   const [showPasswordDropdown, setShowPasswordDropdown] = useState(false)
@@ -193,9 +193,15 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
   return (
     <header className="header">
       <div className="header-content">
-        {/* Logo à gauche */}
+        {/* Logo à gauche - CLIQUABLE */}
         <div className="header-left">
-          <h1>🍽️ KapaLunch</h1>
+          <h1 
+            onClick={onLogoClick}
+            style={{ cursor: 'pointer' }}
+            title="Retour à la carte globale"
+          >
+            🍽️ KapaLunch
+          </h1>
         </div>
 
         {/* Bouton ajouter au centre */}
