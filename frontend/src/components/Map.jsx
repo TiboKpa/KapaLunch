@@ -76,44 +76,88 @@ function Map({ restaurants, selectedRestaurant, onSelectRestaurant, showUserPane
     })
   }, [restaurants, onSelectRestaurant])
 
-  useEffect(() => {
-    if (selectedRestaurant && selectedRestaurant.lat && selectedRestaurant.lon && mapRef.current) {
-      const map = mapRef.current
-      const targetZoom = 15
-      
-      // Calculer l'offset en fonction des panneaux ouverts
-      const mapSize = map.getSize()
-      let offsetX = 0
-      
-      // Si fiche resto ouverte : la pin doit apparaître centrée dans l'espace GAUCHE
-      // Donc on décale la vue vers la GAUCHE
-      if (showRestaurantDetail) {
-        const restaurantPanelWidth = Math.min(600, mapSize.x * 0.5) // 50% max
-        offsetX += restaurantPanelWidth / 2
-      }
-      
-      // Si panneau user ouvert : décaler également vers la GAUCHE
-      if (showUserPanel) {
-        offsetX += 380 / 2
-      }
-      
-      // Projeter avec le zoom cible
-      const targetPoint = map.project([selectedRestaurant.lat, selectedRestaurant.lon], targetZoom)
-      
-      // AJOUTER offsetX pour déplacer la VUE vers la GAUCHE
-      // (la pin apparaît alors centrée dans l'espace visible à gauche)
-      targetPoint.x += offsetX
-      
-      const targetLatLng = map.unproject(targetPoint, targetZoom)
-      
-      // Animation flyTo avec options personnalisées
+  // Fonction de centrage réutilisable
+  const centerMapOnRestaurant = (restaurant, animate = true) => {
+    if (!restaurant || !restaurant.lat || !restaurant.lon || !mapRef.current) return
+
+    const map = mapRef.current
+    const targetZoom = 15
+    
+    // Calculer l'offset en fonction des panneaux ouverts
+    const mapSize = map.getSize()
+    let offsetX = 0
+    
+    // Cas 1: Aucun panneau ouvert (pin au centre absolu)
+    // offsetX reste 0
+    
+    // Cas 2: Panneau user ouvert SEUL (pin reste au centre)
+    // Le panneau user est à droite, pas besoin de décalage
+    
+    // Cas 3: Fiche resto ouverte (avec ou sans panneau user)
+    // La fiche est à gauche, donc décaler la vue vers la DROITE
+    // pour que la pin apparaisse centrée dans l'espace visible restant
+    if (showRestaurantDetail) {
+      const restaurantPanelWidth = Math.min(600, mapSize.x * 0.5) // 50% max
+      // Décaler vers la DROITE de la moitié de la largeur du panneau
+      offsetX += restaurantPanelWidth / 2
+    }
+    
+    // Projeter avec le zoom cible
+    const targetPoint = map.project([restaurant.lat, restaurant.lon], targetZoom)
+    
+    // AJOUTER offsetX pour déplacer le centre vers la DROITE
+    // La pin géographique reste fixe, mais apparaît centrée dans l'espace visible
+    targetPoint.x += offsetX
+    
+    const targetLatLng = map.unproject(targetPoint, targetZoom)
+    
+    // Animation flyTo avec options personnalisées
+    if (animate) {
       map.flyTo(targetLatLng, targetZoom, {
         duration: 1.5,
         easeLinearity: 0.15,
         animate: true
       })
+    } else {
+      map.setView(targetLatLng, targetZoom)
     }
-  }, [selectedRestaurant, showUserPanel, showRestaurantDetail])
+  }
+
+  // Centrer quand un restaurant est sélectionné
+  useEffect(() => {
+    if (selectedRestaurant) {
+      centerMapOnRestaurant(selectedRestaurant, true)
+    }
+  }, [selectedRestaurant])
+
+  // Recentrer quand les panneaux s'ouvrent/ferment (SANS changer de restaurant)
+  useEffect(() => {
+    if (selectedRestaurant) {
+      // Animation plus courte pour le recalage
+      const map = mapRef.current
+      if (!map) return
+
+      const currentZoom = map.getZoom()
+      const mapSize = map.getSize()
+      let offsetX = 0
+
+      if (showRestaurantDetail) {
+        const restaurantPanelWidth = Math.min(600, mapSize.x * 0.5)
+        offsetX += restaurantPanelWidth / 2
+      }
+
+      const targetPoint = map.project([selectedRestaurant.lat, selectedRestaurant.lon], currentZoom)
+      targetPoint.x += offsetX
+      const targetLatLng = map.unproject(targetPoint, currentZoom)
+
+      // Animation douce de recentrage
+      map.flyTo(targetLatLng, currentZoom, {
+        duration: 0.8, // Plus court
+        easeLinearity: 0.25,
+        animate: true
+      })
+    }
+  }, [showUserPanel, showRestaurantDetail]) // Se déclenche quand les panneaux changent
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
