@@ -141,7 +141,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
       [name]: value
     })
     
-    // Si l'utilisateur modifie manuellement le type, ne plus afficher le message auto-fill
+    // Si l'utilisateur modifie manuellement le type, ne plus afficher le badge auto-fill
     if (name === 'type' && value) {
       setTypeAutoFilled(false)
     }
@@ -265,12 +265,63 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
     )
   }
 
+  // Composant pour les badges de statut inline
+  const StatusBadge = ({ status, type = 'geocode' }) => {
+    const badges = {
+      geocode: {
+        validating: { icon: '🔄', title: 'Recherche en cours...', color: '#6c757d' },
+        success: { icon: '✓', title: 'Adresse trouvée', color: '#28a745' },
+        error: { icon: '⚠', title: 'Établissement non trouvé', color: '#dc3545' }
+      },
+      address: {
+        success: { icon: '✓', title: 'Adresse validée', color: '#28a745' }
+      },
+      type: {
+        auto: { icon: '🤖', title: 'Type détecté automatiquement', color: '#17a2b8' }
+      }
+    }
+
+    const config = type === 'geocode' ? badges.geocode[status] : 
+                   type === 'address' ? badges.address[status] :
+                   badges.type[status]
+
+    if (!config) return null
+
+    return (
+      <div 
+        className="status-badge"
+        title={config.title}
+        style={{
+          position: 'absolute',
+          right: '12px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          backgroundColor: config.color,
+          color: 'white',
+          width: '24px',
+          height: '24px',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '14px',
+          fontWeight: 'bold',
+          cursor: 'help',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          zIndex: 10
+        }}
+      >
+        {config.icon}
+      </div>
+    )
+  }
+
   return (
     <div className="add-restaurant-form pop-in">
       <h2>Ajouter un établissement</h2>
       
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
+        <div className="form-group" style={{ position: 'relative' }}>
           <label>Nom de l'établissement *</label>
           <input
             type="text"
@@ -281,17 +332,10 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
             placeholder="Le Petit Bistrot"
             className={geocodeStatus === 'success' ? 'input-success' : geocodeStatus === 'error' ? 'input-error' : ''}
           />
-          {/* Réserver espace fixe pour le message */}
-          <div style={{ minHeight: '20px', marginTop: '4px' }}>
-            {extractedName && extractedName !== formData.name && (
-              <small style={{ color: '#17a2b8', fontSize: '0.85em', display: 'block' }}>
-                📍 Nom OSM: {extractedName}
-              </small>
-            )}
-          </div>
+          {geocodeStatus !== 'idle' && geocodeStatus !== 'success' && <StatusBadge status={geocodeStatus} type="geocode" />}
         </div>
 
-        <div className="form-group">
+        <div className="form-group" style={{ position: 'relative' }}>
           <label>Ville *</label>
           <input
             type="text"
@@ -302,28 +346,10 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
             placeholder="Lyon"
             className={geocodeStatus === 'success' ? 'input-success' : geocodeStatus === 'error' ? 'input-error' : ''}
           />
-          {/* Réserver espace fixe pour le message */}
-          <div style={{ minHeight: '20px', marginTop: '4px' }}>
-            {geocodeStatus === 'validating' && (
-              <small style={{ color: '#6c757d', fontSize: '0.85em', display: 'block' }}>
-                Recherche de l'adresse...
-              </small>
-            )}
-            {geocodeStatus === 'success' && (
-              <small style={{ color: '#28a745', fontSize: '0.85em', display: 'block' }}>
-                ✓ Adresse trouvée
-              </small>
-            )}
-            {geocodeStatus === 'error' && (
-              <small style={{ color: '#dc3545', fontSize: '0.85em', display: 'block' }}>
-                ✗ Établissement non trouvé, vérifiez le nom et la ville
-              </small>
-            )}
-          </div>
+          {geocodeStatus !== 'idle' && <StatusBadge status={geocodeStatus} type="geocode" />}
         </div>
 
-        {/* Champ Adresse en 3ème position */}
-        <div className="form-group">
+        <div className="form-group" style={{ position: 'relative' }}>
           <label>Adresse complète *</label>
           <input
             type="text"
@@ -339,22 +365,10 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
               color: geocodeStatus === 'success' ? '#6c757d' : 'inherit'
             }}
           />
-          {/* Réserver espace fixe pour le message */}
-          <div style={{ minHeight: '20px', marginTop: '4px' }}>
-            {geocodeStatus === 'success' && (
-              <small style={{ color: '#28a745', fontSize: '0.85em', display: 'block' }}>
-                ✓ Adresse trouvée automatiquement
-              </small>
-            )}
-            {geocodeStatus === 'error' && (
-              <small style={{ color: '#dc3545', fontSize: '0.85em', display: 'block' }}>
-                ⚠ Établissement non trouvé - Veuillez saisir l'adresse manuellement
-              </small>
-            )}
-          </div>
+          {geocodeStatus === 'success' && <StatusBadge status="success" type="address" />}
         </div>
 
-        <div className="form-group">
+        <div className="form-group" style={{ position: 'relative' }}>
           <label>Type de cuisine *</label>
           <select
             name="type"
@@ -378,14 +392,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
             <option value="Mexicain">Mexicain</option>
             <option value="Autre">Autre</option>
           </select>
-          {/* Réserver espace fixe pour le message */}
-          <div style={{ minHeight: '20px', marginTop: '4px' }}>
-            {formData.type && typeAutoFilled && (
-              <small style={{ color: '#6c757d', fontSize: '0.85em', display: 'block' }}>
-                🤖 Type détecté automatiquement - vous pouvez le modifier
-              </small>
-            )}
-          </div>
+          {formData.type && typeAutoFilled && <StatusBadge status="auto" type="type" />}
         </div>
 
         <div className="form-group">
