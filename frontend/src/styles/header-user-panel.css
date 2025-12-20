@@ -313,16 +313,13 @@
   gap: 0;
 }
 
-/* TOUS les enfants directs (sections ET boutons) ont le même espacement */
-.user-panel-actions > * {
-  margin-bottom: 0.75rem;
+/* ===== DROPDOWN ANIMÉ ===== */
+.dropdown-section {
+  display: flex;
+  flex-direction: column;
 }
 
-/* Sauf le dernier */
-.user-panel-actions > *:last-child {
-  margin-bottom: 0;
-}
-
+/* Les BOUTONS ont l'espacement, pas les sections */
 .user-panel-action-btn {
   background: white;
   border: 1px solid #dee2e6;
@@ -334,6 +331,13 @@
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: left;
+  margin-bottom: 0.75rem; /* ESPACEMENT ICI */
+}
+
+/* Retire le margin du dernier bouton */
+.user-panel-actions > *:last-child .user-panel-action-btn,
+.user-panel-actions > .user-panel-action-btn:last-child {
+  margin-bottom: 0;
 }
 
 .user-panel-action-btn:hover {
@@ -405,19 +409,14 @@
   color: #dc3545;
 }
 
-/* ===== DROPDOWN ANIMÉ ===== */
-.dropdown-section {
-  display: flex;
-  flex-direction: column;
-}
-
 .dropdown-content {
   background: #f8f9fa;
   border: 1px solid #dee2e6;
   border-top: none;
   border-radius: 0 0 12px 12px;
   padding: 0;
-  margin-top: -12px;
+  margin-top: -12px; /* Remonte pour fusionner visuellement avec le bouton */
+  margin-bottom: 0; /* Pas d'espacement supplémentaire */
   overflow: hidden;
   max-height: 0;
   opacity: 0;
