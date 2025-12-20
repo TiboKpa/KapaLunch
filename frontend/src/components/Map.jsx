@@ -52,19 +52,25 @@ function Map({ restaurants, selectedRestaurant, onSelectRestaurant }) {
   }, [restaurants, onSelectRestaurant])
 
   useEffect(() => {
-    if (selectedRestaurant && mapRef.current) {
-      // Calculer l'offset pour centrer le point dans l'espace disponible à gauche
-      // La popup prend ~45% de la largeur, donc on centre dans les 55% restants
+    if (selectedRestaurant && selectedRestaurant.lat && selectedRestaurant.lon && mapRef.current) {
       const map = mapRef.current
-      const targetPoint = map.project([selectedRestaurant.lat, selectedRestaurant.lon], map.getZoom())
+      const targetZoom = 15
+      
+      // Calculer l'offset AVEC le zoom cible
+      const targetPoint = map.project([selectedRestaurant.lat, selectedRestaurant.lon], targetZoom)
       
       // Décaler vers la droite pour compenser la popup (environ 25% de la largeur)
       const offsetX = map.getSize().x * 0.25
       targetPoint.x += offsetX
       
-      const targetLatLng = map.unproject(targetPoint, map.getZoom())
+      const targetLatLng = map.unproject(targetPoint, targetZoom)
       
-      map.setView(targetLatLng, 15, { animate: true })
+      // Animation flyTo avec options personnalisées
+      map.flyTo(targetLatLng, targetZoom, {
+        duration: 1.5,        // Durée de 1.5 secondes (plus fluide)
+        easeLinearity: 0.15,  // Courbe très douce (valeur basse = plus de courbure)
+        animate: true
+      })
     }
   }, [selectedRestaurant])
 
