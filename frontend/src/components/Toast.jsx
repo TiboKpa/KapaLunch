@@ -1,12 +1,13 @@
 import { useEffect } from 'react'
 import '../styles/Toast.css'
 
-function Toast({ message, type = 'info', duration = 5000, onClose, actionLabel, onAction }) {
+function Toast({ message, type = 'info', onClose, duration = 5000, actionLabel, onAction }) {
   useEffect(() => {
-    if (duration && duration > 0) {
+    if (duration > 0) {
       const timer = setTimeout(() => {
         onClose()
       }, duration)
+
       return () => clearTimeout(timer)
     }
   }, [duration, onClose])
@@ -26,10 +27,10 @@ function Toast({ message, type = 'info', duration = 5000, onClose, actionLabel, 
   }
 
   return (
-    <div className={`toast toast-${type} toast-enter`}>
+    <div className={`toast toast-${type}`}>
       <div className="toast-icon">{getIcon()}</div>
       <div className="toast-content">
-        <p className="toast-message">{message}</p>
+        <div className="toast-message">{message}</div>
         {actionLabel && onAction && (
           <button className="toast-action" onClick={onAction}>
             {actionLabel}
