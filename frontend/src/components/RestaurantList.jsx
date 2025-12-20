@@ -40,10 +40,17 @@ const StarRating = ({ rating }) => {
   return <div className="star-rating-display">{stars}</div>
 }
 
-// Icône étoile pour les boutons de filtres
+// Icône étoile pour les boutons de filtres (jaune par défaut)
 const StarIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '4px' }}>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffc107" style={{ marginRight: '4px' }}>
     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+  </svg>
+)
+
+// Icône pin de localisation
+const LocationPin = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '4px' }}>
+    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
   </svg>
 )
 
@@ -56,6 +63,13 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant })
 
   // Vérifier si des filtres sont actifs (différents des valeurs par défaut)
   const hasActiveFilters = filterType !== 'all' || minRating > 0
+
+  // Extraire la ville de l'adresse (format attendu: "Adresse, Ville")
+  const extractCity = (address) => {
+    if (!address) return ''
+    const parts = address.split(',')
+    return parts.length > 1 ? parts[parts.length - 1].trim() : ''
+  }
 
   // Filtrage
   let filteredRestaurants = restaurants.filter(restaurant => {
@@ -182,23 +196,39 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant })
         {filteredRestaurants.length === 0 ? (
           <p className="no-results">Aucun restaurant trouvé</p>
         ) : (
-          filteredRestaurants.map(restaurant => (
-            <div
-              key={restaurant._id || restaurant.id}
-              className={`restaurant-item pop-in ${selectedRestaurant?._id === restaurant._id || selectedRestaurant?.id === restaurant.id ? 'selected' : ''}`}
-              onClick={() => onSelectRestaurant(restaurant)}
-            >
-              <h3>{restaurant.name}</h3>
-              <p className="address">{restaurant.address}</p>
-              {restaurant.averageRating > 0 && (
-                <div className="restaurant-rating-preview">
-                  <StarRating rating={restaurant.averageRating} />
-                  <span className="rating-number">{restaurant.averageRating.toFixed(1)}/5</span>
+          filteredRestaurants.map(restaurant => {
+            const city = extractCity(restaurant.address)
+            
+            return (
+              <div
+                key={restaurant._id || restaurant.id}
+                className={`restaurant-item pop-in ${selectedRestaurant?._id === restaurant._id || selectedRestaurant?.id === restaurant.id ? 'selected' : ''}`}
+                onClick={() => onSelectRestaurant(restaurant)}
+              >
+                {/* Ligne 1: Nom + Note */}
+                <div className="restaurant-header-line">
+                  <h3>{restaurant.name}</h3>
+                  {restaurant.averageRating > 0 && (
+                    <div className="restaurant-rating-inline">
+                      <StarRating rating={restaurant.averageRating} />
+                      <span className="rating-number">{restaurant.averageRating.toFixed(1)}/5</span>
+                    </div>
+                  )}
                 </div>
-              )}
-              {restaurant.type && <span className="type-badge">{restaurant.type}</span>}
-            </div>
-          ))
+
+                {/* Ligne 2: Type + Ville */}
+                <div className="restaurant-info-line">
+                  {restaurant.type && <span className="type-badge">{restaurant.type}</span>}
+                  {city && (
+                    <div className="city-info">
+                      <LocationPin />
+                      <span>{city}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )
+          })
         )}
       </div>
     </div>
