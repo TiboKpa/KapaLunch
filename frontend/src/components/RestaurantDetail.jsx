@@ -189,19 +189,17 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted, pend
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQuery)}`
   }
 
-  const getCityFromAddress = (address) => {
-    // Extraire la ville de l'adresse
+  const getAddressWithoutNameAndCountry = (address) => {
     // Format OSM: "Nom, Rue, Code Postal Ville, Pays"
-    // On veut l'avant-dernière partie (la ville)
+    // On veut: "40 Quai de la Plage, 69660 Collonges-au-Mont-d'Or"
+    // (tout sauf la première et dernière partie)
     const parts = address.split(',')
-    if (parts.length >= 2) {
-      // Prendre l'avant-dernière partie
-      const cityPart = parts[parts.length - 2].trim()
-      // Extraire uniquement le nom de la ville (après le code postal si présent)
-      const cityMatch = cityPart.match(/\d+\s+(.+)/) // Match "69001 Lyon" -> "Lyon"
-      return cityMatch ? cityMatch[1] : cityPart
+    if (parts.length > 2) {
+      // Enlever la première partie (nom) et la dernière (pays)
+      return parts.slice(1, -1).join(',').trim()
     }
-    return parts[parts.length - 1].trim()
+    // Fallback: retourner l'adresse complète si format inattendu
+    return address
   }
 
   if (!restaurant) return null
@@ -218,7 +216,7 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted, pend
         <div className="restaurant-header">
           <h2>{restaurant.name}</h2>
           
-          {/* Ligne unique avec Type, Ville, Note */}
+          {/* Ligne unique avec Type, Adresse (sans nom ni pays), Note */}
           <div className="restaurant-info-line">
             {restaurant.type && (
               <span className="info-item">
@@ -236,7 +234,7 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted, pend
                 className="city-link"
                 title="Ouvrir dans Google Maps"
               >
-                {getCityFromAddress(restaurant.address)}
+                {getAddressWithoutNameAndCountry(restaurant.address)}
               </a>
             </span>
 
