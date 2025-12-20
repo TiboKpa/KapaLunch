@@ -132,6 +132,20 @@ function App() {
     }
   }
 
+  // Fonction wrapper pour showToast compatible avec AddRestaurantForm
+  const showToast = (message, type = 'info', duration = 5000, actionLabel = null, onAction = null) => {
+    setToast({
+      message,
+      type,
+      duration,
+      actionLabel,
+      onAction: onAction ? () => {
+        onAction()
+        setToast(null) // Fermer le toast après l'action
+      } : null
+    })
+  }
+
   const canAddRestaurant = user && (user.role === 'user' || user.role === 'admin')
 
   return (
@@ -181,7 +195,7 @@ function App() {
               onSubmit={handleAddRestaurant}
               restaurants={restaurants}
               onExistingRestaurantFound={handleSelectRestaurant}
-              onShowToast={setToast}
+              showToast={showToast}
             />
           )}
 
