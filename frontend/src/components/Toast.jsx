@@ -3,6 +3,7 @@ import '../styles/Toast.css'
 
 function Toast({ message, type = 'info', onClose, duration = 5000, actionLabel, onAction }) {
   useEffect(() => {
+    // Si duration est 0 ou négatif, ne pas auto-fermer
     if (duration > 0) {
       const timer = setTimeout(() => {
         onClose()
