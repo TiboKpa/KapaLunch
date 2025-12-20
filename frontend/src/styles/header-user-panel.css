@@ -68,6 +68,34 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+/* Bouton Filtres dans le header */
+.btn-filter-header {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+  flex-shrink: 0;
+  margin-left: 0.25rem;
+}
+
+.btn-filter-header:hover {
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: scale(1.05);
+}
+
+.btn-filter-header svg {
+  display: block;
+}
+
+/* Bouton + dans le header */
 .btn-add-header {
   background: rgba(255, 255, 255, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -622,6 +650,60 @@
   margin-bottom: 1rem;
   font-size: 0.9rem;
   border: 1px solid #c3e6cb;
+}
+
+/* ===== PROMPT "AUCUN RÉSULTAT" ===== */
+.no-results-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.prompt-icon {
+  margin-bottom: 1.5rem;
+  opacity: 0.6;
+}
+
+.prompt-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.prompt-subtitle {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 2rem;
+}
+
+.btn-add-searched-restaurant {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0.9rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-add-searched-restaurant:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-add-searched-restaurant svg {
+  flex-shrink: 0;
 }
 
 /* ===== SÉLECTEUR CARTE ===== */
