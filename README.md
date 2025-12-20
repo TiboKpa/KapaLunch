@@ -26,7 +26,11 @@ L'API sera disponible sur `http://localhost:5000/api`
 
 **✅ SQLite crée automatiquement le fichier `database.sqlite` au démarrage !**
 
-**✅ Un compte admin par défaut est créé : `admin` / `admin`**
+**✅ Un compte admin par défaut est créé :**
+```
+Email    : admin@kapalunch.local
+Password : Admin123!
+```
 
 **⚠️ IMPORTANT : Changez le mot de passe admin après la première connexion !**
 
@@ -70,8 +74,8 @@ L'application sera disponible sur `http://localhost:3000`
 
 **Identifiants :**
 ```
-Email : admin
-Mot de passe : admin
+Email    : admin@kapalunch.local
+Password : Admin123!
 ```
 
 **Après la première connexion :**
@@ -169,7 +173,7 @@ Mot de passe : admin
 ```bash
 # Backend
 cd backend && npm install && npm run dev
-# ✅ Admin créé : admin / admin
+# ✅ Admin créé : admin@kapalunch.local / Admin123!
 
 # Frontend (nouveau terminal)
 cd frontend && npm install && npm run dev
@@ -178,7 +182,8 @@ cd frontend && npm install && npm run dev
 ### 2. Se connecter en tant qu'admin
 - Aller sur http://localhost:3000
 - Cliquer "Se connecter"
-- Email : `admin`, Mot de passe : `admin`
+- Email : `admin@kapalunch.local`
+- Mot de passe : `Admin123!`
 - **Changer le mot de passe immédiatement !**
 
 ### 3. Ajouter un restaurant
