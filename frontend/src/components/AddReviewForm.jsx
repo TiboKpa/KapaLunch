@@ -2,7 +2,7 @@ import { useState } from 'react'
 import axios from 'axios'
 
 const AddReviewForm = ({ restaurantId, onReviewAdded, user }) => {
-  const [rating, setRating] = useState(5)
+  const [rating, setRating] = useState(3)
   const [comment, setComment] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -27,7 +27,7 @@ const AddReviewForm = ({ restaurantId, onReviewAdded, user }) => {
       )
 
       setSuccess('Avis ajouté avec succès !')
-      setRating(5)
+      setRating(3)
       setComment('')
 
       setTimeout(() => {
@@ -42,34 +42,42 @@ const AddReviewForm = ({ restaurantId, onReviewAdded, user }) => {
     }
   }
 
+  const renderStars = () => {
+    return (
+      <div className="star-selector">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            onClick={() => setRating(star)}
+            className={`star-btn-svg ${rating >= star ? 'active' : ''}`}
+          >
+            <svg width="32" height="32" viewBox="0 0 24 24" fill={rating >= star ? '#ffc107' : '#e0e0e0'}>
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </button>
+        ))}
+        <span className="rating-text">{rating}/5</span>
+      </div>
+    )
+  }
+
   // Ne pas afficher si pas connecté ou si lurker
   if (!user || user.role === 'lurker') {
     return (
       <div className="review-form-blocked">
-        <p>⚠️ {!user ? 'Connectez-vous pour laisser un avis' : 'Votre compte doit être validé pour laisser un avis'}</p>
+        <p>{!user ? 'Connectez-vous pour laisser un avis' : 'Votre compte doit être validé pour laisser un avis'}</p>
       </div>
     )
   }
 
   return (
-    <div className="add-review-form">
-      <h3>⭐ Laisser un avis</h3>
+    <div className="add-review-form compact">
+      <h3>Laisser un avis</h3>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Note</label>
-          <div className="rating-selector">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                type="button"
-                className={`star-btn ${rating >= star ? 'active' : ''}`}
-                onClick={() => setRating(star)}
-              >
-                {rating >= star ? '⭐' : '☆'}
-              </button>
-            ))}
-            <span className="rating-text">{rating}/5</span>
-          </div>
+          {renderStars()}
         </div>
 
         <div className="form-group">
@@ -78,17 +86,17 @@ const AddReviewForm = ({ restaurantId, onReviewAdded, user }) => {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Partagez votre expérience..."
-            maxLength={1000}
-            rows={4}
+            maxLength={500}
+            rows={3}
           />
-          <small>{comment.length}/1000 caractères</small>
+          <small>{comment.length}/500 caractères</small>
         </div>
 
         {error && <div className="error-message">{error}</div>}
         {success && <div className="success-message">{success}</div>}
 
         <button type="submit" className="btn-primary" disabled={loading}>
-          {loading ? 'Envoi...' : '💬 Publier l\'avis'}
+          {loading ? 'Envoi...' : 'Publier l\'avis'}
         </button>
       </form>
     </div>
