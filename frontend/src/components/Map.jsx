@@ -85,21 +85,24 @@ function Map({ restaurants, selectedRestaurant, onSelectRestaurant, showUserPane
       const mapSize = map.getSize()
       let offsetX = 0
       
-      // Si fiche resto ouverte : décaler la vue vers la DROITE (panneau prend de l'espace à droite)
-      // La pin doit rester visible dans l'espace de gauche => on décale vers la droite
+      // Si fiche resto ouverte : la pin doit apparaître centrée dans l'espace GAUCHE
+      // Donc on décale la vue vers la GAUCHE
       if (showRestaurantDetail) {
         const restaurantPanelWidth = Math.min(600, mapSize.x * 0.5) // 50% max
-        offsetX += restaurantPanelWidth / 2 // POSITIF pour décaler vers la DROITE
+        offsetX += restaurantPanelWidth / 2
       }
       
-      // Si panneau user ouvert : décaler vers la DROITE également (380px)
+      // Si panneau user ouvert : décaler également vers la GAUCHE
       if (showUserPanel) {
-        offsetX += 380 / 2 // POSITIF pour décaler vers la DROITE
+        offsetX += 380 / 2
       }
       
       // Projeter avec le zoom cible
       const targetPoint = map.project([selectedRestaurant.lat, selectedRestaurant.lon], targetZoom)
-      targetPoint.x -= offsetX // SOUSTRAIRE pour que la pin aille vers la GAUCHE
+      
+      // AJOUTER offsetX pour déplacer la VUE vers la GAUCHE
+      // (la pin apparaît alors centrée dans l'espace visible à gauche)
+      targetPoint.x += offsetX
       
       const targetLatLng = map.unproject(targetPoint, targetZoom)
       
