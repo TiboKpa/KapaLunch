@@ -63,7 +63,7 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
   // Vérifier si des filtres sont actifs (différents des valeurs par défaut)
   const hasActiveFilters = filterType !== 'all' || filterCity !== 'all' || minRating > 0
 
-  // Extraire code postal + ville de l'adresse
+  // Extraire code postal + ville de l'adresse (pour les filtres et la fiche détail)
   // Formats possibles:
   // "Davrey, Troyes, Aube, Grand Est, France métropolitaine, 10130" -> "10130 Troyes"
   // "Paul Bocuse, 40 Quai de la Plage, 69660 Collonges-au-Mont-d'Or, France" -> "69660 Collonges-au-Mont-d'Or"
@@ -99,22 +99,22 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
     return postalCode
   }
 
-  // Extraire uniquement la ville (pour le filtre)
-  const extractCity = (address) => {
+  // Extraire uniquement la ville (sans le code postal)
+  const extractCityOnly = (address) => {
     const postalAndCity = extractPostalCodeAndCity(address)
     // Enlever le code postal pour garder que la ville
     return postalAndCity.replace(/^\d{5}\s*/, '')
   }
 
   // Obtenir la liste des villes uniques (pour le filtre)
-  const cities = ['all', ...new Set(restaurants.map(r => extractCity(r.address)).filter(Boolean))].sort()
+  const cities = ['all', ...new Set(restaurants.map(r => extractCityOnly(r.address)).filter(Boolean))].sort()
 
   // Filtrage
   let filteredRestaurants = restaurants.filter(restaurant => {
     const matchesSearch = restaurant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          restaurant.address.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesType = filterType === 'all' || restaurant.type === filterType
-    const city = extractCity(restaurant.address)
+    const city = extractCityOnly(restaurant.address)
     const matchesCity = filterCity === 'all' || city === filterCity
     const matchesRating = !restaurant.averageRating || restaurant.averageRating >= minRating
     return matchesSearch && matchesType && matchesCity && matchesRating
@@ -230,7 +230,7 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
           <p className="no-results">Aucun restaurant trouvé</p>
         ) : (
           filteredRestaurants.map(restaurant => {
-            const postalCodeAndCity = extractPostalCodeAndCity(restaurant.address)
+            const cityOnly = extractCityOnly(restaurant.address)
             
             return (
               <div
@@ -249,13 +249,13 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
                   )}
                 </div>
 
-                {/* Ligne 2: Type + Code Postal + Ville */}
+                {/* Ligne 2: Type + Nom de Ville UNIQUEMENT */}
                 <div className="restaurant-info-line">
                   {restaurant.type && <span className="type-badge">{restaurant.type}</span>}
-                  {postalCodeAndCity && (
+                  {cityOnly && (
                     <div className="city-info">
                       <LocationPin />
-                      <span>{postalCodeAndCity}</span>
+                      <span>{cityOnly}</span>
                     </div>
                   )}
                 </div>
