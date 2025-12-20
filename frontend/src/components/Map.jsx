@@ -10,7 +10,7 @@ const restaurantIcon = L.icon({
   shadowSize: [41, 41]
 })
 
-function Map({ restaurants, selectedRestaurant, onSelectRestaurant }) {
+function Map({ restaurants, selectedRestaurant, onSelectRestaurant, showUserPanel, showRestaurantDetail }) {
   const mapRef = useRef(null)
   const markersRef = useRef([])
   const layersRef = useRef({})
@@ -81,23 +81,35 @@ function Map({ restaurants, selectedRestaurant, onSelectRestaurant }) {
       const map = mapRef.current
       const targetZoom = 15
       
-      // Calculer l'offset AVEC le zoom cible
-      const targetPoint = map.project([selectedRestaurant.lat, selectedRestaurant.lon], targetZoom)
+      // Calculer l'offset en fonction des panneaux ouverts
+      const mapSize = map.getSize()
+      let offsetX = 0
       
-      // Décaler vers la droite pour compenser la popup (environ 25% de la largeur)
-      const offsetX = map.getSize().x * 0.25
+      // Si fiche resto ouverte : décaler vers la gauche (600px max)
+      if (showRestaurantDetail) {
+        const restaurantPanelWidth = Math.min(600, mapSize.x * 0.5) // 50% max
+        offsetX -= restaurantPanelWidth / 2
+      }
+      
+      // Si panneau user ouvert : décaler vers la gauche (380px)
+      if (showUserPanel) {
+        offsetX -= 380 / 2
+      }
+      
+      // Projeter avec le zoom cible
+      const targetPoint = map.project([selectedRestaurant.lat, selectedRestaurant.lon], targetZoom)
       targetPoint.x += offsetX
       
       const targetLatLng = map.unproject(targetPoint, targetZoom)
       
       // Animation flyTo avec options personnalisées
       map.flyTo(targetLatLng, targetZoom, {
-        duration: 1.5,        // Durée de 1.5 secondes (plus fluide)
-        easeLinearity: 0.15,  // Courbe très douce (valeur basse = plus de courbure)
+        duration: 1.5,
+        easeLinearity: 0.15,
         animate: true
       })
     }
-  }, [selectedRestaurant])
+  }, [selectedRestaurant, showUserPanel, showRestaurantDetail])
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
