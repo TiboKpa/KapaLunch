@@ -65,7 +65,6 @@ function App() {
       if (response.ok) {
         loadRestaurants()
         setShowAddForm(false)
-        alert('Restaurant ajouté avec succès !')
       } else {
         const error = await response.json()
         alert(error.message || 'Erreur lors de l\'ajout')
