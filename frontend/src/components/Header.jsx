@@ -27,40 +27,64 @@ function Header({ user, onLogin, onLogout, onToggleAddForm }) {
       <div className="header-content">
         <div className="header-left">
           <h1>🍽️ KapaLunch</h1>
-          <p className="subtitle">Trouvez votre restaurant</p>
         </div>
 
         <div className="header-right">
           {user ? (
             <>
               <div className="user-info">
-                <span className="user-name">Bonjour, {user.name}</span>
+                <span className="user-name">{user.name}</span>
                 {getRoleBadge(user.role)}
               </div>
 
               {/* Bouton ajouter restaurant (user et admin) */}
               {(user.role === 'user' || user.role === 'admin') && (
-                <button className="btn btn-primary" onClick={onToggleAddForm}>
-                  ➕ Ajouter un restaurant
+                <button className="btn btn-add" onClick={onToggleAddForm}>
+                  <span className="btn-icon">➕</span>
+                  <span className="btn-text">Ajouter un resto</span>
                 </button>
               )}
 
-              {/* Bouton panneau admin (admin uniquement) */}
-              {user.role === 'admin' && (
-                <button className="btn btn-admin" onClick={() => setShowAdminPanel(true)}>
-                  🛠️ Panneau Admin
+              {/* Boutons avec icônes utilisateur */}
+              <div className="user-actions">
+                {/* Bouton panneau admin (admin uniquement) */}
+                {user.role === 'admin' && (
+                  <button 
+                    className="btn-icon-only" 
+                    onClick={() => setShowAdminPanel(true)}
+                    title="Panneau Admin"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                  </button>
+                )}
+
+                {/* Bouton changer mot de passe */}
+                <button 
+                  className="btn-icon-only" 
+                  onClick={() => setShowPasswordModal(true)}
+                  title="Mot de passe"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
                 </button>
-              )}
 
-              {/* Bouton changer mot de passe */}
-              <button className="btn btn-secondary" onClick={() => setShowPasswordModal(true)}>
-                🔐 Mot de passe
-              </button>
-
-              {/* Bouton déconnexion */}
-              <button className="btn btn-secondary" onClick={onLogout}>
-                Déconnexion
-              </button>
+                {/* Bouton déconnexion */}
+                <button 
+                  className="btn-icon-only" 
+                  onClick={onLogout}
+                  title="Déconnexion"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                </button>
+              </div>
             </>
           ) : (
             <button className="btn btn-primary" onClick={() => setShowLoginModal(true)}>
