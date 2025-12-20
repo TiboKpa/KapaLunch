@@ -1,12 +1,22 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const AddReviewForm = ({ restaurantId, onReviewAdded, user }) => {
-  const [rating, setRating] = useState(3)
-  const [comment, setComment] = useState('')
+const AddReviewForm = ({ restaurantId, onReviewAdded, user, initialRating, initialComment }) => {
+  const [rating, setRating] = useState(initialRating || 3)
+  const [comment, setComment] = useState(initialComment || '')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+
+  // Mettre à jour les valeurs si les props changent
+  useEffect(() => {
+    if (initialRating !== undefined) {
+      setRating(initialRating)
+    }
+    if (initialComment !== undefined) {
+      setComment(initialComment)
+    }
+  }, [initialRating, initialComment])
 
   const handleSubmit = async (e) => {
     e.preventDefault()

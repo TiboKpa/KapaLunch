@@ -59,7 +59,7 @@ const EditableStars = ({ rating, onChange }) => {
   )
 }
 
-const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted }) => {
+const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted, pendingReview, onReviewSubmitted }) => {
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
   const [averageRating, setAverageRating] = useState(0)
@@ -99,6 +99,13 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted }) =>
       console.error('Erreur chargement avis:', err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleReviewAdded = () => {
+    fetchReviews()
+    if (onReviewSubmitted) {
+      onReviewSubmitted()
     }
   }
 
@@ -243,8 +250,10 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted }) =>
           {!userHasReview && (
             <AddReviewForm
               restaurantId={restaurant.id}
-              onReviewAdded={fetchReviews}
+              onReviewAdded={handleReviewAdded}
               user={user}
+              initialRating={pendingReview?.rating}
+              initialComment={pendingReview?.comment}
             />
           )}
 
