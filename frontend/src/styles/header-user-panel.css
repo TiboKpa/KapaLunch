@@ -310,13 +310,20 @@
 .user-panel-actions {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem !important; /* FORCE LE GAP */
+  gap: 0;
 }
 
 /* ===== DROPDOWN ANIMÉ ===== */
 .dropdown-section {
   display: flex;
   flex-direction: column;
+  margin-bottom: 12px; /* Espacement subtil entre les sections */
+}
+
+/* Retire le margin du dernier */
+.dropdown-section:last-child,
+.user-panel-actions > .user-panel-action-btn:last-child {
+  margin-bottom: 0;
 }
 
 .user-panel-action-btn {
@@ -330,7 +337,12 @@
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: left;
-  margin: 0 !important; /* Retire tout margin pour laisser le gap faire le travail */
+  margin: 0;
+}
+
+/* Bouton seul (Déconnexion) a aussi le margin */
+.user-panel-actions > .user-panel-action-btn {
+  margin-bottom: 12px;
 }
 
 .user-panel-action-btn:hover {
@@ -408,17 +420,19 @@
   border-top: none;
   border-radius: 0 0 12px 12px;
   padding: 0;
-  margin-top: -12px;
+  margin-top: -12px; /* Remonte pour fusionner avec le bouton */
+  margin-bottom: -12px; /* Compense l'espacement de la section pour éviter le double */
   overflow: hidden;
   max-height: 0;
   opacity: 0;
-  transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+  transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease, margin-bottom 0.3s ease;
 }
 
 .dropdown-content.open {
   max-height: 500px;
   opacity: 1;
   padding: 1rem;
+  margin-bottom: 0; /* Revient à 0 quand ouvert pour garder l'espacement de la section */
   overflow-y: auto;
 }
 
