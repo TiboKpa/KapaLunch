@@ -3,10 +3,9 @@ import axios from 'axios'
 import LoginModal from './LoginModal'
 import AdminPanel from './AdminPanel'
 
-function Header({ user, onLogin, onLogout, onToggleAddForm }) {
+function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel }) {
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [showAdminPanel, setShowAdminPanel] = useState(false)
-  const [showUserPanel, setShowUserPanel] = useState(false)
   const [showPasswordForm, setShowPasswordForm] = useState(false)
   
   // États du formulaire de changement de mot de passe
