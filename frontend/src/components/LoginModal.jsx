@@ -9,8 +9,13 @@ function LoginModal({ onClose, onLogin }) {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [shake, setShake] = useState(false)
 
   const handleChange = (e) => {
+    // Retirer le style d'erreur quand l'utilisateur retape
+    if (error) {
+      setError('')
+    }
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -21,6 +26,7 @@ function LoginModal({ onClose, onLogin }) {
     e.preventDefault()
     setError('')
     setLoading(true)
+    setShake(false)
 
     try {
       const endpoint = isSignup ? '/api/auth/signup' : '/api/auth/login'
@@ -39,10 +45,16 @@ function LoginModal({ onClose, onLogin }) {
         onLogin(data.user, data.token)
         onClose()
       } else {
-        setError(data.message || 'Erreur de connexion')
+        // Déclencher l'animation shake
+        setShake(true)
+        setTimeout(() => setShake(false), 650)
+        setError(data.message || 'Email ou mot de passe incorrect')
       }
     } catch (err) {
-      setError('Erreur de connexion au serveur')
+      // Déclencher l'animation shake
+      setShake(true)
+      setTimeout(() => setShake(false), 650)
+      setError('Impossible de se connecter au serveur. Vérifiez que le backend est démarré.')
     } finally {
       setLoading(false)
     }
@@ -50,8 +62,11 @@ function LoginModal({ onClose, onLogin }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="close-btn" onClick={onClose}>✕</button>
+      <div 
+        className={`modal-content ${shake ? 'shake' : ''}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button className="close-btn" onClick={onClose}>×</button>
         <h2>{isSignup ? 'Créer un compte' : 'Se connecter'}</h2>
         <form onSubmit={handleSubmit}>
           {isSignup && (
@@ -64,18 +79,21 @@ function LoginModal({ onClose, onLogin }) {
                 onChange={handleChange}
                 required
                 placeholder="Votre nom"
+                className={error ? 'input-error' : ''}
               />
             </div>
           )}
           <div className="form-group">
             <label>Email</label>
             <input
-              type="email"
+              type="text"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
               placeholder="votre@email.com"
+              className={error ? 'input-error' : ''}
+              autoComplete="username"
             />
           </div>
           <div className="form-group">
@@ -88,9 +106,16 @@ function LoginModal({ onClose, onLogin }) {
               required
               placeholder="••••••••"
               minLength="6"
+              className={error ? 'input-error' : ''}
+              autoComplete="current-password"
             />
           </div>
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div className="error-message">
+              <span className="error-icon">⚠️</span>
+              {error}
+            </div>
+          )}
           <button 
             type="submit" 
             className="btn btn-primary btn-block"
