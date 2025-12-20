@@ -57,12 +57,13 @@ const LocationPin = () => (
 function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState('all')
+  const [filterCity, setFilterCity] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
   const [sortOrder, setSortOrder] = useState('desc') // 'asc', 'desc'
   const [minRating, setMinRating] = useState(0) // 0, 3.5, 4, 4.5
 
   // Vérifier si des filtres sont actifs (différents des valeurs par défaut)
-  const hasActiveFilters = filterType !== 'all' || minRating > 0
+  const hasActiveFilters = filterType !== 'all' || filterCity !== 'all' || minRating > 0
 
   // Extraire la ville de l'adresse (format attendu: "Adresse, Ville")
   const extractCity = (address) => {
@@ -71,13 +72,18 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant })
     return parts.length > 1 ? parts[parts.length - 1].trim() : ''
   }
 
+  // Obtenir la liste des villes uniques
+  const cities = ['all', ...new Set(restaurants.map(r => extractCity(r.address)).filter(Boolean))].sort()
+
   // Filtrage
   let filteredRestaurants = restaurants.filter(restaurant => {
     const matchesSearch = restaurant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          restaurant.address.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesType = filterType === 'all' || restaurant.type === filterType
+    const city = extractCity(restaurant.address)
+    const matchesCity = filterCity === 'all' || city === filterCity
     const matchesRating = !restaurant.averageRating || restaurant.averageRating >= minRating
-    return matchesSearch && matchesType && matchesRating
+    return matchesSearch && matchesType && matchesCity && matchesRating
   })
 
   // Tri par note (toujours actif)
@@ -120,45 +126,41 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant })
       {/* Panneau de filtres déroulant */}
       {showFilters && (
         <div className="filters-panel pop-in">
-          {/* Ligne 1: Type et Tri côte à côte */}
+          {/* Ligne 1: Type et Ville côte à côte */}
           <div className="filter-row">
             <div className="filter-group">
-              <label>Type de restaurant</label>
+              <label>Type</label>
               <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
                 {types.map(type => (
                   <option key={type} value={type}>
-                    {type === 'all' ? 'Tous les types' : type}
+                    {type === 'all' ? 'Tous' : type}
                   </option>
                 ))}
               </select>
             </div>
 
             <div className="filter-group">
-              <label>Tri par note</label>
-              <div className="sort-buttons">
-                <button 
-                  className={`sort-btn ${sortOrder === 'desc' ? 'active' : ''}`}
-                  onClick={() => setSortOrder('desc')}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7 14l5-5 5 5z"/>
-                  </svg>
-                  Décroissant
-                </button>
-                <button 
-                  className={`sort-btn ${sortOrder === 'asc' ? 'active' : ''}`}
-                  onClick={() => setSortOrder('asc')}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7 10l5 5 5-5z"/>
-                  </svg>
-                  Croissant
-                </button>
-              </div>
+              <label>Ville</label>
+              <select value={filterCity} onChange={(e) => setFilterCity(e.target.value)}>
+                {cities.map(city => (
+                  <option key={city} value={city}>
+                    {city === 'all' ? 'Toutes' : city}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
-          {/* Ligne 2: Note minimum */}
+          {/* Ligne 2: Tri par note (dropdown) */}
+          <div className="filter-group">
+            <label>Tri par note</label>
+            <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+              <option value="desc">Décroissant</option>
+              <option value="asc">Croissant</option>
+            </select>
+          </div>
+
+          {/* Ligne 3: Note minimum */}
           <div className="filter-group">
             <label>Note minimum</label>
             <div className="rating-filter-buttons">
