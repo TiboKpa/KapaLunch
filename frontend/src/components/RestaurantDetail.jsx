@@ -184,18 +184,23 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted, pend
   }
 
   const getGoogleMapsUrl = () => {
-    // Utiliser les coordonnées GPS pour éviter les problèmes d'encodage
-    if (restaurant.lat && restaurant.lon) {
-      return `https://www.google.com/maps/search/?api=1&query=${restaurant.lat},${restaurant.lon}`
-    }
-    // Fallback: utiliser l'adresse nettoyée (sans le nom du restaurant)
-    const addressWithoutName = restaurant.address.split(',').slice(1).join(',').trim()
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressWithoutName || restaurant.address)}`
+    // Utiliser le nom du restaurant + l'adresse complète
+    const searchQuery = `${restaurant.name}, ${restaurant.address}`
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQuery)}`
   }
 
   const getCityFromAddress = (address) => {
-    // Extraire la ville de l'adresse (dernière partie après la virgule)
+    // Extraire la ville de l'adresse
+    // Format OSM: "Nom, Rue, Code Postal Ville, Pays"
+    // On veut l'avant-dernière partie (la ville)
     const parts = address.split(',')
+    if (parts.length >= 2) {
+      // Prendre l'avant-dernière partie
+      const cityPart = parts[parts.length - 2].trim()
+      // Extraire uniquement le nom de la ville (après le code postal si présent)
+      const cityMatch = cityPart.match(/\d+\s+(.+)/) // Match "69001 Lyon" -> "Lyon"
+      return cityMatch ? cityMatch[1] : cityPart
+    }
     return parts[parts.length - 1].trim()
   }
 
