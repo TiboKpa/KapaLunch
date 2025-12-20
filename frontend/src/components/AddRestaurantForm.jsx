@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 
-function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFound, showToast }) {
+function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFound, showToast, initialName = '' }) {
   const [formData, setFormData] = useState({
-    name: '',
+    name: initialName,
     city: '',
     type: '',
     rating: 3,
@@ -13,6 +13,13 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
   const [foundAddress, setFoundAddress] = useState('')
   const [extractedName, setExtractedName] = useState('') // Nom extrait d'OSM
   const [typeAutoFilled, setTypeAutoFilled] = useState(false) // Pour savoir si le type a été auto-rempli
+
+  // Mettre à jour le nom si initialName change
+  useEffect(() => {
+    if (initialName) {
+      setFormData(prev => ({ ...prev, name: initialName }))
+    }
+  }, [initialName])
 
   // Auto-geocode dès que nom + ville sont remplis
   useEffect(() => {
@@ -434,7 +441,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
           className="btn btn-primary btn-block"
           disabled={loading || (geocodeStatus !== 'success' && !foundAddress)}
         >
-          {loading ? 'Ajout en cours...' : 'Ajouter l\'établissement'}
+          {loading ? 'Ajout en cours...' : 'Ajouter l\''établissement'}
         </button>
       </form>
     </div>
