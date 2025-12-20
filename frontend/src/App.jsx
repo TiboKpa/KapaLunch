@@ -104,6 +104,19 @@ function App() {
             selectedRestaurant={selectedRestaurant}
             onSelectRestaurant={handleSelectRestaurant}
           />
+          
+          {/* Popup RestaurantDetail dans la carte */}
+          {showRestaurantDetail && selectedRestaurant && (
+            <RestaurantDetail
+              restaurant={selectedRestaurant}
+              onClose={() => {
+                setShowRestaurantDetail(false)
+                setSelectedRestaurant(null)
+              }}
+              user={user}
+              onRestaurantDeleted={handleRestaurantDeleted}
+            />
+          )}
         </div>
 
         <div className="sidebar">
@@ -118,18 +131,6 @@ function App() {
           />
         </div>
       </div>
-
-      {showRestaurantDetail && selectedRestaurant && (
-        <RestaurantDetail
-          restaurant={selectedRestaurant}
-          onClose={() => {
-            setShowRestaurantDetail(false)
-            setSelectedRestaurant(null)
-          }}
-          user={user}
-          onRestaurantDeleted={handleRestaurantDeleted}
-        />
-      )}
     </div>
   )
 }
