@@ -28,32 +28,22 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
     return () => clearTimeout(timer)
   }, [formData.name, formData.city])
 
-  // Auto-remplissage intelligent du type de cuisine
-  useEffect(() => {
-    if (formData.name.trim() && !formData.type) {
-      const suggestedType = detectCuisineType(formData.name)
-      if (suggestedType) {
-        setFormData(prev => ({ ...prev, type: suggestedType }))
-      }
-    }
-  }, [formData.name])
-
   const detectCuisineType = (name) => {
     const nameLower = name.toLowerCase()
     
     // Mots-clés pour chaque type de cuisine
     const keywords = {
-      'Japonais': ['sushi', 'ramen', 'tokyo', 'osaka', 'sakura', 'bento', 'izakaya', 'yakitori', 'udon', 'wasabi'],
+      'Japonais': ['sushi', 'ramen', 'tokyo', 'osaka', 'sakura', 'bento', 'izakaya', 'yakitori', 'udon', 'wasabi', 'maki'],
       'Chinois': ['china', 'chinois', 'wok', 'canton', 'pékin', 'beijing', 'shanghai', 'dim sum', 'dragon'],
       'Coréen': ['korea', 'coréen', 'seoul', 'bibimbap', 'kimchi', 'bulgogi'],
-      'Vietnamien': ['vietnam', 'vietnamien', 'pho', 'saigon', 'hanoi', 'banh mi'],
+      'Vietnamien': ['vietnam', 'vietnamien', 'pho', 'saigon', 'hanoi', 'banh mi', 'bo bun'],
       'Indien': ['india', 'indien', 'taj', 'mumbai', 'delhi', 'curry', 'tandoori', 'masala'],
       'Thaïlandais': ['thai', 'thaï', 'bangkok', 'pad thai'],
-      'Italien': ['pizza', 'pasta', 'trattoria', 'italia', 'italien', 'roma', 'napoli', 'venezia', 'toscana', 'sicilia'],
-      'Mexicain': ['mexico', 'mexicain', 'tacos', 'burrito', 'azteca', 'mariachi'],
+      'Italien': ['pizza', 'pizzeria', 'pasta', 'trattoria', 'italia', 'italien', 'roma', 'napoli', 'venezia', 'toscana', 'sicilia', 'ristorante'],
+      'Mexicain': ['mexico', 'mexicain', 'tacos', 'burrito', 'azteca', 'mariachi', 'tex mex'],
       'Burger': ['burger', 'five guys', 'smash'],
-      'Fast-food': ['quick', 'fast', 'express', 'drive', 'speed'],
-      'Français': ['bistrot', 'brasserie', 'auberge', 'belle', 'petit', 'chez', 'grand']
+      'Fast-food': ['quick', 'fast', 'express', 'drive', 'speed', 'mc', 'kfc', 'subway'],
+      'Français': ['bistrot', 'brasserie', 'auberge', 'chez']
     }
     
     // Chercher une correspondance
@@ -119,6 +109,16 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
         // Mettre à jour le nom dans le formulaire si différent
         if (osmName && osmName.toLowerCase() !== formData.name.toLowerCase()) {
           setFormData(prev => ({ ...prev, name: osmName }))
+        }
+        
+        // Auto-remplir le type de cuisine APRÈS validation de l'adresse
+        // Utiliser le nom OSM s'il existe, sinon le nom saisi
+        const nameToAnalyze = osmName || formData.name
+        if (nameToAnalyze && !formData.type) {
+          const suggestedType = detectCuisineType(nameToAnalyze)
+          if (suggestedType) {
+            setFormData(prev => ({ ...prev, type: suggestedType }))
+          }
         }
       } else {
         setGeocodeStatus('error')
@@ -360,7 +360,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
             <option value="Mexicain">Mexicain</option>
             <option value="Autre">Autre</option>
           </select>
-          {formData.type && (
+          {formData.type && geocodeStatus === 'success' && (
             <small style={{ color: '#6c757d', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
               🤖 Type détecté automatiquement - vous pouvez le modifier
             </small>

@@ -184,9 +184,8 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted, pend
   }
 
   const getGoogleMapsUrl = () => {
-    // Combiner nom + adresse pour des résultats plus précis
-    const query = `${restaurant.name}, ${restaurant.address}`
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
+    // Utiliser uniquement l'adresse (sans le nom) pour éviter le doublon
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.address)}`
   }
 
   const getCityFromAddress = (address) => {
