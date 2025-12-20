@@ -14,6 +14,7 @@ function App() {
   const [selectedRestaurant, setSelectedRestaurant] = useState(null)
   const [showAddForm, setShowAddForm] = useState(false)
   const [showRestaurantDetail, setShowRestaurantDetail] = useState(false)
+  const [showUserPanel, setShowUserPanel] = useState(false)
 
   useEffect(() => {
     loadRestaurants()
@@ -90,12 +91,14 @@ function App() {
   const canAddRestaurant = user && (user.role === 'user' || user.role === 'admin')
 
   return (
-    <div className="app">
+    <div className={`app ${showUserPanel ? 'panel-open' : ''}`}>
       <Header 
         user={user} 
         onLogin={handleLogin}
         onLogout={handleLogout}
         onToggleAddForm={() => setShowAddForm(!showAddForm)}
+        showUserPanel={showUserPanel}
+        setShowUserPanel={setShowUserPanel}
       />
 
       <div className="main-container">
