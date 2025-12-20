@@ -63,11 +63,19 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
   // Vérifier si des filtres sont actifs (différents des valeurs par défaut)
   const hasActiveFilters = filterType !== 'all' || filterCity !== 'all' || minRating > 0
 
-  // Extraire la ville de l'adresse (format attendu: "Adresse, Ville")
+  // Extraire la ville de l'adresse
+  // Format OSM: "Nom, Rue, Code Postal Ville, Pays"
   const extractCity = (address) => {
     if (!address) return ''
     const parts = address.split(',')
-    return parts.length > 1 ? parts[parts.length - 1].trim() : ''
+    if (parts.length >= 2) {
+      // Prendre l'avant-dernière partie (la ville)
+      const cityPart = parts[parts.length - 2].trim()
+      // Extraire uniquement le nom de la ville (après le code postal si présent)
+      const cityMatch = cityPart.match(/\d+\s+(.+)/) // Match "69001 Lyon" -> "Lyon"
+      return cityMatch ? cityMatch[1] : cityPart
+    }
+    return parts[parts.length - 1].trim()
   }
 
   // Obtenir la liste des villes uniques
