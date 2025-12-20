@@ -26,6 +26,44 @@ function AddRestaurantForm({ onSubmit }) {
     return () => clearTimeout(timer)
   }, [formData.name, formData.city])
 
+  // Auto-remplissage intelligent du type de cuisine
+  useEffect(() => {
+    if (formData.name.trim() && !formData.type) {
+      const suggestedType = detectCuisineType(formData.name)
+      if (suggestedType) {
+        setFormData(prev => ({ ...prev, type: suggestedType }))
+      }
+    }
+  }, [formData.name])
+
+  const detectCuisineType = (name) => {
+    const nameLower = name.toLowerCase()
+    
+    // Mots-clés pour chaque type de cuisine
+    const keywords = {
+      'Japonais': ['sushi', 'ramen', 'tokyo', 'osaka', 'sakura', 'bento', 'izakaya', 'yakitori', 'udon', 'wasabi'],
+      'Chinois': ['china', 'chinois', 'wok', 'canton', 'pékin', 'beijing', 'shanghai', 'dim sum', 'dragon'],
+      'Coréen': ['korea', 'coréen', 'seoul', 'bibimbap', 'kimchi', 'bulgogi'],
+      'Vietnamien': ['vietnam', 'vietnamien', 'pho', 'saigon', 'hanoi', 'banh mi'],
+      'Indien': ['india', 'indien', 'taj', 'mumbai', 'delhi', 'curry', 'tandoori', 'masala'],
+      'Thaïlandais': ['thai', 'thaï', 'bangkok', 'pad thai'],
+      'Italien': ['pizza', 'pasta', 'trattoria', 'italia', 'italien', 'roma', 'napoli', 'venezia', 'toscana', 'sicilia'],
+      'Mexicain': ['mexico', 'mexicain', 'tacos', 'burrito', 'azteca', 'mariachi'],
+      'Burger': ['burger', 'five guys', 'smash'],
+      'Fast-food': ['quick', 'fast', 'express', 'drive', 'speed'],
+      'Français': ['bistrot', 'brasserie', 'auberge', 'belle', 'petit', 'chez', 'grand']
+    }
+    
+    // Chercher une correspondance
+    for (const [type, words] of Object.entries(keywords)) {
+      if (words.some(word => nameLower.includes(word))) {
+        return type
+      }
+    }
+    
+    return null
+  }
+
   const validateAddress = async () => {
     setGeocodeStatus('validating')
     
@@ -183,27 +221,24 @@ function AddRestaurantForm({ onSubmit }) {
             placeholder="Lyon"
             className={geocodeStatus === 'success' ? 'input-success' : geocodeStatus === 'error' ? 'input-error' : ''}
           />
+          {geocodeStatus === 'validating' && (
+            <small style={{ color: '#6c757d', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
+              Recherche de l'adresse...
+            </small>
+          )}
+          {geocodeStatus === 'success' && (
+            <small style={{ color: '#28a745', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
+              ✓ Adresse trouvée
+            </small>
+          )}
+          {geocodeStatus === 'error' && (
+            <small style={{ color: '#dc3545', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
+              ✗ Établissement non trouvé, vérifiez le nom et la ville
+            </small>
+          )}
         </div>
 
-        {geocodeStatus === 'validating' && (
-          <div className="geocode-status validating">
-            Recherche de l'adresse...
-          </div>
-        )}
-
-        {geocodeStatus === 'success' && (
-          <div className="geocode-status success">
-            ✓ Adresse trouvée : {foundAddress}
-          </div>
-        )}
-
-        {geocodeStatus === 'error' && (
-          <div className="geocode-status error">
-            ✗ Établissement non trouvé, vérifiez le nom et la ville
-          </div>
-        )}
-
-        {/* Champ Adresse en 4ème position */}
+        {/* Champ Adresse en 3ème position */}
         <div className="form-group">
           <label>Adresse complète *</label>
           <input
@@ -256,6 +291,11 @@ function AddRestaurantForm({ onSubmit }) {
             <option value="Mexicain">Mexicain</option>
             <option value="Autre">Autre</option>
           </select>
+          {formData.type && (
+            <small style={{ color: '#6c757d', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
+              🤖 Type détecté automatiquement - vous pouvez le modifier
+            </small>
+          )}
         </div>
 
         <div className="form-group">

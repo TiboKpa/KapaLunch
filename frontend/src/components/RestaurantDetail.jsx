@@ -177,7 +177,9 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted }) =>
   }
 
   const getGoogleMapsUrl = () => {
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.address)}`
+    // Combiner nom + adresse pour des résultats plus précis
+    const query = `${restaurant.name}, ${restaurant.address}`
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
   }
 
   const getCityFromAddress = (address) => {
@@ -216,6 +218,7 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted }) =>
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="city-link"
+                title="Ouvrir dans Google Maps"
               >
                 {getCityFromAddress(restaurant.address)}
               </a>
