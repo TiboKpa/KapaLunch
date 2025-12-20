@@ -16,8 +16,9 @@ function App() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [showRestaurantDetail, setShowRestaurantDetail] = useState(false)
   const [showUserPanel, setShowUserPanel] = useState(false)
-  const [pendingReview, setPendingReview] = useState(null) // Pour stocker avis en attente
-  const [toast, setToast] = useState(null) // Pour afficher les toasts
+  const [pendingReview, setPendingReview] = useState(null)
+  const [toast, setToast] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('') // État de recherche au niveau App
   const userPanelRef = useRef(null)
   const mapRef = useRef(null)
 
@@ -30,17 +31,13 @@ function App() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (showUserPanel && userPanelRef.current && !userPanelRef.current.contains(event.target)) {
-        // Vérifier aussi que le clic n'est pas sur le bouton d'ouverture
         const isUserMenuButton = event.target.closest('.user-menu-trigger')
         if (!isUserMenuButton) {
-          // Fermer le panneau
           setShowUserPanel(false)
         }
       }
     }
 
-    // Utiliser 'click' au lieu de 'mousedown'
-    // 'click' se déclenche APRÈS que tous les onClick handlers ont été exécutés
     document.addEventListener('click', handleClickOutside, false)
     return () => {
       document.removeEventListener('click', handleClickOutside, false)
@@ -106,9 +103,8 @@ function App() {
   const handleSelectRestaurant = (restaurant, reviewData = null) => {
     setSelectedRestaurant(restaurant)
     setShowRestaurantDetail(true)
-    setShowAddForm(false) // Fermer le formulaire d'ajout
+    setShowAddForm(false)
     
-    // Stocker les données d'avis si fournies
     if (reviewData) {
       setPendingReview(reviewData)
     }
@@ -120,13 +116,10 @@ function App() {
     setShowRestaurantDetail(false)
   }
 
-  // Handler pour le clic sur le logo - Retour à la carte globale
   const handleLogoClick = () => {
-    // Désélectionner le restaurant
     setSelectedRestaurant(null)
     setShowRestaurantDetail(false)
     
-    // Zoom out sur la carte pour vue globale
     if (mapRef.current && mapRef.current.resetView) {
       mapRef.current.resetView()
     }
@@ -141,7 +134,7 @@ function App() {
       actionLabel,
       onAction: onAction ? () => {
         onAction()
-        setToast(null) // Fermer le toast après l'action
+        setToast(null)
       } : null
     })
   }
@@ -159,6 +152,9 @@ function App() {
         setShowUserPanel={setShowUserPanel}
         userPanelRef={userPanelRef}
         onLogoClick={handleLogoClick}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        canAddRestaurant={canAddRestaurant}
       />
 
       <div className="main-container">
@@ -172,14 +168,13 @@ function App() {
             showRestaurantDetail={showRestaurantDetail}
           />
           
-          {/* Popup RestaurantDetail dans la carte */}
           {showRestaurantDetail && selectedRestaurant && (
             <RestaurantDetail
               restaurant={selectedRestaurant}
               onClose={() => {
                 setShowRestaurantDetail(false)
                 setSelectedRestaurant(null)
-                setPendingReview(null) // Réinitialiser les données d'avis
+                setPendingReview(null)
               }}
               user={user}
               onRestaurantDeleted={handleRestaurantDeleted}
@@ -203,11 +198,11 @@ function App() {
             restaurants={restaurants}
             selectedRestaurant={selectedRestaurant}
             onSelectRestaurant={handleSelectRestaurant}
+            searchTerm={searchTerm}
           />
         </div>
       </div>
 
-      {/* Toast notifications */}
       {toast && (
         <Toast
           message={toast.message}
