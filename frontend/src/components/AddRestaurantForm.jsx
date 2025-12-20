@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-function AddRestaurantForm({ onSubmit }) {
+function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFound }) {
   const [formData, setFormData] = useState({
     name: '',
     city: '',
@@ -11,6 +11,7 @@ function AddRestaurantForm({ onSubmit }) {
   const [loading, setLoading] = useState(false)
   const [geocodeStatus, setGeocodeStatus] = useState('idle') // idle | validating | success | error
   const [foundAddress, setFoundAddress] = useState('')
+  const [extractedName, setExtractedName] = useState('') // Nom extrait d'OSM
 
   // Auto-geocode dès que nom + ville sont remplis
   useEffect(() => {
@@ -20,6 +21,7 @@ function AddRestaurantForm({ onSubmit }) {
       } else {
         setGeocodeStatus('idle')
         setFoundAddress('')
+        setExtractedName('')
       }
     }, 800) // Délai de 800ms après la dernière frappe
 
@@ -64,6 +66,34 @@ function AddRestaurantForm({ onSubmit }) {
     return null
   }
 
+  // Fonction pour extraire le nom du restaurant depuis la réponse OSM
+  const extractRestaurantName = (displayName) => {
+    // Le displayName est souvent au format: "Nom, Rue, Ville, Pays"
+    // On prend la première partie avant la première virgule
+    const parts = displayName.split(',')
+    return parts[0].trim()
+  }
+
+  // Fonction pour vérifier si un restaurant existe déjà
+  const checkDuplicate = (name, address) => {
+    const nameLower = name.toLowerCase().trim()
+    const addressLower = address.toLowerCase().trim()
+    
+    return restaurants.find(resto => {
+      const restoNameLower = resto.name.toLowerCase().trim()
+      const restoAddressLower = resto.address.toLowerCase().trim()
+      
+      // Vérifier si le nom correspond exactement
+      const nameMatch = restoNameLower === nameLower
+      
+      // Vérifier si l'adresse contient des éléments similaires
+      const addressMatch = addressLower.includes(restoAddressLower) || 
+                          restoAddressLower.includes(addressLower)
+      
+      return nameMatch && addressMatch
+    })
+  }
+
   const validateAddress = async () => {
     setGeocodeStatus('validating')
     
@@ -79,14 +109,26 @@ function AddRestaurantForm({ onSubmit }) {
 
       if (geocodeData.success && geocodeData.lat && geocodeData.lon) {
         setGeocodeStatus('success')
-        setFoundAddress(geocodeData.displayName || searchQuery)
+        const fullAddress = geocodeData.displayName || searchQuery
+        setFoundAddress(fullAddress)
+        
+        // Extraire le nom exact du restaurant depuis OSM
+        const osmName = extractRestaurantName(fullAddress)
+        setExtractedName(osmName)
+        
+        // Mettre à jour le nom dans le formulaire si différent
+        if (osmName && osmName.toLowerCase() !== formData.name.toLowerCase()) {
+          setFormData(prev => ({ ...prev, name: osmName }))
+        }
       } else {
         setGeocodeStatus('error')
         setFoundAddress('')
+        setExtractedName('')
       }
     } catch (error) {
       setGeocodeStatus('error')
       setFoundAddress('')
+      setExtractedName('')
     }
   }
 
@@ -124,10 +166,31 @@ function AddRestaurantForm({ onSubmit }) {
       return
     }
 
+    // Vérifier les doublons
+    const finalName = extractedName || formData.name
+    const existingRestaurant = checkDuplicate(finalName, foundAddress)
+    
+    if (existingRestaurant) {
+      // Restaurant existe déjà
+      const confirmOpen = window.confirm(
+        `L'établissement "${existingRestaurant.name}" existe déjà dans la base.\n\nVoulez-vous ouvrir sa fiche pour ajouter votre avis ?`
+      )
+      
+      if (confirmOpen && onExistingRestaurantFound) {
+        // Passer les données de l'avis au parent
+        const reviewData = {
+          rating: formData.rating,
+          comment: formData.comment
+        }
+        onExistingRestaurantFound(existingRestaurant, reviewData)
+      }
+      return
+    }
+
     setLoading(true)
 
     try {
-      const searchQuery = `${formData.name}, ${formData.city}`
+      const searchQuery = `${finalName}, ${formData.city}`
       const geocodeResponse = await fetch('/api/geocode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -138,7 +201,7 @@ function AddRestaurantForm({ onSubmit }) {
 
       if (geocodeData.success && geocodeData.lat && geocodeData.lon) {
         const restaurantData = {
-          name: formData.name,
+          name: finalName,
           address: foundAddress,
           type: formData.type,
           lat: geocodeData.lat,
@@ -162,6 +225,7 @@ function AddRestaurantForm({ onSubmit }) {
         })
         setGeocodeStatus('idle')
         setFoundAddress('')
+        setExtractedName('')
       } else {
         alert('Impossible de géocoder cette adresse')
       }
@@ -208,6 +272,11 @@ function AddRestaurantForm({ onSubmit }) {
             placeholder="Le Petit Bistrot"
             className={geocodeStatus === 'success' ? 'input-success' : geocodeStatus === 'error' ? 'input-error' : ''}
           />
+          {extractedName && extractedName !== formData.name && (
+            <small style={{ color: '#17a2b8', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
+              📍 Nom OSM: {extractedName}
+            </small>
+          )}
         </div>
 
         <div className="form-group">

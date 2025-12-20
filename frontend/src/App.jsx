@@ -15,6 +15,7 @@ function App() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [showRestaurantDetail, setShowRestaurantDetail] = useState(false)
   const [showUserPanel, setShowUserPanel] = useState(false)
+  const [pendingReview, setPendingReview] = useState(null) // Pour stocker avis en attente
   const userPanelRef = useRef(null)
   const mapRef = useRef(null)
 
@@ -100,9 +101,15 @@ function App() {
     }
   }
 
-  const handleSelectRestaurant = (restaurant) => {
+  const handleSelectRestaurant = (restaurant, reviewData = null) => {
     setSelectedRestaurant(restaurant)
     setShowRestaurantDetail(true)
+    setShowAddForm(false) // Fermer le formulaire d'ajout
+    
+    // Stocker les données d'avis si fournies
+    if (reviewData) {
+      setPendingReview(reviewData)
+    }
   }
 
   const handleRestaurantDeleted = () => {
@@ -154,16 +161,23 @@ function App() {
               onClose={() => {
                 setShowRestaurantDetail(false)
                 setSelectedRestaurant(null)
+                setPendingReview(null) // Réinitialiser les données d'avis
               }}
               user={user}
               onRestaurantDeleted={handleRestaurantDeleted}
+              pendingReview={pendingReview}
+              onReviewSubmitted={() => setPendingReview(null)}
             />
           )}
         </div>
 
         <div className="sidebar">
           {showAddForm && canAddRestaurant && (
-            <AddRestaurantForm onSubmit={handleAddRestaurant} />
+            <AddRestaurantForm 
+              onSubmit={handleAddRestaurant}
+              restaurants={restaurants}
+              onExistingRestaurantFound={handleSelectRestaurant}
+            />
           )}
 
           <RestaurantList 
