@@ -85,6 +85,25 @@ const LoadingSpinner = () => (
   </div>
 )
 
+// Liste des départements français à ignorer
+const FRENCH_DEPARTMENTS = [
+  'ain', 'aisne', 'allier', 'alpes-de-haute-provence', 'hautes-alpes', 'alpes-maritimes',
+  'ardèche', 'ardennes', 'ariège', 'aube', 'aude', 'aveyron', 'bouches-du-rhône',
+  'calvados', 'cantal', 'charente', 'charente-maritime', 'cher', 'corrèze', 'corse',
+  'corse-du-sud', 'haute-corse', 'côte-d\'or', 'côtes-d\'armor', 'creuse', 'dordogne',
+  'doubs', 'drôme', 'eure', 'eure-et-loir', 'finistère', 'gard', 'haute-garonne', 'gers',
+  'gironde', 'hérault', 'ille-et-vilaine', 'indre', 'indre-et-loire', 'isère', 'jura',
+  'landes', 'loir-et-cher', 'loire', 'haute-loire', 'loire-atlantique', 'loiret',
+  'lot', 'lot-et-garonne', 'lozère', 'maine-et-loire', 'manche', 'marne', 'haute-marne',
+  'mayenne', 'meurthe-et-moselle', 'meuse', 'morbihan', 'moselle', 'nièvre', 'nord',
+  'oise', 'orne', 'pas-de-calais', 'puy-de-dôme', 'pyrénées-atlantiques', 'hautes-pyrénées',
+  'pyrénées-orientales', 'bas-rhin', 'haut-rhin', 'rhône', 'haute-saône', 'saône-et-loire',
+  'sarthe', 'savoie', 'haute-savoie', 'paris', 'seine-maritime', 'seine-et-marne',
+  'yvelines', 'deux-sèvres', 'somme', 'tarn', 'tarn-et-garonne', 'var', 'vaucluse',
+  'vendée', 'vienne', 'haute-vienne', 'vosges', 'yonne', 'territoire de belfort',
+  'essonne', 'hauts-de-seine', 'seine-saint-denis', 'val-de-marne', 'val-d\'oise'
+]
+
 const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted, pendingReview, onReviewSubmitted }) => {
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
@@ -238,25 +257,28 @@ const RestaurantDetail = ({ restaurant, onClose, user, onRestaurantDeleted, pend
     }
     
     // Si le code postal est seul à la fin, chercher la ville dans les parties précédentes
-    // Ignorer "France", "France métropolitaine", régions
     const postalIndex = parts.findIndex(p => p.trim() === postalCode)
     if (postalIndex >= 0) {
-      // Chercher la vraie ville (pas le pays ni les régions)
+      // Chercher la vraie ville (pas le pays, régions ni départements)
       for (let i = postalIndex - 1; i >= 0; i--) {
         const potentialCity = parts[i].trim()
-        // Ignorer les pays et régions communes
-        if (!potentialCity.toLowerCase().includes('france') && 
-            !potentialCity.toLowerCase().includes('grand est') &&
-            !potentialCity.toLowerCase().includes('auvergne') &&
-            !potentialCity.toLowerCase().includes('nouvelle-aquitaine') &&
-            !potentialCity.toLowerCase().includes('occitanie') &&
-            !potentialCity.toLowerCase().includes('bretagne') &&
-            !potentialCity.toLowerCase().includes('normandie') &&
-            !potentialCity.toLowerCase().includes('pays de la loire') &&
-            !potentialCity.toLowerCase().includes('centre-val de loire') &&
-            !potentialCity.toLowerCase().includes('bourgogne') &&
-            !potentialCity.toLowerCase().includes('hauts-de-france') &&
-            potentialCity.length > 0) {
+        const lowerCity = potentialCity.toLowerCase()
+        
+        // Ignorer les pays, régions ET départements
+        const isNotCity = lowerCity.includes('france') || 
+                         lowerCity.includes('grand est') ||
+                         lowerCity.includes('auvergne') ||
+                         lowerCity.includes('nouvelle-aquitaine') ||
+                         lowerCity.includes('occitanie') ||
+                         lowerCity.includes('bretagne') ||
+                         lowerCity.includes('normandie') ||
+                         lowerCity.includes('pays de la loire') ||
+                         lowerCity.includes('centre-val de loire') ||
+                         lowerCity.includes('bourgogne') ||
+                         lowerCity.includes('hauts-de-france') ||
+                         FRENCH_DEPARTMENTS.includes(lowerCity)
+        
+        if (!isNotCity && potentialCity.length > 0) {
           return `${postalCode} ${potentialCity}`
         }
       }
