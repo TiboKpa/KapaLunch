@@ -113,7 +113,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
     
     try {
       const searchQuery = `${formData.name}, ${formData.city}`
-      const geocodeResponse = await fetch('/api/geocode', {
+      const geocodeResponse = await fetch('http://localhost:5000/api/geocode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ address: searchQuery })
@@ -151,6 +151,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
         setExtractedName('')
       }
     } catch (error) {
+      console.error('Erreur géocodage:', error)
       setGeocodeStatus('error')
       setFoundAddress('')
       setExtractedName('')
@@ -209,7 +210,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
       }
       
       showToast(
-        `L'\u00e9tablissement "${existingRestaurant.name}" existe déjà dans la base.`,
+        `L'établissement "${existingRestaurant.name}" existe déjà dans la base.`,
         'warning',
         7000, // Durée plus longue pour laisser le temps de cliquer
         'Voir la fiche',
@@ -222,7 +223,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
 
     try {
       const searchQuery = `${finalName}, ${formData.city}`
-      const geocodeResponse = await fetch('/api/geocode', {
+      const geocodeResponse = await fetch('http://localhost:5000/api/geocode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ address: searchQuery })
