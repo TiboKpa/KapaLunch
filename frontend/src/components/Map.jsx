@@ -10,7 +10,7 @@ const restaurantIcon = L.icon({
   shadowSize: [41, 41]
 })
 
-// Icône pour restaurant sélectionné (rouge vif + plus gros)
+// Icône pour restaurant sélectionné (violet + plus gros)
 const selectedRestaurantIcon = L.icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
@@ -26,6 +26,17 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
   const layersRef = useRef({})
   const [mapType, setMapType] = useState('map') // 'map' ou 'satellite'
   const prevSelectedRef = useRef(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Détecter le mode mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Exposer les méthodes au parent via ref
   useImperativeHandle(ref, () => ({
@@ -48,15 +59,35 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
       prevSelectedRef.current = null
     },
     
-    // Nouvelle méthode pour centrer sur un restaurant (mobile)
+    // Méthode pour centrer sur un restaurant (mobile)
     centerOnRestaurant: (restaurant) => {
       if (!mapRef.current || !restaurant || !restaurant.lat || !restaurant.lon) return
 
+      const map = mapRef.current
       const targetZoom = 15
-      mapRef.current.flyTo([restaurant.lat, restaurant.lon], targetZoom, {
-        duration: 0.3,
-        easeLinearity: 0.25
-      })
+      
+      // Sur mobile, calculer l'offset pour centrer sur la partie visible (50% supérieur)
+      if (isMobile) {
+        const mapSize = map.getSize()
+        const bottomSheetHeight = mapSize.y * 0.5 // 50vh de bottom sheet
+        const visibleMapHeight = mapSize.y - bottomSheetHeight
+        
+        // Calculer le point cible en tenant compte de la partie cachée
+        const targetPoint = map.project([restaurant.lat, restaurant.lon], targetZoom)
+        // Décaler vers le haut pour centrer sur la partie visible
+        targetPoint.y -= bottomSheetHeight / 4
+        const targetLatLng = map.unproject(targetPoint, targetZoom)
+        
+        map.flyTo(targetLatLng, targetZoom, {
+          duration: 0.5,
+          easeLinearity: 0.25
+        })
+      } else {
+        map.flyTo([restaurant.lat, restaurant.lon], targetZoom, {
+          duration: 0.3,
+          easeLinearity: 0.25
+        })
+      }
     }
   }))
 
@@ -137,8 +168,14 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
 
     const mapSize = map.getSize()
     let offsetX = 0
+    let offsetY = 0
     
-    if (showRestaurantDetail) {
+    // Sur mobile, décaler vers le haut pour compenser le bottom sheet (50vh)
+    if (isMobile) {
+      const bottomSheetHeight = mapSize.y * 0.5
+      offsetY = -bottomSheetHeight / 4 // Décaler de 25% de la hauteur totale vers le haut
+    } else if (showRestaurantDetail) {
+      // Sur desktop, décaler horizontalement pour le panel
       const restaurantPanelWidth = Math.min(600, mapSize.x * 0.5)
       offsetX += restaurantPanelWidth / 2
     }
@@ -147,10 +184,11 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
       const targetZoom = 15
       const targetPoint = map.project([selectedRestaurant.lat, selectedRestaurant.lon], targetZoom)
       targetPoint.x += offsetX
+      targetPoint.y += offsetY
       const targetLatLng = map.unproject(targetPoint, targetZoom)
       
       map.flyTo(targetLatLng, targetZoom, {
-        duration: 1.5,
+        duration: isMobile ? 0.5 : 1.5,
         easeLinearity: 0.15,
         animate: true
       })
@@ -158,6 +196,7 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
       const currentZoom = map.getZoom()
       const targetPoint = map.project([selectedRestaurant.lat, selectedRestaurant.lon], currentZoom)
       targetPoint.x += offsetX
+      targetPoint.y += offsetY
       const targetLatLng = map.unproject(targetPoint, currentZoom)
       
       map.flyTo(targetLatLng, currentZoom, {
@@ -166,7 +205,7 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
         animate: true
       })
     }
-  }, [selectedRestaurant, showUserPanel, showRestaurantDetail])
+  }, [selectedRestaurant, showUserPanel, showRestaurantDetail, isMobile])
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
