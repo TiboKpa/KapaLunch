@@ -105,6 +105,7 @@ function App() {
     setSelectedRestaurant(restaurant)
     setShowRestaurantDetail(true)
     setShowAddForm(false)
+    setShowUserPanel(false) // Fermer le panneau utilisateur
     
     if (reviewData) {
       setPendingReview(reviewData)
