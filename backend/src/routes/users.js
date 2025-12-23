@@ -124,7 +124,7 @@ router.put('/:id/role', protect, async (req, res) => {
       })
     }
 
-    const { newRole, emailConfirmation } = req.body
+    const { newRole } = req.body
 
     if (!['lurker', 'user', 'admin'].includes(newRole)) {
       return res.status(400).json({
@@ -156,23 +156,6 @@ router.put('/:id/role', protect, async (req, res) => {
         success: false,
         message: 'Vous ne pouvez pas rétrograder votre propre compte'
       })
-    }
-
-    // Vérification par email pour promotion admin
-    if (newRole === 'admin' && user.role !== 'admin') {
-      if (!emailConfirmation) {
-        return res.status(400).json({
-          success: false,
-          message: 'Confirmation par email requise pour promouvoir un administrateur'
-        })
-      }
-
-      if (emailConfirmation.toLowerCase() !== user.email.toLowerCase()) {
-        return res.status(400).json({
-          success: false,
-          message: 'L\'email de confirmation ne correspond pas'
-        })
-      }
     }
 
     const oldRole = user.role
