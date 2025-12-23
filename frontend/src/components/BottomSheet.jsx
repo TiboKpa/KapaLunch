@@ -51,7 +51,6 @@ function BottomSheet({
     const threshold = 50
 
     if (Math.abs(deltaY) < threshold) {
-      // Pas assez de mouvement, on reste dans l'état actuel
       return
     }
 
@@ -138,7 +137,7 @@ function BottomSheet({
 
               <div className="mobile-detail-type">
                 <span>🍽️</span>
-                <span>{selectedRestaurant.type}</span>
+                <span>{selectedRestaurant.cuisineType}</span>
               </div>
             </div>
 
