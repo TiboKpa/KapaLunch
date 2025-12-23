@@ -61,7 +61,7 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
   const [minRating, setMinRating] = useState(0) // 0, 3.5, 4, 4.5
 
   // Vérifier si des filtres sont actifs (différents des valeurs par défaut)
-  const hasActiveFilters = filterType !== 'all' || filterCity !== 'all' || minRating > 0
+  const hasActiveFilters = filterType !== 'all' || filterCity !== 'all' || sortOrder !== 'desc' || minRating > 0
 
   // Fonction pour réinitialiser tous les filtres
   const resetFilters = () => {
@@ -79,17 +79,17 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
     'ain', 'aisne', 'allier', 'alpes-de-haute-provence', 'hautes-alpes', 'alpes-maritimes',
     'ardèche', 'ardennes', 'ariège', 'aube', 'aude', 'aveyron', 'bouches-du-rhône',
     'calvados', 'cantal', 'charente', 'charente-maritime', 'cher', 'corrèze', 'corse',
-    'corse-du-sud', 'haute-corse', "c\u00f4te-d'or", "c\u00f4tes-d'armor", 'creuse', 'dordogne',
-    'doubs', 'dr\u00f4me', 'eure', 'eure-et-loir', 'finist\u00e8re', 'gard', 'haute-garonne', 'gers',
-    'gironde', 'h\u00e9rault', 'ille-et-vilaine', 'indre', 'indre-et-loire', 'is\u00e8re', 'jura',
+    'corse-du-sud', 'haute-corse', "côte-d'or", "côtes-d'armor", 'creuse', 'dordogne',
+    'doubs', 'drôme', 'eure', 'eure-et-loir', 'finistère', 'gard', 'haute-garonne', 'gers',
+    'gironde', 'hérault', 'ille-et-vilaine', 'indre', 'indre-et-loire', 'isère', 'jura',
     'landes', 'loir-et-cher', 'loire', 'haute-loire', 'loire-atlantique', 'loiret',
-    'lot', 'lot-et-garonne', 'loz\u00e8re', 'maine-et-loire', 'manche', 'marne', 'haute-marne',
-    'mayenne', 'meurthe-et-moselle', 'meuse', 'morbihan', 'moselle', 'ni\u00e8vre', 'nord',
-    'oise', 'orne', 'pas-de-calais', 'puy-de-d\u00f4me', 'pyr\u00e9n\u00e9es-atlantiques', 'hautes-pyr\u00e9n\u00e9es',
-    'pyr\u00e9n\u00e9es-orientales', 'bas-rhin', 'haut-rhin', 'rh\u00f4ne', 'haute-sa\u00f4ne', 'sa\u00f4ne-et-loire',
+    'lot', 'lot-et-garonne', 'lozère', 'maine-et-loire', 'manche', 'marne', 'haute-marne',
+    'mayenne', 'meurthe-et-moselle', 'meuse', 'morbihan', 'moselle', 'nièvre', 'nord',
+    'oise', 'orne', 'pas-de-calais', 'puy-de-dôme', 'pyrénées-atlantiques', 'hautes-pyrénées',
+    'pyrénées-orientales', 'bas-rhin', 'haut-rhin', 'rhône', 'haute-saône', 'saône-et-loire',
     'sarthe', 'savoie', 'haute-savoie', 'paris', 'seine-maritime', 'seine-et-marne',
-    'yvelines', 'deux-s\u00e8vres', 'somme', 'tarn', 'tarn-et-garonne', 'var', 'vaucluse',
-    'vend\u00e9e', 'vienne', 'haute-vienne', 'vosges', 'yonne', 'territoire de belfort',
+    'yvelines', 'deux-sèvres', 'somme', 'tarn', 'tarn-et-garonne', 'var', 'vaucluse',
+    'vendée', 'vienne', 'haute-vienne', 'vosges', 'yonne', 'territoire de belfort',
     'essonne', 'hauts-de-seine', 'seine-saint-denis', 'val-de-marne', "val-d'oise"
   ]
 
@@ -186,7 +186,7 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
       {/* Panneau de filtres déroulant */}
       {showFilters && (
         <div className="filters-panel pop-in">
-          {/* Ligne 1: Type et Ville côte à côte */}
+          {/* Ligne 1: Type et Ville côte à côte + Croix de réinitialisation */}
           <div className="filter-row">
             <div className="filter-group">
               <label>Type</label>
@@ -209,6 +209,19 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
                 ))}
               </select>
             </div>
+
+            {/* Croix de réinitialisation à côté du filtre Ville */}
+            {hasActiveFilters && (
+              <button 
+                className="btn-reset-filters-icon"
+                onClick={resetFilters}
+                title="Réinitialiser les filtres"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+              </button>
+            )}
           </div>
 
           {/* Ligne 2: Tri par note (dropdown) */}
@@ -250,19 +263,6 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
               </button>
             </div>
           </div>
-
-          {/* Bouton réinitialiser les filtres */}
-          {hasActiveFilters && (
-            <button 
-              className="btn-reset-filters"
-              onClick={resetFilters}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '6px' }}>
-                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-              </svg>
-              Réinitialiser les filtres
-            </button>
-          )}
         </div>
       )}
 
