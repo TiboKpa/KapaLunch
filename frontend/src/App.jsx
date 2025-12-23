@@ -20,6 +20,7 @@ function App() {
   const [toast, setToast] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [showFilters, setShowFilters] = useState(false) // État du panneau de filtres
+  const [hasActiveFilters, setHasActiveFilters] = useState(false) // État des filtres actifs
   const userPanelRef = useRef(null)
   const mapRef = useRef(null)
 
@@ -170,6 +171,7 @@ function App() {
         showFilters={showFilters}
         setShowFilters={setShowFilters}
         onResetFilters={handleResetFilters}
+        hasActiveFilters={hasActiveFilters}
       />
 
       <div className="main-container">
@@ -220,6 +222,7 @@ function App() {
             canAddRestaurant={canAddRestaurant}
             onOpenAddForm={handleToggleAddFormWithSearch}
             onResetFilters={handleResetFilters}
+            onFiltersChange={setHasActiveFilters}
           />
         </div>
       </div>
