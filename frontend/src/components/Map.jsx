@@ -10,16 +10,6 @@ const restaurantIcon = L.icon({
   shadowSize: [41, 41]
 })
 
-// Icône pour restaurant sélectionné (violet + plus gros)
-const selectedRestaurantIcon = L.icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-  iconSize: [35, 57],
-  iconAnchor: [17, 57],
-  popupAnchor: [1, -48],
-  shadowSize: [57, 57]
-})
-
 const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, showUserPanel, showRestaurantDetail }, ref) => {
   const mapRef = useRef(null)
   const markersRef = useRef([])
@@ -70,12 +60,11 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
       if (isMobile) {
         const mapSize = map.getSize()
         const bottomSheetHeight = mapSize.y * 0.5 // 50vh de bottom sheet
-        const visibleMapHeight = mapSize.y - bottomSheetHeight
         
         // Calculer le point cible en tenant compte de la partie cachée
         const targetPoint = map.project([restaurant.lat, restaurant.lon], targetZoom)
-        // Décaler vers le haut pour centrer sur la partie visible
-        targetPoint.y -= bottomSheetHeight / 4
+        // Décaler vers le haut pour centrer sur la partie visible (25% de la hauteur totale)
+        targetPoint.y -= bottomSheetHeight / 2
         const targetLatLng = map.unproject(targetPoint, targetZoom)
         
         map.flyTo(targetLatLng, targetZoom, {
@@ -136,23 +125,12 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
 
     restaurants.forEach((restaurant) => {
       if (restaurant.lat && restaurant.lon) {
-        // Utiliser l'icône appropriée selon si le restaurant est sélectionné
-        const isSelected = selectedRestaurant && selectedRestaurant.id === restaurant.id
-        const icon = isSelected ? selectedRestaurantIcon : restaurantIcon
-        
-        const marker = L.marker([restaurant.lat, restaurant.lon], { icon }).addTo(mapRef.current)
+        // Toujours utiliser l'icône rouge standard
+        const marker = L.marker([restaurant.lat, restaurant.lon], { icon: restaurantIcon }).addTo(mapRef.current)
         
         marker.on('click', () => {
           onSelectRestaurant(restaurant)
         })
-
-        // Ajouter une classe pour animation si sélectionné
-        if (isSelected) {
-          const iconElement = marker.getElement()
-          if (iconElement) {
-            iconElement.classList.add('marker-selected')
-          }
-        }
 
         markersRef.current.push(marker)
       }
@@ -173,7 +151,8 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
     // Sur mobile, décaler vers le haut pour compenser le bottom sheet (50vh)
     if (isMobile) {
       const bottomSheetHeight = mapSize.y * 0.5
-      offsetY = -bottomSheetHeight / 4 // Décaler de 25% de la hauteur totale vers le haut
+      // Décaler pour centrer sur la partie visible (les 50% du haut)
+      offsetY = -bottomSheetHeight / 2
     } else if (showRestaurantDetail) {
       // Sur desktop, décaler horizontalement pour le panel
       const restaurantPanelWidth = Math.min(600, mapSize.x * 0.5)
