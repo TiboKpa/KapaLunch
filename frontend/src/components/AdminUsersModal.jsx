@@ -41,9 +41,16 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
         { newRole },
         { headers: { Authorization: `Bearer ${token}` } }
       )
+      
+      // Mettre à jour localement sans recharger
+      setUsers(prevUsers => 
+        prevUsers.map(user => 
+          user.id === userId ? { ...user, role: newRole } : user
+        )
+      )
+      
       setFooterMessage(`Rôle de ${userName} mis à jour`)
       setTimeout(() => setFooterMessage(''), 3000)
-      fetchAllUsers()
     } catch (err) {
       setFooterMessage(err.response?.data?.message || 'Erreur lors du changement de rôle')
       setTimeout(() => setFooterMessage(''), 5000)
@@ -59,9 +66,12 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
         `http://localhost:5000/api/users/${userId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       )
+      
+      // Mettre à jour localement sans recharger
+      setUsers(prevUsers => prevUsers.filter(user => user.id !== userId))
+      
       setFooterMessage(`${userName} a été supprimé`)
       setTimeout(() => setFooterMessage(''), 3000)
-      fetchAllUsers()
     } catch (err) {
       setFooterMessage(err.response?.data?.message || 'Erreur lors de la suppression')
       setTimeout(() => setFooterMessage(''), 5000)
@@ -138,8 +148,9 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
             <h2>Panneau Admin - Gestion des utilisateurs</h2>
           </div>
           <button className="admin-modal-close" onClick={handleClose}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
         </div>
