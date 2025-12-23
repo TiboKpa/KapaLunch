@@ -3,7 +3,7 @@
 /* Variables mobile */
 :root {
   --mobile-header-height: 60px;
-  --mobile-sheet-handle-height: 45px;
+  --mobile-sheet-handle-height: 40px;
   --mobile-transition-smooth: cubic-bezier(0.4, 0.0, 0.2, 1);
   --mobile-transition-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -44,22 +44,23 @@
   }
 
   .header-content {
+    display: grid;
     grid-template-columns: auto 1fr auto;
     padding: 0 1rem;
-    gap: 0.75rem;
+    gap: 1rem;
     height: 100%;
     align-items: center;
-    display: flex;
     width: 100%;
   }
 
   .header-left {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
   }
 
   .header-left h1 {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -68,8 +69,8 @@
   }
 
   .header-left h1 svg {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     flex-shrink: 0;
   }
 
@@ -84,12 +85,12 @@
     justify-content: flex-end;
     align-items: center;
     gap: 0.5rem;
-    flex: 1;
   }
 
   .header-right {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
   }
 
   /* Boutons mobiles dans le header */
@@ -190,26 +191,21 @@
     border-radius: 20px 20px 0 0;
     box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
     z-index: 999 !important;
-    transform: translateY(0) !important;
-    transition: transform 0.3s var(--mobile-transition-smooth);
-    height: 50vh;
     display: flex !important;
     flex-direction: column;
+    touch-action: none;
   }
 
   .bottom-sheet.visible {
-    transform: translateY(0) !important;
     display: flex !important;
   }
 
   .bottom-sheet.semi-open {
     height: 50vh !important;
-    transform: translateY(0) !important;
   }
 
   .bottom-sheet.full-open {
     height: 90vh !important;
-    transform: translateY(0) !important;
   }
 
   /* Poignée du bottom sheet */
@@ -232,15 +228,15 @@
   }
 
   .sheet-handle-bar {
-    width: 50px;
-    height: 5px;
+    width: 45px;
+    height: 4px;
     background: #cbd5e0;
-    border-radius: 3px;
+    border-radius: 2px;
     transition: all 0.2s ease;
   }
 
   .sheet-handle:active .sheet-handle-bar {
-    width: 60px;
+    width: 55px;
     background: #667eea;
   }
 
@@ -251,8 +247,8 @@
     transform: translateY(-50%);
     background: transparent;
     border: none;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -303,7 +299,7 @@
   }
 
   .restaurant-list .restaurant-item {
-    padding: 1rem;
+    padding: 0.75rem 1rem !important;
     border-bottom: 1px solid #f1f3f5;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -319,60 +315,67 @@
     border-left: 3px solid #667eea;
   }
 
-  /* Liste des restaurants */
-  .mobile-restaurant-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0.5rem 0;
-  }
-
-  .mobile-restaurant-item {
-    padding: 1rem 1rem;
-    border-bottom: 1px solid #f1f3f5;
-    cursor: pointer;
-    transition: all 0.15s ease;
+  /* Compacter la liste */
+  .restaurant-list .restaurant-header-line {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
     gap: 0.5rem;
   }
 
-  .mobile-restaurant-item:active {
-    background: #f8f9fa;
-    transform: scale(0.98);
-  }
-
-  .mobile-restaurant-item.selected {
-    background: #f0f4ff;
-    border-left: 3px solid #667eea;
-  }
-
-  .mobile-restaurant-name {
-    font-size: 1rem;
+  .restaurant-list .restaurant-header-line h3 {
+    font-size: 0.95rem !important;
+    margin: 0 !important;
     font-weight: 600;
-    color: #2c3e50;
-    margin: 0;
   }
 
-  .mobile-restaurant-info {
+  .restaurant-list .restaurant-rating-inline {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    font-size: 0.85rem;
-    color: #6c757d;
+    gap: 0.3rem;
+    flex-shrink: 0;
+  }
+
+  .restaurant-list .restaurant-rating-inline .star-rating-display {
+    display: flex;
+    gap: 1px;
+  }
+
+  .restaurant-list .restaurant-rating-inline .star-rating-display svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .restaurant-list .restaurant-rating-inline .rating-number {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .restaurant-list .restaurant-info-line {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     flex-wrap: wrap;
   }
 
-  .mobile-restaurant-rating {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
+  .restaurant-list .type-badge {
+    font-size: 0.75rem !important;
+    padding: 0.2rem 0.5rem !important;
   }
 
-  .mobile-restaurant-type,
-  .mobile-restaurant-city {
+  .restaurant-list .city-info {
     display: flex;
     align-items: center;
     gap: 0.25rem;
+    font-size: 0.8rem;
+    color: #6c757d;
+  }
+
+  .restaurant-list .city-info svg {
+    width: 12px !important;
+    height: 12px !important;
   }
 
   /* ===== RESTAURANT DETAIL MOBILE ===== */
@@ -403,11 +406,13 @@
 
   .mobile-detail-address {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 0.5rem;
-    color: #6c757d;
+    color: #667eea;
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
+    text-decoration: underline;
+    cursor: pointer;
   }
 
   .mobile-detail-type {

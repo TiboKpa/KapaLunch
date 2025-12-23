@@ -22,6 +22,7 @@ function BottomSheet({
   const [startY, setStartY] = useState(0)
   const [currentY, setCurrentY] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
+  const [dragOffset, setDragOffset] = useState(0)
   const sheetRef = useRef(null)
 
   // Ouvrir le sheet quand un restaurant est sélectionné
@@ -29,19 +30,22 @@ function BottomSheet({
     if (selectedRestaurant) {
       setSheetState('semi')
     } else {
-      // En mode liste, rester semi-ouvert
       setSheetState('semi')
     }
   }, [selectedRestaurant])
 
   const handleTouchStart = (e) => {
     setStartY(e.touches[0].clientY)
+    setCurrentY(e.touches[0].clientY)
     setIsDragging(true)
   }
 
   const handleTouchMove = (e) => {
     if (!isDragging) return
-    setCurrentY(e.touches[0].clientY)
+    const newY = e.touches[0].clientY
+    setCurrentY(newY)
+    const offset = newY - startY
+    setDragOffset(offset)
   }
 
   const handleTouchEnd = () => {
@@ -49,10 +53,14 @@ function BottomSheet({
     setIsDragging(false)
 
     const deltaY = currentY - startY
-    const threshold = 50
+    const threshold = 80
 
+    // Reset offset
+    setDragOffset(0)
+
+    // Snap vers la position la plus proche
     if (Math.abs(deltaY) < threshold) {
-      return
+      return // Rester à la position actuelle
     }
 
     if (deltaY > 0) {
@@ -60,28 +68,21 @@ function BottomSheet({
       if (sheetState === 'full') {
         setSheetState('semi')
       } else if (sheetState === 'semi') {
-        // En mode liste, on ne ferme jamais complètement
-        if (!selectedRestaurant) {
-          // Rester semi-ouvert
-        } else {
-          setSheetState('closed')
+        // Ne jamais fermer complètement en mode liste
+        if (selectedRestaurant) {
           onSelectRestaurant(null)
         }
       }
     } else {
       // Swipe up
-      if (sheetState === 'closed') {
-        setSheetState('semi')
-      } else if (sheetState === 'semi') {
+      if (sheetState === 'semi') {
         setSheetState('full')
       }
     }
   }
 
   const handleToggle = () => {
-    if (sheetState === 'closed') {
-      setSheetState('semi')
-    } else if (sheetState === 'semi') {
+    if (sheetState === 'semi') {
       setSheetState('full')
     } else {
       setSheetState('semi')
@@ -103,8 +104,35 @@ function BottomSheet({
     return classes.join(' ')
   }
 
+  // Calculer le transform en fonction du drag
+  const getTransform = () => {
+    if (!isDragging) return 'translateY(0)'
+    
+    // Limiter le drag vers le haut (ne pas dépasser full)
+    const maxDragUp = sheetState === 'semi' ? -window.innerHeight * 0.4 : 0
+    // Limiter le drag vers le bas
+    const maxDragDown = sheetState === 'full' ? window.innerHeight * 0.4 : 100
+    
+    const clampedOffset = Math.max(maxDragUp, Math.min(maxDragDown, dragOffset))
+    return `translateY(${clampedOffset}px)`
+  }
+
+  // Extraire code postal + ville
+  const extractCityPostal = (address) => {
+    if (!address) return ''
+    const postalMatch = address.match(/(\d{5})\s+([^,]+)/)
+    if (postalMatch) {
+      return `${postalMatch[2]} - ${postalMatch[1]}`
+    }
+    return ''
+  }
+
   return (
-    <div ref={sheetRef} className={getSheetClass()}>
+    <div 
+      ref={sheetRef} 
+      className={getSheetClass()}
+      style={{ transform: getTransform(), transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)' }}
+    >
       <div 
         className="sheet-handle"
         onTouchStart={handleTouchStart}
@@ -138,10 +166,16 @@ function BottomSheet({
                 <span style={{ color: '#adb5bd', fontSize: '0.85rem' }}>({selectedRestaurant.reviewCount || 0} avis)</span>
               </div>
 
-              <div className="mobile-detail-address">
+              <a 
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedRestaurant.address)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mobile-detail-address"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <span>📍</span>
-                <span>{selectedRestaurant.address}, {selectedRestaurant.city}</span>
-              </div>
+                <span>{extractCityPostal(selectedRestaurant.address)}</span>
+              </a>
 
               <div className="mobile-detail-type">
                 <span>🍽️</span>
@@ -182,8 +216,8 @@ function BottomSheet({
           </div>
         ) : (
           <>
-            <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #e9ecef', background: '#f8f9fa' }}>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#2c3e50', fontWeight: '600' }}>
+            <div style={{ padding: '0.5rem 1rem', borderBottom: '1px solid #e9ecef', background: '#f8f9fa' }}>
+              <h3 style={{ margin: 0, fontSize: '1rem', color: '#2c3e50', fontWeight: '600' }}>
                 {restaurants.length} restaurant{restaurants.length > 1 ? 's' : ''}
               </h3>
             </div>
