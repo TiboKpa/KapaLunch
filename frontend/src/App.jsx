@@ -146,8 +146,8 @@ function App() {
     setSelectedRestaurant(restaurant)
     
     if (isMobile) {
-      // Sur mobile, on ne change pas showRestaurantDetail, c'est le BottomSheet qui gère
-      if (mapRef.current && mapRef.current.centerOnRestaurant) {
+      // Sur mobile, recentrer la carte
+      if (mapRef.current && mapRef.current.centerOnRestaurant && restaurant) {
         mapRef.current.centerOnRestaurant(restaurant)
       }
     } else {
@@ -203,11 +203,6 @@ function App() {
         setToast(null)
       } : null
     })
-  }
-
-  const handleShowDetails = (restaurant) => {
-    setShowRestaurantDetail(true)
-    setSelectedRestaurant(restaurant)
   }
 
   const canAddRestaurant = user && (user.role === 'user' || user.role === 'admin')
@@ -317,10 +312,20 @@ function App() {
       {/* Bottom Sheet pour mobile */}
       {isMobile && (
         <BottomSheet
-          restaurant={selectedRestaurant}
-          onClose={() => setSelectedRestaurant(null)}
-          onShowDetails={handleShowDetails}
+          restaurants={restaurants}
+          selectedRestaurant={selectedRestaurant}
+          onSelectRestaurant={handleSelectRestaurant}
+          searchTerm={searchTerm}
+          showFilters={showFilters}
+          setShowFilters={setShowFilters}
+          canAddRestaurant={canAddRestaurant}
+          onOpenAddForm={handleToggleAddFormWithSearch}
+          onResetFilters={handleResetFilters}
+          onFiltersChange={setHasActiveFilters}
           user={user}
+          onRestaurantDeleted={handleRestaurantDeleted}
+          pendingReview={pendingReview}
+          onReviewSubmitted={() => setPendingReview(null)}
         />
       )}
 
