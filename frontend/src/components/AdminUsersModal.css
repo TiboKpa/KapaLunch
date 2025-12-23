@@ -259,6 +259,15 @@
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
+  color: #1a1a1a;
+}
+
+.user-name-cell svg {
+  color: #666;
+}
+
+.user-name-cell span {
+  color: #1a1a1a;
 }
 
 .you-badge {
