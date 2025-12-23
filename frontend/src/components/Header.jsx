@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import AdminUsersModal from './AdminUsersModal'
 
-function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel, userPanelRef, onLogoClick, searchTerm, setSearchTerm, canAddRestaurant, showFilters, setShowFilters, onResetFilters }) {
+function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel, userPanelRef, onLogoClick, searchTerm, setSearchTerm, canAddRestaurant, showFilters, setShowFilters, onResetFilters, hasActiveFilters }) {
   // États des différentes sections du panneau
   const [panelView, setPanelView] = useState('menu') // 'menu', 'login'
   const [showPasswordDropdown, setShowPasswordDropdown] = useState(false)
@@ -190,15 +190,20 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
               </button>
             )}
             
-            {/* Bouton Filtres */}
+            {/* Bouton Filtres avec bulle de notification */}
             <button 
               className="btn-filter-header"
               onClick={() => setShowFilters(!showFilters)}
               title="Filtres avancés"
+              style={{ position: 'relative' }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
               </svg>
+              {/* Bulle de notification façon Teams */}
+              {hasActiveFilters && (
+                <span className="filter-notification-badge"></span>
+              )}
             </button>
 
             {/* Bouton + */}
