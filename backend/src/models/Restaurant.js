@@ -51,9 +51,9 @@ const Restaurant = sequelize.define('Restaurant', {
     validate: {
       isIn: {
         args: [[
-          'Français', 'Italien', 'Asiatique', 'Fast-food',
-          'Pizza', 'Burger', 'Japonais', 'Indien',
-          'Mexicain', 'Autre', ''
+          'Français', 'Italien', 'Japonais', 'Chinois', 'Coréen', 
+          'Vietnamien', 'Asiatique', 'Indien', 'Thaïlandais',
+          'Fast-food', 'Pizza', 'Burger', 'Mexicain', 'Autre', ''
         ]],
         msg: 'Type de cuisine invalide'
       }
