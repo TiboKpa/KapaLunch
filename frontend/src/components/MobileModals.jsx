@@ -12,9 +12,9 @@ export function MobileSearchModal({ isOpen, onClose, searchTerm, setSearchTerm, 
   if (!isOpen) return null
 
   const filteredRestaurants = restaurants.filter(r =>
-    r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    r.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    r.cuisineType.toLowerCase().includes(searchTerm.toLowerCase())
+    (r.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (r.city || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (r.cuisineType || '').toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const handleSelectRestaurant = (restaurant) => {
