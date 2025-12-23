@@ -122,6 +122,30 @@
   display: block;
 }
 
+/* Bulle de notification sur l'icône filtres (façon Teams) */
+.filter-notification-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  background: #dc3545;
+  border: 2px solid white;
+  border-radius: 50%;
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.9;
+  }
+}
+
 /* Bouton + dans le header */
 .btn-add-header {
   background: rgba(255, 255, 255, 0.3);
