@@ -1,13 +1,17 @@
 import { useState, useEffect, useRef } from 'react'
+import { Search, Filter } from 'lucide-react'
 import Header from './components/Header'
 import Map from './components/Map'
 import RestaurantList from './components/RestaurantList'
 import AddRestaurantForm from './components/AddRestaurantForm'
 import RestaurantDetail from './components/RestaurantDetail'
 import Toast from './components/Toast'
+import BottomSheet from './components/BottomSheet'
+import { MobileSearchModal, MobileFiltersModal } from './components/MobileModals'
 import './styles/App.css'
 import './styles/features.css'
 import './styles/header-user-panel.css'
+import './styles/mobile.css'
 
 function App() {
   const [restaurants, setRestaurants] = useState([])
@@ -19,10 +23,33 @@ function App() {
   const [pendingReview, setPendingReview] = useState(null)
   const [toast, setToast] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [showFilters, setShowFilters] = useState(false) // État du panneau de filtres
-  const [hasActiveFilters, setHasActiveFilters] = useState(false) // État des filtres actifs
+  const [showFilters, setShowFilters] = useState(false)
+  const [hasActiveFilters, setHasActiveFilters] = useState(false)
+  
+  // États mobiles
+  const [isMobile, setIsMobile] = useState(false)
+  const [showMobileSearch, setShowMobileSearch] = useState(false)
+  const [showMobileFilters, setShowMobileFilters] = useState(false)
+  const [filters, setFilters] = useState({
+    cuisineType: 'Tous',
+    city: 'Toutes',
+    minRating: 0,
+    sortOrder: 'desc'
+  })
+  
   const userPanelRef = useRef(null)
   const mapRef = useRef(null)
+
+  // Détecter si mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     loadRestaurants()
@@ -104,9 +131,19 @@ function App() {
 
   const handleSelectRestaurant = (restaurant, reviewData = null) => {
     setSelectedRestaurant(restaurant)
-    setShowRestaurantDetail(true)
-    setShowAddForm(false)
-    setShowUserPanel(false) // Fermer le panneau utilisateur
+    
+    if (isMobile) {
+      // Sur mobile, on ne change pas showRestaurantDetail, c'est le BottomSheet qui gère
+      if (mapRef.current && mapRef.current.centerOnRestaurant) {
+        mapRef.current.centerOnRestaurant(restaurant)
+      }
+    } else {
+      // Sur desktop, comportement normal
+      setShowRestaurantDetail(true)
+      setShowAddForm(false)
+    }
+    
+    setShowUserPanel(false)
     
     if (reviewData) {
       setPendingReview(reviewData)
@@ -128,17 +165,20 @@ function App() {
     }
   }
 
-  // Handler pour ouvrir le formulaire d'ajout avec le searchTerm pré-rempli
   const handleToggleAddFormWithSearch = () => {
     setShowAddForm(true)
   }
 
-  // Fonction pour réinitialiser la recherche ET les filtres
   const handleResetFilters = () => {
     setSearchTerm('')
+    setFilters({
+      cuisineType: 'Tous',
+      city: 'Toutes',
+      minRating: 0,
+      sortOrder: 'desc'
+    })
   }
 
-  // Fonction wrapper pour showToast compatible avec AddRestaurantForm
   const showToast = (message, type = 'info', duration = 5000, actionLabel = null, onAction = null) => {
     setToast({
       message,
@@ -152,7 +192,16 @@ function App() {
     })
   }
 
+  const handleShowDetails = (restaurant) => {
+    setShowRestaurantDetail(true)
+    setSelectedRestaurant(restaurant)
+  }
+
   const canAddRestaurant = user && (user.role === 'user' || user.role === 'admin')
+
+  // Extraire les types de cuisine et villes uniques
+  const cuisineTypes = [...new Set(restaurants.map(r => r.cuisineType))].sort()
+  const cities = [...new Set(restaurants.map(r => r.city))].sort()
 
   return (
     <div className={`app ${showUserPanel ? 'panel-open' : ''}`}>
@@ -172,7 +221,28 @@ function App() {
         setShowFilters={setShowFilters}
         onResetFilters={handleResetFilters}
         hasActiveFilters={hasActiveFilters}
-      />
+      >
+        {/* Boutons mobiles dans le header */}
+        {isMobile && (
+          <div className="mobile-header-actions">
+            <button 
+              className="mobile-search-btn"
+              onClick={() => setShowMobileSearch(true)}
+              aria-label="Rechercher"
+            >
+              <Search size={20} />
+            </button>
+            <button 
+              className="mobile-filter-btn"
+              onClick={() => setShowMobileFilters(true)}
+              aria-label="Filtres"
+            >
+              <Filter size={20} />
+              {hasActiveFilters && <span className="mobile-filter-badge" />}
+            </button>
+          </div>
+        )}
+      </Header>
 
       <div className="main-container">
         <div className="map-section">
@@ -185,7 +255,8 @@ function App() {
             showRestaurantDetail={showRestaurantDetail}
           />
           
-          {showRestaurantDetail && selectedRestaurant && (
+          {/* RestaurantDetail uniquement sur desktop */}
+          {!isMobile && showRestaurantDetail && selectedRestaurant && (
             <RestaurantDetail
               restaurant={selectedRestaurant}
               onClose={() => {
@@ -201,31 +272,75 @@ function App() {
           )}
         </div>
 
-        <div className="sidebar">
-          {showAddForm && canAddRestaurant && (
-            <AddRestaurantForm 
-              onSubmit={handleAddRestaurant}
-              restaurants={restaurants}
-              onExistingRestaurantFound={handleSelectRestaurant}
-              showToast={showToast}
-              initialName={searchTerm}
-            />
-          )}
+        {/* Sidebar uniquement sur desktop */}
+        {!isMobile && (
+          <div className="sidebar">
+            {showAddForm && canAddRestaurant && (
+              <AddRestaurantForm 
+                onSubmit={handleAddRestaurant}
+                restaurants={restaurants}
+                onExistingRestaurantFound={handleSelectRestaurant}
+                showToast={showToast}
+                initialName={searchTerm}
+              />
+            )}
 
-          <RestaurantList 
-            restaurants={restaurants}
-            selectedRestaurant={selectedRestaurant}
-            onSelectRestaurant={handleSelectRestaurant}
-            searchTerm={searchTerm}
-            showFilters={showFilters}
-            setShowFilters={setShowFilters}
-            canAddRestaurant={canAddRestaurant}
-            onOpenAddForm={handleToggleAddFormWithSearch}
-            onResetFilters={handleResetFilters}
-            onFiltersChange={setHasActiveFilters}
-          />
-        </div>
+            <RestaurantList 
+              restaurants={restaurants}
+              selectedRestaurant={selectedRestaurant}
+              onSelectRestaurant={handleSelectRestaurant}
+              searchTerm={searchTerm}
+              showFilters={showFilters}
+              setShowFilters={setShowFilters}
+              canAddRestaurant={canAddRestaurant}
+              onOpenAddForm={handleToggleAddFormWithSearch}
+              onResetFilters={handleResetFilters}
+              onFiltersChange={setHasActiveFilters}
+            />
+          </div>
+        )}
       </div>
+
+      {/* Bottom Sheet pour mobile */}
+      {isMobile && (
+        <BottomSheet
+          restaurant={selectedRestaurant}
+          onClose={() => setSelectedRestaurant(null)}
+          onShowDetails={handleShowDetails}
+          user={user}
+        />
+      )}
+
+      {/* Modals mobiles */}
+      {isMobile && (
+        <>
+          <MobileSearchModal
+            isOpen={showMobileSearch}
+            onClose={() => setShowMobileSearch(false)}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            restaurants={restaurants}
+            onSelectRestaurant={handleSelectRestaurant}
+          />
+          
+          <MobileFiltersModal
+            isOpen={showMobileFilters}
+            onClose={() => setShowMobileFilters(false)}
+            filters={filters}
+            onFiltersChange={(newFilters) => {
+              setFilters(newFilters)
+              // Checker si des filtres sont actifs
+              const isActive = newFilters.cuisineType !== 'Tous' ||
+                              newFilters.city !== 'Toutes' ||
+                              newFilters.minRating > 0 ||
+                              newFilters.sortOrder !== 'desc'
+              setHasActiveFilters(isActive)
+            }}
+            cuisineTypes={cuisineTypes}
+            cities={cities}
+          />
+        </>
+      )}
 
       {toast && (
         <Toast
