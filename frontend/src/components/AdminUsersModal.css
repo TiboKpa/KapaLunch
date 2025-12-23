@@ -147,28 +147,6 @@
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* Messages */
-.admin-modal-error,
-.admin-modal-success {
-  margin: 1rem 2rem 0;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  flex-shrink: 0;
-}
-
-.admin-modal-error {
-  background: #fee;
-  color: #c33;
-  border: 1px solid #fcc;
-}
-
-.admin-modal-success {
-  background: #efe;
-  color: #3c3;
-  border: 1px solid #cfc;
-}
-
 /* Content */
 .admin-modal-content {
   flex: 1;
@@ -208,7 +186,7 @@
 .admin-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .admin-table thead {
@@ -235,6 +213,7 @@
 .admin-table td {
   padding: 1rem;
   border-bottom: 1px solid #f0f0f0;
+  color: #333;
 }
 
 .admin-table tbody tr {
@@ -259,15 +238,11 @@
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
-  color: #1a1a1a;
+  color: #333;
 }
 
 .user-name-cell svg {
   color: #666;
-}
-
-.user-name-cell span {
-  color: #1a1a1a;
 }
 
 .you-badge {
@@ -280,7 +255,7 @@
 }
 
 .email-cell {
-  color: #666;
+  color: #333;
 }
 
 /* Boutons rôles */
@@ -324,8 +299,8 @@
 }
 
 .date-cell {
-  color: #666;
-  font-size: 0.85rem;
+  color: #333;
+  font-size: 0.9rem;
 }
 
 .actions-cell {
@@ -382,6 +357,7 @@
   background: #f8f9fa;
   border-radius: 0 0 12px 12px;
   flex-shrink: 0;
+  gap: 1.5rem;
 }
 
 .admin-modal-stats {
@@ -396,6 +372,14 @@
   color: #ccc;
 }
 
+.admin-modal-message {
+  flex: 1;
+  text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
 .btn-close {
   background: #667eea;
   color: white;
@@ -405,6 +389,7 @@
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .btn-close:hover {
@@ -450,5 +435,9 @@
 
   .admin-modal-stats {
     flex-wrap: wrap;
+  }
+  
+  .admin-modal-message {
+    order: -1;
   }
 }
