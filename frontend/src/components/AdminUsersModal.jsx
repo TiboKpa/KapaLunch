@@ -8,9 +8,11 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [isClosing, setIsClosing] = useState(false)
 
   useEffect(() => {
     if (isOpen) {
+      setIsClosing(false)
       fetchAllUsers()
     }
   }, [isOpen])
@@ -33,8 +35,6 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
   }
 
   const handleRoleChange = async (userId, newRole, userName) => {
-    if (!confirm(`Changer le rôle de ${userName} en ${getRoleLabel(newRole)} ?`)) return
-
     try {
       const token = localStorage.getItem('token')
       await axios.put(
@@ -47,6 +47,7 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
       fetchAllUsers()
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors du changement de rôle')
+      setTimeout(() => setError(''), 3000)
     }
   }
 
@@ -64,6 +65,7 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
       fetchAllUsers()
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors de la suppression')
+      setTimeout(() => setError(''), 3000)
     }
   }
 
@@ -110,16 +112,23 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
     }
   }
 
+  const handleClose = () => {
+    setIsClosing(true)
+    setTimeout(() => {
+      onClose()
+    }, 300) // Durée de l'animation
+  }
+
   const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  if (!isOpen) return null
+  if (!isOpen && !isClosing) return null
 
   return (
-    <div className="admin-modal-overlay" onClick={onClose}>
-      <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+    <div className={`admin-modal-overlay ${isClosing ? 'closing' : ''}`} onClick={handleClose}>
+      <div className={`admin-modal ${isClosing ? 'closing' : ''}`} onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="admin-modal-header">
           <div className="admin-modal-title">
@@ -128,7 +137,7 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
             </svg>
             <h2>Panneau Admin - Gestion des utilisateurs</h2>
           </div>
-          <button className="admin-modal-close" onClick={onClose}>
+          <button className="admin-modal-close" onClick={handleClose}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
             </svg>
@@ -238,21 +247,34 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
                           </div>
                         </td>
                         <td>
-                          <div className="role-select-wrapper">
-                            <div className="role-badge" style={{ backgroundColor: getRoleColor(user.role) }}>
-                              {getRoleIcon(user.role)}
-                              <span>{getRoleLabel(user.role)}</span>
-                            </div>
-                            <select
-                              value={user.role}
-                              onChange={(e) => handleRoleChange(user.id, e.target.value, user.name)}
-                              disabled={user.id === currentUser?.id}
-                              className="role-select"
+                          <div className="role-buttons-wrapper">
+                            <button
+                              className={`role-btn ${user.role === 'lurker' ? 'active' : ''}`}
+                              onClick={() => user.role !== 'lurker' && handleRoleChange(user.id, 'lurker', user.name)}
+                              disabled={user.id === currentUser?.id || user.role === 'lurker'}
+                              title="En attente"
+                              style={{ '--role-color': getRoleColor('lurker') }}
                             >
-                              <option value="lurker">En attente</option>
-                              <option value="user">Utilisateur</option>
-                              <option value="admin">Admin</option>
-                            </select>
+                              {getRoleIcon('lurker')}
+                            </button>
+                            <button
+                              className={`role-btn ${user.role === 'user' ? 'active' : ''}`}
+                              onClick={() => user.role !== 'user' && handleRoleChange(user.id, 'user', user.name)}
+                              disabled={user.id === currentUser?.id || user.role === 'user'}
+                              title="Utilisateur"
+                              style={{ '--role-color': getRoleColor('user') }}
+                            >
+                              {getRoleIcon('user')}
+                            </button>
+                            <button
+                              className={`role-btn ${user.role === 'admin' ? 'active' : ''}`}
+                              onClick={() => user.role !== 'admin' && handleRoleChange(user.id, 'admin', user.name)}
+                              disabled={user.id === currentUser?.id || user.role === 'admin'}
+                              title="Admin"
+                              style={{ '--role-color': getRoleColor('admin') }}
+                            >
+                              {getRoleIcon('admin')}
+                            </button>
                           </div>
                         </td>
                         <td>
@@ -299,7 +321,7 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
             <span className="separator">•</span>
             <span>{filteredUsers.filter(u => u.role === 'lurker').length} en attente</span>
           </div>
-          <button className="btn-close" onClick={onClose}>
+          <button className="btn-close" onClick={handleClose}>
             Fermer
           </button>
         </div>
