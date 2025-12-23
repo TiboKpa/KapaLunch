@@ -52,9 +52,9 @@ const LocationPin = () => (
   </svg>
 )
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, searchTerm, showFilters, setShowFilters, canAddRestaurant, onOpenAddForm, onResetFilters }) {
+function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, searchTerm, showFilters, setShowFilters, canAddRestaurant, onOpenAddForm, onResetFilters, onFiltersChange }) {
   const [filterType, setFilterType] = useState('all')
   const [filterCity, setFilterCity] = useState('all')
   const [sortOrder, setSortOrder] = useState('desc') // 'asc', 'desc'
@@ -62,6 +62,13 @@ function RestaurantList({ restaurants, selectedRestaurant, onSelectRestaurant, s
 
   // Vérifier si des filtres sont actifs (différents des valeurs par défaut)
   const hasActiveFilters = filterType !== 'all' || filterCity !== 'all' || sortOrder !== 'desc' || minRating > 0
+
+  // Notifier le parent quand les filtres changent
+  useEffect(() => {
+    if (onFiltersChange) {
+      onFiltersChange(hasActiveFilters)
+    }
+  }, [hasActiveFilters, onFiltersChange])
 
   // Fonction pour réinitialiser tous les filtres
   const resetFilters = () => {
