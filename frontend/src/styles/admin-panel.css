@@ -1,0 +1,357 @@
+/* ===== MODAL ADMIN PANEL ===== */
+.admin-panel-modal {
+  max-width: 1000px;
+  width: 90%;
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-panel-header {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 1rem;
+}
+
+.admin-panel-header h2 {
+  display: flex;
+  align-items: center;
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+}
+
+.admin-panel-subtitle {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ===== TABLE DES UTILISATEURS ===== */
+.users-table-container {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.users-table thead {
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  z-index: 10;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.users-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.9rem;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.users-table tbody tr {
+  border-bottom: 1px solid #f1f1f1;
+  transition: background 0.2s ease;
+}
+
+.users-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.users-table tbody tr.current-user {
+  background: #e8eeff;
+}
+
+.users-table tbody tr.current-user:hover {
+  background: #dae3ff;
+}
+
+.users-table td {
+  padding: 1rem;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+/* Colonne email */
+.email-cell {
+  color: #667eea;
+  font-weight: 500;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+}
+
+/* Badge "Vous" */
+.you-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  padding: 0.2rem 0.6rem;
+  background: #667eea;
+  color: white;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+/* ===== BOUTONS DE RÔLE ===== */
+.role-badges {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
+}
+
+.role-badge-btn {
+  background: white;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6c757d;
+  padding: 0;
+}
+
+.role-badge-btn:hover:not(:disabled) {
+  border-color: #667eea;
+  background: #f0f3ff;
+  color: #667eea;
+  transform: scale(1.1);
+}
+
+.role-badge-btn.active {
+  border-color: #667eea;
+  background: #667eea;
+  color: white;
+  transform: scale(1.05);
+}
+
+.role-badge-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.role-badge-btn svg {
+  display: block;
+}
+
+/* ===== BOUTON SUPPRESSION ===== */
+.btn-delete-user {
+  background: white;
+  border: 2px solid #dc3545;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #dc3545;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0;
+}
+
+.btn-delete-user:hover {
+  background: #dc3545;
+  color: white;
+  transform: scale(1.15) rotate(90deg);
+}
+
+/* ===== MODAL CONFIRMATION EMAIL ===== */
+.email-confirm-modal {
+  max-width: 500px;
+}
+
+.email-confirm-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.email-confirm-header h3 {
+  margin: 1rem 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.3rem;
+}
+
+.email-confirm-header p {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.email-confirm-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.email-confirm-form .form-group label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.email-confirm-form input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid #ced4da;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.email-confirm-form input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.email-confirm-form input.input-error {
+  border-color: #dc3545;
+}
+
+.email-confirm-form input.input-error:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.error-text {
+  display: block;
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
+.hint-box {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.hint-box p {
+  margin: 0;
+  color: #856404;
+  font-size: 0.85rem;
+}
+
+/* ===== BOUTONS DU MODAL ===== */
+.modal-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid #dee2e6;
+}
+
+/* ===== MESSAGE SUCCESS ===== */
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  border: 1px solid #c3e6cb;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.success-message::before {
+  content: '✓';
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* ===== MESSAGE EMPTY ===== */
+.empty-message {
+  text-align: center;
+  color: #6c757d;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+/* ===== SCROLLBAR ===== */
+.users-table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.users-table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.users-table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+.users-table-container::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .admin-panel-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .users-table {
+    font-size: 0.85rem;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .role-badges {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .role-badge-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .email-cell {
+    font-size: 0.75rem;
+  }
+
+  .you-badge {
+    display: block;
+    margin-left: 0;
+    margin-top: 0.25rem;
+    width: fit-content;
+  }
+}
