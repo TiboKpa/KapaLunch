@@ -322,12 +322,13 @@ body {
   animation: slideUpPanel 0.3s ease forwards;
 }
 
-/* Ligne de filtres côte à côte */
+/* Ligne de filtres côte à côte + bouton croix */
 .filter-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr auto;
   gap: 1rem;
   margin-bottom: 1rem;
+  align-items: end;
 }
 
 .filter-group {
@@ -365,6 +366,34 @@ body {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Bouton croix de réinitialisation */
+.btn-reset-filters-icon {
+  background: white;
+  border: 1px solid #ced4da;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6c757d;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.btn-reset-filters-icon:hover {
+  background: #fff5f5;
+  border-color: #dc3545;
+  color: #dc3545;
+  transform: rotate(90deg) scale(1.1);
+}
+
+.btn-reset-filters-icon svg {
+  display: block;
 }
 
 /* Boutons de tri */
@@ -786,6 +815,14 @@ body {
 
   .filter-row .filter-group:last-child {
     margin-bottom: 0;
+  }
+
+  /* Croix en dessous sur mobile */
+  .btn-reset-filters-icon {
+    width: 100%;
+    border-radius: 6px;
+    height: 40px;
+    margin-top: 0.5rem;
   }
 
   .rating-filter-buttons {
