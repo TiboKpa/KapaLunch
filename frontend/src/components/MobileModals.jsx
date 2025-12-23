@@ -1,97 +1,86 @@
-import { useState, useEffect, useRef } from 'react'
-import { Search, ArrowLeft, X, Filter, Star } from 'lucide-react'
+import { useEffect, useRef } from 'react'
 
-// Modal de recherche mobile
 export function MobileSearchModal({ isOpen, onClose, searchTerm, setSearchTerm, restaurants, onSelectRestaurant }) {
   const inputRef = useRef(null)
-  const [filteredResults, setFilteredResults] = useState([])
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus()
-      document.body.classList.add('modal-open')
-    } else {
-      document.body.classList.remove('modal-open')
     }
   }, [isOpen])
 
-  useEffect(() => {
-    if (searchTerm.trim()) {
-      const results = restaurants.filter(r => 
-        r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        r.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        r.cuisineType.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      setFilteredResults(results)
-    } else {
-      setFilteredResults([])
-    }
-  }, [searchTerm, restaurants])
+  if (!isOpen) return null
+
+  const filteredRestaurants = restaurants.filter(r =>
+    r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.cuisineType.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   const handleSelectRestaurant = (restaurant) => {
     onSelectRestaurant(restaurant)
     onClose()
   }
 
-  if (!isOpen) return null
-
   return (
-    <div className={`mobile-search-modal ${isOpen ? 'open' : ''}`}>
+    <div className="mobile-search-modal open">
       <div className="mobile-search-header">
-        <button className="mobile-search-back" onClick={onClose}>
-          <ArrowLeft size={24} />
+        <button className="btn-back-mobile" onClick={onClose}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
         </button>
-        <div className="mobile-search-input-wrapper">
-          <input
-            ref={inputRef}
-            type="text"
-            className="mobile-search-input"
-            placeholder="Nom, ville, type de cuisine..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+        <input
+          ref={inputRef}
+          type="text"
+          className="mobile-search-input"
+          placeholder="Nom, ville, type..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
         {searchTerm && (
-          <button 
-            className="mobile-search-back" 
-            onClick={() => setSearchTerm('')}
-            style={{ color: '#dc3545' }}
-          >
-            <X size={24} />
+          <button className="btn-back-mobile" onClick={() => setSearchTerm('')}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
           </button>
         )}
       </div>
 
       <div className="mobile-search-results">
-        {searchTerm.trim() ? (
-          <>
-            <p style={{ color: '#6c757d', marginBottom: '1rem', fontSize: '0.9rem' }}>
-              {filteredResults.length} résultat{filteredResults.length > 1 ? 's' : ''}
-            </p>
-            {filteredResults.map((restaurant) => (
-              <div
-                key={restaurant.id}
-                className="mobile-restaurant-item"
-                onClick={() => handleSelectRestaurant(restaurant)}
-              >
-                <div className="mobile-restaurant-name">{restaurant.name}</div>
-                <div className="mobile-restaurant-meta">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
-                    <Star size={14} fill="#ffc107" color="#ffc107" />
-                    <span>{restaurant.averageRating ? restaurant.averageRating.toFixed(1) : 'N/A'}</span>
-                  </div>
-                  <span>•</span>
-                  <span>🍽️ {restaurant.cuisineType}</span>
-                  <span>•</span>
-                  <span>📍 {restaurant.city}</span>
-                </div>
+        {searchTerm ? (
+          filteredRestaurants.length > 0 ? (
+            <>
+              <div style={{ padding: '0.75rem 1rem', color: '#6c757d', fontSize: '0.85rem', fontWeight: '500' }}>
+                {filteredRestaurants.length} résultat{filteredRestaurants.length > 1 ? 's' : ''}
               </div>
-            ))}
-          </>
+              {filteredRestaurants.map(restaurant => (
+                <div
+                  key={restaurant.id}
+                  className="mobile-restaurant-item"
+                  onClick={() => handleSelectRestaurant(restaurant)}
+                >
+                  <div className="mobile-restaurant-name">{restaurant.name}</div>
+                  <div className="mobile-restaurant-info">
+                    <span className="mobile-restaurant-rating">
+                      ⭐ {restaurant.averageRating?.toFixed(1) || 'N/A'}
+                    </span>
+                    <span>•</span>
+                    <span className="mobile-restaurant-city">
+                      📍 {restaurant.city}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <div style={{ padding: '2rem 1rem', textAlign: 'center', color: '#adb5bd' }}>
+              Aucun restaurant trouvé
+            </div>
+          )
         ) : (
-          <div style={{ textAlign: 'center', color: '#6c757d', padding: '3rem 1rem' }}>
-            <Search size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-            <p>Recherchez un restaurant par nom, ville ou type de cuisine</p>
+          <div style={{ padding: '2rem 1rem', textAlign: 'center', color: '#adb5bd' }}>
+            Commencez à taper pour rechercher
           </div>
         )}
       </div>
@@ -99,56 +88,44 @@ export function MobileSearchModal({ isOpen, onClose, searchTerm, setSearchTerm, 
   )
 }
 
-// Modal de filtres mobile
-export function MobileFiltersModal({ 
-  isOpen, 
-  onClose, 
-  filters,
-  onFiltersChange,
-  cuisineTypes,
-  cities 
-}) {
-  const [localFilters, setLocalFilters] = useState(filters)
-
-  useEffect(() => {
-    setLocalFilters(filters)
-  }, [filters])
-
-  useEffect(() => {
-    if (isOpen) {
-      document.body.classList.add('modal-open')
-    } else {
-      document.body.classList.remove('modal-open')
-    }
-  }, [isOpen])
+export function MobileFiltersModal({ isOpen, onClose, filters, onFiltersChange, cuisineTypes, cities }) {
+  if (!isOpen) return null
 
   const handleApply = () => {
-    onFiltersChange(localFilters)
     onClose()
   }
 
   const handleReset = () => {
-    const resetFilters = {
+    onFiltersChange({
       cuisineType: 'Tous',
       city: 'Toutes',
       minRating: 0,
       sortOrder: 'desc'
-    }
-    setLocalFilters(resetFilters)
+    })
   }
 
-  const handleRatingChip = (rating) => {
-    setLocalFilters(prev => ({ ...prev, minRating: rating }))
-  }
+  const ratingOptions = [
+    { label: 'Tous', value: 0 },
+    { label: '3.5+', value: 3.5 },
+    { label: '4.0+', value: 4.0 },
+    { label: '4.5+', value: 4.5 }
+  ]
 
-  if (!isOpen) return null
+  const activeFiltersCount = (
+    (filters.cuisineType !== 'Tous' ? 1 : 0) +
+    (filters.city !== 'Toutes' ? 1 : 0) +
+    (filters.minRating > 0 ? 1 : 0) +
+    (filters.sortOrder !== 'desc' ? 1 : 0)
+  )
 
   return (
-    <div className={`mobile-filters-modal ${isOpen ? 'open' : ''}`}>
+    <div className="mobile-filters-modal open">
       <div className="mobile-filters-header">
         <h3>Filtres</h3>
-        <button className="mobile-filters-close" onClick={onClose}>
-          <X size={24} />
+        <button className="btn-back-mobile" onClick={onClose}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
         </button>
       </div>
 
@@ -157,8 +134,8 @@ export function MobileFiltersModal({
         <div className="mobile-filter-group">
           <label>Type de cuisine</label>
           <select
-            value={localFilters.cuisineType}
-            onChange={(e) => setLocalFilters(prev => ({ ...prev, cuisineType: e.target.value }))}
+            value={filters.cuisineType}
+            onChange={(e) => onFiltersChange({ ...filters, cuisineType: e.target.value })}
           >
             <option value="Tous">Tous</option>
             {cuisineTypes.map(type => (
@@ -171,8 +148,8 @@ export function MobileFiltersModal({
         <div className="mobile-filter-group">
           <label>Ville</label>
           <select
-            value={localFilters.city}
-            onChange={(e) => setLocalFilters(prev => ({ ...prev, city: e.target.value }))}
+            value={filters.city}
+            onChange={(e) => onFiltersChange({ ...filters, city: e.target.value })}
           >
             <option value="Toutes">Toutes</option>
             {cities.map(city => (
@@ -185,71 +162,56 @@ export function MobileFiltersModal({
         <div className="mobile-filter-group">
           <label>Note minimum</label>
           <div className="mobile-rating-chips">
-            <button
-              className={`mobile-rating-chip ${localFilters.minRating === 0 ? 'active' : ''}`}
-              onClick={() => handleRatingChip(0)}
-            >
-              Toutes
-            </button>
-            <button
-              className={`mobile-rating-chip ${localFilters.minRating === 3.5 ? 'active' : ''}`}
-              onClick={() => handleRatingChip(3.5)}
-            >
-              <Star size={14} fill="#ffc107" color="#ffc107" /> 3.5+
-            </button>
-            <button
-              className={`mobile-rating-chip ${localFilters.minRating === 4.0 ? 'active' : ''}`}
-              onClick={() => handleRatingChip(4.0)}
-            >
-              <Star size={14} fill="#ffc107" color="#ffc107" /> 4.0+
-            </button>
-            <button
-              className={`mobile-rating-chip ${localFilters.minRating === 4.5 ? 'active' : ''}`}
-              onClick={() => handleRatingChip(4.5)}
-            >
-              <Star size={14} fill="#ffc107" color="#ffc107" /> 4.5+
-            </button>
+            {ratingOptions.map(option => (
+              <button
+                key={option.value}
+                className={`mobile-rating-chip ${filters.minRating === option.value ? 'active' : ''}`}
+                onClick={() => onFiltersChange({ ...filters, minRating: option.value })}
+              >
+                {option.label}
+              </button>
+            ))}
           </div>
         </div>
 
         {/* Tri */}
         <div className="mobile-filter-group">
           <label>Tri par note</label>
-          <div className="mobile-sort-options">
-            <label className={`mobile-sort-option ${localFilters.sortOrder === 'asc' ? 'active' : ''}`}>
+          <div className="mobile-radio-group">
+            <div
+              className={`mobile-radio-option ${filters.sortOrder === 'asc' ? 'selected' : ''}`}
+              onClick={() => onFiltersChange({ ...filters, sortOrder: 'asc' })}
+            >
               <input
                 type="radio"
-                name="sortOrder"
-                value="asc"
-                checked={localFilters.sortOrder === 'asc'}
-                onChange={(e) => setLocalFilters(prev => ({ ...prev, sortOrder: e.target.value }))}
+                checked={filters.sortOrder === 'asc'}
+                onChange={() => {}}
               />
-              <span>Croissant (- vers +)</span>
-            </label>
-            <label className={`mobile-sort-option ${localFilters.sortOrder === 'desc' ? 'active' : ''}`}>
+              <span>Croissant</span>
+            </div>
+            <div
+              className={`mobile-radio-option ${filters.sortOrder === 'desc' ? 'selected' : ''}`}
+              onClick={() => onFiltersChange({ ...filters, sortOrder: 'desc' })}
+            >
               <input
                 type="radio"
-                name="sortOrder"
-                value="desc"
-                checked={localFilters.sortOrder === 'desc'}
-                onChange={(e) => setLocalFilters(prev => ({ ...prev, sortOrder: e.target.value }))}
+                checked={filters.sortOrder === 'desc'}
+                onChange={() => {}}
               />
-              <span>Décroissant (+ vers -)</span>
-            </label>
+              <span>Décroissant</span>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="mobile-filters-footer">
-        <button className="mobile-filters-reset" onClick={handleReset}>
+        <button className="btn-mobile-reset" onClick={handleReset}>
           Réinitialiser
         </button>
-        <button className="mobile-filters-apply" onClick={handleApply}>
-          Appliquer
+        <button className="btn-mobile-apply" onClick={handleApply}>
+          Appliquer{activeFiltersCount > 0 ? ` (${activeFiltersCount})` : ''}
         </button>
       </div>
     </div>
   )
 }
-
-export default { MobileSearchModal, MobileFiltersModal }
