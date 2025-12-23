@@ -325,9 +325,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
                         <span className="action-btn-title">Gestion des utilisateurs</span>
                         <span className="action-btn-description">Valider, modifier, supprimer</span>
                       </div>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="action-btn-chevron">
-                        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                      </svg>
                     </button>
                   )}
 
