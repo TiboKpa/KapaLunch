@@ -18,7 +18,7 @@ function BottomSheet({
   pendingReview,
   onReviewSubmitted
 }) {
-  const [sheetState, setSheetState] = useState('closed') // 'closed', 'semi', 'full'
+  const [sheetState, setSheetState] = useState('semi') // 'closed', 'semi', 'full'
   const [startY, setStartY] = useState(0)
   const [currentY, setCurrentY] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
@@ -29,7 +29,8 @@ function BottomSheet({
     if (selectedRestaurant) {
       setSheetState('semi')
     } else {
-      setSheetState('closed')
+      // En mode liste, rester semi-ouvert
+      setSheetState('semi')
     }
   }, [selectedRestaurant])
 
@@ -59,8 +60,13 @@ function BottomSheet({
       if (sheetState === 'full') {
         setSheetState('semi')
       } else if (sheetState === 'semi') {
-        setSheetState('closed')
-        onSelectRestaurant(null)
+        // En mode liste, on ne ferme jamais complètement
+        if (!selectedRestaurant) {
+          // Rester semi-ouvert
+        } else {
+          setSheetState('closed')
+          onSelectRestaurant(null)
+        }
       }
     } else {
       // Swipe up
@@ -83,8 +89,10 @@ function BottomSheet({
   }
 
   const handleClose = () => {
-    setSheetState('closed')
-    onSelectRestaurant(null)
+    if (selectedRestaurant) {
+      setSheetState('semi')
+      onSelectRestaurant(null)
+    }
   }
 
   const getSheetClass = () => {
@@ -105,7 +113,7 @@ function BottomSheet({
         onClick={handleToggle}
       >
         <div className="sheet-handle-bar"></div>
-        {sheetState !== 'closed' && (
+        {selectedRestaurant && (
           <button className="sheet-close-btn" onClick={handleClose}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M18 6L6 18M6 6l12 12" />
@@ -173,19 +181,26 @@ function BottomSheet({
             )}
           </div>
         ) : (
-          <RestaurantList
-            restaurants={restaurants}
-            selectedRestaurant={selectedRestaurant}
-            onSelectRestaurant={onSelectRestaurant}
-            searchTerm={searchTerm}
-            showFilters={showFilters}
-            setShowFilters={setShowFilters}
-            canAddRestaurant={canAddRestaurant}
-            onOpenAddForm={onOpenAddForm}
-            onResetFilters={onResetFilters}
-            onFiltersChange={onFiltersChange}
-            isMobile={true}
-          />
+          <>
+            <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #e9ecef', background: '#f8f9fa' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#2c3e50', fontWeight: '600' }}>
+                {restaurants.length} restaurant{restaurants.length > 1 ? 's' : ''}
+              </h3>
+            </div>
+            <RestaurantList
+              restaurants={restaurants}
+              selectedRestaurant={selectedRestaurant}
+              onSelectRestaurant={onSelectRestaurant}
+              searchTerm={searchTerm}
+              showFilters={showFilters}
+              setShowFilters={setShowFilters}
+              canAddRestaurant={canAddRestaurant}
+              onOpenAddForm={onOpenAddForm}
+              onResetFilters={onResetFilters}
+              onFiltersChange={onFiltersChange}
+              isMobile={true}
+            />
+          </>
         )}
       </div>
     </div>
