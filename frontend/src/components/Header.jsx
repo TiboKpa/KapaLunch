@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import AdminUsersModal from './AdminUsersModal'
 
 function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel, userPanelRef, onLogoClick, searchTerm, setSearchTerm, canAddRestaurant, showFilters, setShowFilters, onResetFilters }) {
   // États des différentes sections du panneau
   const [panelView, setPanelView] = useState('menu') // 'menu', 'login'
   const [showPasswordDropdown, setShowPasswordDropdown] = useState(false)
-  const [showAdminDropdown, setShowAdminDropdown] = useState(false)
+  const [showAdminModal, setShowAdminModal] = useState(false)
   
   // États login/signup
   const [isSignup, setIsSignup] = useState(false)
@@ -21,12 +22,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
   const [passwordSuccess, setPasswordSuccess] = useState('')
   const [passwordLoading, setPasswordLoading] = useState(false)
 
-  // États admin panel
-  const [lurkers, setLurkers] = useState([])
-  const [adminLoading, setAdminLoading] = useState(false)
-  const [adminError, setAdminError] = useState('')
-  const [adminSuccess, setAdminSuccess] = useState('')
-
   const getRoleBadge = (role) => {
     const badges = {
       admin: { emoji: '🔑', text: 'Admin', color: '#d4af37' },
@@ -39,65 +34,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
         {badge.emoji} {badge.text}
       </span>
     )
-  }
-
-  // Charger les lurkers quand on ouvre le dropdown admin
-  useEffect(() => {
-    if (showAdminDropdown && user?.role === 'admin') {
-      fetchLurkers()
-    }
-  }, [showAdminDropdown, user])
-
-  const fetchLurkers = async () => {
-    setAdminLoading(true)
-    setAdminError('')
-    try {
-      const token = localStorage.getItem('token')
-      const response = await axios.get(
-        'http://localhost:5000/api/users/lurkers',
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-      setLurkers(response.data.data)
-    } catch (err) {
-      setAdminError('Erreur lors du chargement des utilisateurs')
-    } finally {
-      setAdminLoading(false)
-    }
-  }
-
-  const handleValidateLurker = async (userId, userName) => {
-    if (!confirm(`Valider l'utilisateur ${userName} ?`)) return
-
-    try {
-      const token = localStorage.getItem('token')
-      await axios.put(
-        `http://localhost:5000/api/users/${userId}/validate`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-      setAdminSuccess(`${userName} a été validé !`)
-      setTimeout(() => setAdminSuccess(''), 3000)
-      fetchLurkers()
-    } catch (err) {
-      setAdminError(err.response?.data?.message || 'Erreur lors de la validation')
-    }
-  }
-
-  const handleRejectLurker = async (userId, userName) => {
-    if (!confirm(`Rejeter (supprimer) l'utilisateur ${userName} ?`)) return
-
-    try {
-      const token = localStorage.getItem('token')
-      await axios.delete(
-        `http://localhost:5000/api/users/${userId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-      setAdminSuccess(`${userName} a été rejeté`)
-      setTimeout(() => setAdminSuccess(''), 3000)
-      fetchLurkers()
-    } catch (err) {
-      setAdminError(err.response?.data?.message || 'Erreur lors du rejet')
-    }
   }
 
   const handleAuthSubmit = async (e) => {
@@ -175,7 +111,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
     setShowUserPanel(false)
     setPanelView('menu')
     setShowPasswordDropdown(false)
-    setShowAdminDropdown(false)
     setFormData({ email: '', password: '', name: '' })
     setAuthError('')
     setCurrentPassword('')
@@ -362,76 +297,26 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
                 </div>
 
                 <div className="user-panel-actions">
-                  {/* Panneau admin avec dropdown */}
+                  {/* Panneau admin - ouvre maintenant le modal */}
                   {user.role === 'admin' && (
-                    <div className="dropdown-section">
-                      <button 
-                        className="user-panel-action-btn"
-                        onClick={() => setShowAdminDropdown(!showAdminDropdown)}
-                      >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                        </svg>
-                        <div className="action-btn-content">
-                          <span className="action-btn-title">Panneau Admin</span>
-                          <span className="action-btn-description">Gérer les utilisateurs</span>
-                        </div>
-                        <svg 
-                          width="20" 
-                          height="20" 
-                          viewBox="0 0 24 24" 
-                          fill="currentColor" 
-                          className={`action-btn-chevron ${showAdminDropdown ? 'rotate-down' : ''}`}
-                        >
-                          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                        </svg>
-                      </button>
-
-                      {/* Dropdown admin animé avec classe .open */}
-                      <div className={`dropdown-content ${showAdminDropdown ? 'open' : ''}`}>
-                        <div className="admin-section">
-                          <h4>Utilisateurs en attente ({lurkers.length})</h4>
-
-                          {adminLoading && <p>Chargement...</p>}
-                          {adminError && <div className="error-message">{adminError}</div>}
-                          {adminSuccess && <div className="success-message">{adminSuccess}</div>}
-
-                          {!adminLoading && lurkers.length === 0 && (
-                            <p className="empty-message">✅ Aucun utilisateur en attente</p>
-                          )}
-
-                          {lurkers.length > 0 && (
-                            <div className="lurkers-list">
-                              {lurkers.map((lurker) => (
-                                <div key={lurker.id} className="lurker-card">
-                                  <div className="lurker-info">
-                                    <strong>{lurker.name}</strong>
-                                    <span className="lurker-email">{lurker.email}</span>
-                                    <span className="lurker-date">
-                                      {new Date(lurker.createdAt).toLocaleDateString('fr-FR')}
-                                    </span>
-                                  </div>
-                                  <div className="lurker-actions">
-                                    <button
-                                      onClick={() => handleValidateLurker(lurker.id, lurker.name)}
-                                      className="btn-validate"
-                                    >
-                                      ✓ Valider
-                                    </button>
-                                    <button
-                                      onClick={() => handleRejectLurker(lurker.id, lurker.name)}
-                                      className="btn-reject"
-                                    >
-                                      ✕ Rejeter
-                                    </button>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                    <button 
+                      className="user-panel-action-btn"
+                      onClick={() => {
+                        setShowAdminModal(true)
+                        setShowUserPanel(false)
+                      }}
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                      </svg>
+                      <div className="action-btn-content">
+                        <span className="action-btn-title">Panneau Admin</span>
+                        <span className="action-btn-description">Gérer les utilisateurs</span>
                       </div>
-                    </div>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="action-btn-chevron">
+                        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                      </svg>
+                    </button>
                   )}
 
                   {/* Changer mot de passe avec dropdown et classe .open */}
@@ -527,6 +412,13 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
           </div>
         </div>
       )}
+
+      {/* Modal Admin */}
+      <AdminUsersModal
+        isOpen={showAdminModal}
+        onClose={() => setShowAdminModal(false)}
+        currentUser={user}
+      />
     </header>
   )
 }
