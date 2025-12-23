@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { Search, Filter } from 'lucide-react'
 import Header from './components/Header'
 import Map from './components/Map'
 import RestaurantList from './components/RestaurantList'
@@ -12,6 +11,20 @@ import './styles/App.css'
 import './styles/features.css'
 import './styles/header-user-panel.css'
 import './styles/mobile.css'
+
+// Icônes SVG inline
+const SearchIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="11" cy="11" r="8"/>
+    <path d="m21 21-4.35-4.35"/>
+  </svg>
+)
+
+const FilterIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+  </svg>
+)
 
 function App() {
   const [restaurants, setRestaurants] = useState([])
@@ -230,14 +243,14 @@ function App() {
               onClick={() => setShowMobileSearch(true)}
               aria-label="Rechercher"
             >
-              <Search size={20} />
+              <SearchIcon />
             </button>
             <button 
               className="mobile-filter-btn"
               onClick={() => setShowMobileFilters(true)}
               aria-label="Filtres"
             >
-              <Filter size={20} />
+              <FilterIcon />
               {hasActiveFilters && <span className="mobile-filter-badge" />}
             </button>
           </div>
