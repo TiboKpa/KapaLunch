@@ -317,7 +317,7 @@
 .dropdown-section {
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px; /* Espacement entre les sections */
+  margin-bottom: 12px; /* Espacement constant entre les sections */
 }
 
 /* Retire le margin du dernier */
@@ -420,7 +420,6 @@
   border-top: none;
   border-radius: 0 0 12px 12px;
   padding: 0;
-  margin-top: -12px; /* Remonte pour fusionner avec le bouton */
   overflow: hidden;
   max-height: 0;
   opacity: 0;
