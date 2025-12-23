@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import AdminUsersModal from './AdminUsersModal'
 
-function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel, userPanelRef, onLogoClick, searchTerm, setSearchTerm, canAddRestaurant, showFilters, setShowFilters, onResetFilters, hasActiveFilters }) {
+function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setShowUserPanel, userPanelRef, onLogoClick, searchTerm, setSearchTerm, canAddRestaurant, showFilters, setShowFilters, onResetFilters, hasActiveFilters, children }) {
   // États des différentes sections du panneau
   const [panelView, setPanelView] = useState('menu') // 'menu', 'login'
   const [showPasswordDropdown, setShowPasswordDropdown] = useState(false)
@@ -138,7 +138,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
     return 'Mon compte'
   }
 
-  // Handler pour la croix de recherche - appelle onResetFilters
   const handleClearSearch = () => {
     if (onResetFilters) {
       onResetFilters()
@@ -162,7 +161,7 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
           </h1>
         </div>
 
-        {/* Barre de recherche au centre avec boutons Filtres et + */}
+        {/* Barre de recherche au centre avec boutons Filtres et + (desktop uniquement) */}
         <div className="header-center">
           <div className="search-bar-header">
             <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -176,7 +175,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
               className="search-input-header"
             />
             
-            {/* Bouton croix pour effacer */}
             {searchTerm && (
               <button 
                 className="btn-clear-search"
@@ -190,7 +188,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
               </button>
             )}
             
-            {/* Bouton Filtres avec bulle de notification */}
             <button 
               className="btn-filter-header"
               onClick={() => setShowFilters(!showFilters)}
@@ -200,13 +197,11 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
               </svg>
-              {/* Bulle de notification façon Teams */}
               {hasActiveFilters && (
                 <span className="filter-notification-badge"></span>
               )}
             </button>
 
-            {/* Bouton + */}
             {canAddRestaurant && (
               <button className="btn-add-header" onClick={onToggleAddForm} title="Ajouter un établissement">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -215,6 +210,9 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
               </button>
             )}
           </div>
+
+          {/* Boutons mobiles (affichés en mobile via children) */}
+          {children}
         </div>
 
         {/* Menu utilisateur à droite */}
@@ -249,7 +247,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
           </div>
 
           <div className="user-panel-content">
-            {/* VUE LOGIN/SIGNUP */}
             {panelView === 'login' && (
               <div className="auth-form">
                 <form onSubmit={handleAuthSubmit}>
@@ -300,7 +297,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
               </div>
             )}
 
-            {/* VUE MENU UTILISATEUR */}
             {panelView === 'menu' && user && (
               <>
                 <div className="user-panel-info">
@@ -314,7 +310,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
                 </div>
 
                 <div className="user-panel-actions">
-                  {/* Panneau admin - ouvre maintenant le modal */}
                   {user.role === 'admin' && (
                     <button 
                       className="user-panel-action-btn"
@@ -333,7 +328,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
                     </button>
                   )}
 
-                  {/* Changer mot de passe avec dropdown et classe .open */}
                   <div className="dropdown-section">
                     <button 
                       className="user-panel-action-btn"
@@ -357,7 +351,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
                       </svg>
                     </button>
 
-                    {/* Dropdown animé avec classe .open */}
                     <div className={`dropdown-content ${showPasswordDropdown ? 'open' : ''}`}>
                       <form onSubmit={handlePasswordSubmit}>
                         <div className="form-group">
@@ -398,7 +391,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
                     </div>
                   </div>
 
-                  {/* Déconnexion */}
                   <button 
                     className="user-panel-action-btn user-panel-action-btn-danger"
                     onClick={() => {
@@ -424,7 +416,6 @@ function Header({ user, onLogin, onLogout, onToggleAddForm, showUserPanel, setSh
         </div>
       )}
 
-      {/* Modal Admin */}
       <AdminUsersModal
         isOpen={showAdminModal}
         onClose={() => setShowAdminModal(false)}
