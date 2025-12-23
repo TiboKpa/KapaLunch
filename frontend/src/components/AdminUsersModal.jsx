@@ -5,10 +5,9 @@ import './AdminUsersModal.css'
 function AdminUsersModal({ isOpen, onClose, currentUser }) {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [isClosing, setIsClosing] = useState(false)
+  const [footerMessage, setFooterMessage] = useState('')
 
   useEffect(() => {
     if (isOpen) {
@@ -19,7 +18,6 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
 
   const fetchAllUsers = async () => {
     setLoading(true)
-    setError('')
     try {
       const token = localStorage.getItem('token')
       const response = await axios.get(
@@ -28,7 +26,8 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
       )
       setUsers(response.data.data)
     } catch (err) {
-      setError(err.response?.data?.message || 'Erreur lors du chargement des utilisateurs')
+      setFooterMessage(err.response?.data?.message || 'Erreur lors du chargement des utilisateurs')
+      setTimeout(() => setFooterMessage(''), 5000)
     } finally {
       setLoading(false)
     }
@@ -42,12 +41,12 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
         { newRole },
         { headers: { Authorization: `Bearer ${token}` } }
       )
-      setSuccess(`Rôle de ${userName} mis à jour !`)
-      setTimeout(() => setSuccess(''), 3000)
+      setFooterMessage(`Rôle de ${userName} mis à jour`)
+      setTimeout(() => setFooterMessage(''), 3000)
       fetchAllUsers()
     } catch (err) {
-      setError(err.response?.data?.message || 'Erreur lors du changement de rôle')
-      setTimeout(() => setError(''), 3000)
+      setFooterMessage(err.response?.data?.message || 'Erreur lors du changement de rôle')
+      setTimeout(() => setFooterMessage(''), 5000)
     }
   }
 
@@ -60,12 +59,12 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
         `http://localhost:5000/api/users/${userId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       )
-      setSuccess(`${userName} a été supprimé`)
-      setTimeout(() => setSuccess(''), 3000)
+      setFooterMessage(`${userName} a été supprimé`)
+      setTimeout(() => setFooterMessage(''), 3000)
       fetchAllUsers()
     } catch (err) {
-      setError(err.response?.data?.message || 'Erreur lors de la suppression')
-      setTimeout(() => setError(''), 3000)
+      setFooterMessage(err.response?.data?.message || 'Erreur lors de la suppression')
+      setTimeout(() => setFooterMessage(''), 5000)
     }
   }
 
@@ -117,7 +116,7 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
     setTimeout(() => {
       onClose()
       setIsClosing(false)
-    }, 300) // Durée de l'animation
+    }, 300)
   }
 
   const filteredUsers = users.filter(user =>
@@ -157,10 +156,6 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-
-        {/* Messages */}
-        {error && <div className="admin-modal-error">{error}</div>}
-        {success && <div className="admin-modal-success">{success}</div>}
 
         {/* Content */}
         <div className="admin-modal-content">
@@ -322,6 +317,11 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
             <span className="separator">•</span>
             <span>{filteredUsers.filter(u => u.role === 'lurker').length} en attente</span>
           </div>
+          
+          <div className="admin-modal-message">
+            {footerMessage}
+          </div>
+          
           <button className="btn-close" onClick={handleClose}>
             Fermer
           </button>
