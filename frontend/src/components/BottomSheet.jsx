@@ -26,7 +26,8 @@ function BottomSheet({
 
   useEffect(() => {
     if (selectedRestaurant) {
-      setSheetState('semi')
+      // Afficher directement en mode full pour voir les commentaires
+      setSheetState('full')
     } else {
       setSheetState('semi')
     }
@@ -180,36 +181,27 @@ function BottomSheet({
               )}
             </div>
 
-            {sheetState === 'full' && (
-              <>
-                <div className="mobile-mini-map">
-                  <h4>Localisation</h4>
-                  <button className="btn-view-map" onClick={() => setSheetState('semi')}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                      <circle cx="12" cy="10" r="3" />
-                    </svg>
-                    Voir sur la carte
-                  </button>
-                </div>
+            {/* Afficher RestaurantDetail directement en mode full */}
+            <div className="mobile-mini-map">
+              <h4>Localisation</h4>
+              <button className="btn-view-map" onClick={() => setSheetState('semi')}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                Voir sur la carte
+              </button>
+            </div>
 
-                <RestaurantDetail
-                  restaurant={selectedRestaurant}
-                  onClose={handleClose}
-                  user={user}
-                  onRestaurantDeleted={onRestaurantDeleted}
-                  pendingReview={pendingReview}
-                  onReviewSubmitted={onReviewSubmitted}
-                  isMobileSheet={true}
-                />
-              </>
-            )}
-
-            {sheetState === 'semi' && (
-              <div style={{ textAlign: 'center', padding: '1rem 0', color: '#adb5bd', fontSize: '0.85rem' }}>
-                Glissez vers le haut pour voir les avis
-              </div>
-            )}
+            <RestaurantDetail
+              restaurant={selectedRestaurant}
+              onClose={handleClose}
+              user={user}
+              onRestaurantDeleted={onRestaurantDeleted}
+              pendingReview={pendingReview}
+              onReviewSubmitted={onReviewSubmitted}
+              isMobileSheet={true}
+            />
           </div>
         ) : (
           <>
