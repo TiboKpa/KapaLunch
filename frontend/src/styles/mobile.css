@@ -28,6 +28,7 @@
     flex-direction: column;
     height: calc(100vh - var(--mobile-header-height));
     position: relative;
+    margin-top: var(--mobile-header-height);
   }
 
   /* ===== HEADER MOBILE COMPACT ===== */
@@ -43,7 +44,9 @@
   .header-content {
     grid-template-columns: auto 1fr auto;
     padding: 0.75rem 1rem;
-    gap: 1rem;
+    gap: 0.5rem;
+    height: 100%;
+    align-items: center;
   }
 
   .header-left h1 {
@@ -51,6 +54,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    margin: 0;
   }
 
   .header-left h1 svg {
@@ -60,7 +64,7 @@
 
   /* Barre de recherche mobile - cachée par défaut */
   .search-bar-header {
-    display: none;
+    display: none !important;
   }
 
   /* Boutons header mobile */
@@ -73,7 +77,7 @@
 
   /* Boutons mobiles dans le header */
   .mobile-header-actions {
-    display: flex;
+    display: flex !important;
     gap: 0.5rem;
     align-items: center;
   }
@@ -127,33 +131,8 @@
   .map-section {
     flex: 1;
     position: relative;
-    height: 50vh;
-    transition: height 0.3s var(--mobile-transition-smooth);
-  }
-
-  .map-section.sheet-open {
-    height: 50vh;
-  }
-
-  .map-section.sheet-full {
-    height: 10vh;
-  }
-
-  /* Overlay pour la carte quand sheet ouvert */
-  .map-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0);
-    pointer-events: none;
-    transition: background 0.3s ease;
-    z-index: 10;
-  }
-
-  .map-overlay.active {
-    background: rgba(0, 0, 0, 0.2);
+    height: 100%;
+    transition: none;
   }
 
   /* ===== BOTTOM SHEET ===== */
@@ -166,9 +145,9 @@
     border-radius: 20px 20px 0 0;
     box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
     z-index: 100;
-    transform: translateY(100%);
+    transform: translateY(0);
     transition: transform 0.3s var(--mobile-transition-smooth);
-    max-height: 90vh;
+    height: 50vh;
     display: flex;
     flex-direction: column;
   }
@@ -178,11 +157,13 @@
   }
 
   .bottom-sheet.semi-open {
-    transform: translateY(50vh);
+    height: 50vh;
+    transform: translateY(0);
   }
 
   .bottom-sheet.full-open {
-    transform: translateY(10vh);
+    height: 90vh;
+    transform: translateY(0);
   }
 
   /* Poignée du bottom sheet */
@@ -241,61 +222,52 @@
   .sheet-content {
     flex: 1;
     overflow-y: auto;
-    padding: 0 1rem 1rem 1rem;
-    opacity: 0;
-    transition: opacity 0.2s ease 0.1s;
-  }
-
-  .bottom-sheet.semi-open .sheet-content,
-  .bottom-sheet.full-open .sheet-content {
-    opacity: 1;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
   }
 
   /* ===== SIDEBAR DEVIENT BOTTOM SHEET CONTENT ===== */
   .sidebar {
-    display: none;
+    display: none !important;
   }
 
   /* ===== LISTE MOBILE COMPACTE ===== */
-  .restaurant-list-mobile {
-    height: 100%;
-  }
-
-  /* Boutons filtres mobile */
-  .mobile-filter-bar {
-    display: flex;
-    gap: 0.5rem;
-    padding: 1rem 1rem 0.75rem 1rem;
-    border-bottom: 1px solid #e9ecef;
-    flex-shrink: 0;
-  }
-
-  .btn-mobile-filter {
+  .restaurant-list {
+    padding: 0 !important;
+    margin: 0 !important;
     flex: 1;
-    padding: 0.6rem 1rem;
-    background: white;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #495057;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    overflow-y: auto;
+  }
+
+  .restaurant-list .filters-section {
+    display: none !important;
+  }
+
+  .restaurant-list .search-bar {
+    display: none !important;
+  }
+
+  .restaurant-list .no-results {
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+
+  .restaurant-list .restaurant-item {
+    padding: 1rem;
+    border-bottom: 1px solid #f1f3f5;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
   }
 
-  .btn-mobile-filter:active {
-    transform: scale(0.98);
+  .restaurant-list .restaurant-item:active {
     background: #f8f9fa;
+    transform: scale(0.98);
   }
 
-  .btn-mobile-filter.active {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
+  .restaurant-list .restaurant-item.selected {
+    background: #f0f4ff;
+    border-left: 3px solid #667eea;
   }
 
   /* Liste des restaurants */
@@ -357,6 +329,7 @@
   /* ===== RESTAURANT DETAIL MOBILE ===== */
   .mobile-restaurant-detail {
     animation: fadeIn 0.2s ease;
+    padding: 0 1rem 1rem 1rem;
   }
 
   .mobile-detail-header {
@@ -433,50 +406,6 @@
   .btn-view-map:active {
     transform: scale(0.98);
     background: #f8f9fa;
-  }
-
-  /* Avis mobile */
-  .mobile-reviews-section {
-    margin-top: 1.5rem;
-  }
-
-  .mobile-reviews-section h4 {
-    font-size: 1.1rem;
-    color: #2c3e50;
-    margin: 0 0 1rem 0;
-    font-weight: 600;
-  }
-
-  .mobile-review-card {
-    background: #f8f9fa;
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .mobile-review-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-  }
-
-  .mobile-review-author {
-    font-weight: 600;
-    color: #2c3e50;
-    font-size: 0.9rem;
-  }
-
-  .mobile-review-date {
-    font-size: 0.75rem;
-    color: #adb5bd;
-  }
-
-  .mobile-review-comment {
-    color: #495057;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin: 0.5rem 0 0 0;
   }
 
   /* ===== MODAL RECHERCHE MOBILE ===== */
@@ -834,5 +763,9 @@
 
   .bottom-sheet {
     display: none;
+  }
+
+  .mobile-header-actions {
+    display: none !important;
   }
 }
