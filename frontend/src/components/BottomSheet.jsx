@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import RestaurantList from './RestaurantList'
 import RestaurantDetail from './RestaurantDetail'
 
 function BottomSheet({ 
@@ -18,14 +17,13 @@ function BottomSheet({
   pendingReview,
   onReviewSubmitted
 }) {
-  const [sheetState, setSheetState] = useState('semi') // 'closed', 'semi', 'full'
+  const [sheetState, setSheetState] = useState('semi')
   const [startY, setStartY] = useState(0)
   const [currentY, setCurrentY] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [dragOffset, setDragOffset] = useState(0)
   const sheetRef = useRef(null)
 
-  // Ouvrir le sheet quand un restaurant est sélectionné
   useEffect(() => {
     if (selectedRestaurant) {
       setSheetState('semi')
@@ -55,26 +53,21 @@ function BottomSheet({
     const deltaY = currentY - startY
     const threshold = 80
 
-    // Reset offset
     setDragOffset(0)
 
-    // Snap vers la position la plus proche
     if (Math.abs(deltaY) < threshold) {
-      return // Rester à la position actuelle
+      return
     }
 
     if (deltaY > 0) {
-      // Swipe down
       if (sheetState === 'full') {
         setSheetState('semi')
       } else if (sheetState === 'semi') {
-        // Ne jamais fermer complètement en mode liste
         if (selectedRestaurant) {
           onSelectRestaurant(null)
         }
       }
     } else {
-      // Swipe up
       if (sheetState === 'semi') {
         setSheetState('full')
       }
@@ -104,20 +97,14 @@ function BottomSheet({
     return classes.join(' ')
   }
 
-  // Calculer le transform en fonction du drag
   const getTransform = () => {
     if (!isDragging) return 'translateY(0)'
-    
-    // Limiter le drag vers le haut (ne pas dépasser full)
     const maxDragUp = sheetState === 'semi' ? -window.innerHeight * 0.4 : 0
-    // Limiter le drag vers le bas
     const maxDragDown = sheetState === 'full' ? window.innerHeight * 0.4 : 100
-    
     const clampedOffset = Math.max(maxDragUp, Math.min(maxDragDown, dragOffset))
     return `translateY(${clampedOffset}px)`
   }
 
-  // Extraire code postal + ville
   const extractCityPostal = (address) => {
     if (!address) return ''
     const postalMatch = address.match(/(\d{5})\s+([^,]+)/)
@@ -126,6 +113,13 @@ function BottomSheet({
     }
     return ''
   }
+
+  // Filtrer les restaurants selon le terme de recherche
+  const filteredRestaurants = restaurants.filter(r => 
+    r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.cuisineType?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
     <div 
@@ -173,14 +167,17 @@ function BottomSheet({
                 className="mobile-detail-address"
                 onClick={(e) => e.stopPropagation()}
               >
-                <span>📍</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
                 <span>{extractCityPostal(selectedRestaurant.address)}</span>
               </a>
 
-              <div className="mobile-detail-type">
-                <span>🍽️</span>
-                <span>{selectedRestaurant.cuisineType}</span>
-              </div>
+              {selectedRestaurant.cuisineType && (
+                <div className="mobile-detail-type">
+                  <span>{selectedRestaurant.cuisineType}</span>
+                </div>
+              )}
             </div>
 
             {sheetState === 'full' && (
@@ -216,24 +213,43 @@ function BottomSheet({
           </div>
         ) : (
           <>
-            <div style={{ padding: '0.5rem 1rem', borderBottom: '1px solid #e9ecef', background: '#f8f9fa' }}>
-              <h3 style={{ margin: 0, fontSize: '1rem', color: '#2c3e50', fontWeight: '600' }}>
-                {restaurants.length} restaurant{restaurants.length > 1 ? 's' : ''}
-              </h3>
+            <div className="sheet-list-header">
+              <h3>{filteredRestaurants.length} restaurant{filteredRestaurants.length > 1 ? 's' : ''}</h3>
             </div>
-            <RestaurantList
-              restaurants={restaurants}
-              selectedRestaurant={selectedRestaurant}
-              onSelectRestaurant={onSelectRestaurant}
-              searchTerm={searchTerm}
-              showFilters={showFilters}
-              setShowFilters={setShowFilters}
-              canAddRestaurant={canAddRestaurant}
-              onOpenAddForm={onOpenAddForm}
-              onResetFilters={onResetFilters}
-              onFiltersChange={onFiltersChange}
-              isMobile={true}
-            />
+            
+            <div className="mobile-restaurant-grid">
+              {filteredRestaurants.map(restaurant => (
+                <div
+                  key={restaurant._id || restaurant.id}
+                  className="mobile-restaurant-card"
+                  onClick={() => onSelectRestaurant(restaurant)}
+                >
+                  <div className="card-header">
+                    <h3 className="card-title">{restaurant.name}</h3>
+                    {restaurant.averageRating > 0 && (
+                      <div className="card-rating">
+                        <span className="rating-star">⭐</span>
+                        <span className="rating-value">{restaurant.averageRating.toFixed(1)}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="card-info">
+                    {restaurant.cuisineType && (
+                      <span className="card-badge">{restaurant.cuisineType}</span>
+                    )}
+                    {extractCityPostal(restaurant.address) && (
+                      <div className="card-location">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                        <span>{extractCityPostal(restaurant.address).split(' - ')[0]}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           </>
         )}
       </div>
