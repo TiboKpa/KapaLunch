@@ -10,26 +10,34 @@ const restaurantIcon = L.icon({
   shadowSize: [41, 41]
 })
 
+// Icône pour restaurant sélectionné (rouge vif + plus gros)
+const selectedRestaurantIcon = L.icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+  iconSize: [35, 57],
+  iconAnchor: [17, 57],
+  popupAnchor: [1, -48],
+  shadowSize: [57, 57]
+})
+
 const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, showUserPanel, showRestaurantDetail }, ref) => {
   const mapRef = useRef(null)
   const markersRef = useRef([])
   const layersRef = useRef({})
   const [mapType, setMapType] = useState('map') // 'map' ou 'satellite'
-  const prevSelectedRef = useRef(null) // Pour détecter le changement de restaurant
+  const prevSelectedRef = useRef(null)
 
-  // Exposer la méthode resetView au parent via ref
+  // Exposer les méthodes au parent via ref
   useImperativeHandle(ref, () => ({
     resetView: () => {
       if (!mapRef.current || !restaurants.length) return
 
-      // Créer un groupe de tous les markers pour calculer les bounds
       const bounds = L.latLngBounds(
         restaurants
           .filter(r => r.lat && r.lon)
           .map(r => [r.lat, r.lon])
       )
 
-      // Zoomer pour afficher tous les restaurants avec padding
       mapRef.current.flyToBounds(bounds, {
         padding: [50, 50],
         maxZoom: 12,
@@ -37,8 +45,18 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
         easeLinearity: 0.15
       })
 
-      // Réinitialiser la référence du restaurant précédent
       prevSelectedRef.current = null
+    },
+    
+    // Nouvelle méthode pour centrer sur un restaurant (mobile)
+    centerOnRestaurant: (restaurant) => {
+      if (!mapRef.current || !restaurant || !restaurant.lat || !restaurant.lon) return
+
+      const targetZoom = 15
+      mapRef.current.flyTo([restaurant.lat, restaurant.lon], targetZoom, {
+        duration: 0.3,
+        easeLinearity: 0.25
+      })
     }
   }))
 
@@ -46,7 +64,6 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
     if (!mapRef.current) {
       mapRef.current = L.map('map').setView([46.603354, 1.888334], 6)
       
-      // Création des deux couches
       layersRef.current.map = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
         maxZoom: 19
@@ -57,7 +74,6 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
         maxZoom: 19
       })
       
-      // Ajouter la couche par défaut
       layersRef.current.map.addTo(mapRef.current)
     }
 
@@ -69,7 +85,6 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
     }
   }, [])
 
-  // Changer de couche quand mapType change
   useEffect(() => {
     if (!mapRef.current || !layersRef.current.map || !layersRef.current.satellite) return
 
@@ -90,38 +105,44 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
 
     restaurants.forEach((restaurant) => {
       if (restaurant.lat && restaurant.lon) {
-        const marker = L.marker([restaurant.lat, restaurant.lon], { icon: restaurantIcon }).addTo(mapRef.current)
+        // Utiliser l'icône appropriée selon si le restaurant est sélectionné
+        const isSelected = selectedRestaurant && selectedRestaurant.id === restaurant.id
+        const icon = isSelected ? selectedRestaurantIcon : restaurantIcon
         
-        // Clic sur le marker sélectionne le restaurant (pas de popup)
+        const marker = L.marker([restaurant.lat, restaurant.lon], { icon }).addTo(mapRef.current)
+        
         marker.on('click', () => {
           onSelectRestaurant(restaurant)
         })
 
+        // Ajouter une classe pour animation si sélectionné
+        if (isSelected) {
+          const iconElement = marker.getElement()
+          if (iconElement) {
+            iconElement.classList.add('marker-selected')
+          }
+        }
+
         markersRef.current.push(marker)
       }
     })
-  }, [restaurants, onSelectRestaurant])
+  }, [restaurants, selectedRestaurant, onSelectRestaurant])
 
-  // UNIQUE useEffect pour gérer TOUT le centrage
   useEffect(() => {
     if (!selectedRestaurant || !selectedRestaurant.lat || !selectedRestaurant.lon || !mapRef.current) return
 
     const map = mapRef.current
-    
-    // Détecter si c'est un NOUVEAU restaurant sélectionné ou juste un changement de panneau
     const isNewRestaurant = prevSelectedRef.current?.id !== selectedRestaurant.id
     prevSelectedRef.current = selectedRestaurant
 
-    // Calculer l'offset en fonction des panneaux ouverts
     const mapSize = map.getSize()
     let offsetX = 0
     
     if (showRestaurantDetail) {
-      const restaurantPanelWidth = Math.min(600, mapSize.x * 0.5) // 50% max
+      const restaurantPanelWidth = Math.min(600, mapSize.x * 0.5)
       offsetX += restaurantPanelWidth / 2
     }
 
-    // Si NOUVEAU restaurant : zoom + centrage avec animation longue
     if (isNewRestaurant) {
       const targetZoom = 15
       const targetPoint = map.project([selectedRestaurant.lat, selectedRestaurant.lon], targetZoom)
@@ -133,9 +154,7 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
         easeLinearity: 0.15,
         animate: true
       })
-    } 
-    // Sinon : juste recentrage (panneau ouvert/fermé) avec animation courte
-    else {
+    } else {
       const currentZoom = map.getZoom()
       const targetPoint = map.project([selectedRestaurant.lat, selectedRestaurant.lon], currentZoom)
       targetPoint.x += offsetX
@@ -151,7 +170,6 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      {/* Sélecteur de type de carte */}
       <div className="map-type-selector">
         <button 
           className={`map-type-btn ${mapType === 'map' ? 'active' : ''}`}
