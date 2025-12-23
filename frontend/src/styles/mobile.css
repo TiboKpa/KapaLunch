@@ -1,31 +1,50 @@
-/* ============================================
-   MOBILE RESPONSIVE STYLES
-   Breakpoint: max-width 768px
-   ============================================ */
+/* ===== MOBILE STYLES ===== */
 
-/* ===== VARIABLES MOBILE ===== */
+/* Variables mobile */
 :root {
   --mobile-header-height: 60px;
   --mobile-sheet-handle-height: 40px;
-  --mobile-transition-speed: 300ms;
-  --mobile-bounce-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --mobile-ease-out: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --mobile-transition-smooth: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --mobile-transition-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* ===== MEDIA QUERY MOBILE ===== */
 @media (max-width: 768px) {
   
+  /* ===== LAYOUT GÉNÉRAL ===== */
+  .app {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .main-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - var(--mobile-header-height));
+    position: relative;
+  }
+
   /* ===== HEADER MOBILE COMPACT ===== */
-  .header-content {
-    grid-template-columns: auto auto auto;
-    justify-content: space-between;
-    padding: 0.5rem 1rem;
+  .header {
     height: var(--mobile-header-height);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+  }
+
+  .header-content {
+    grid-template-columns: auto 1fr auto;
+    padding: 0.75rem 1rem;
+    gap: 1rem;
   }
 
   .header-left h1 {
     font-size: 1.2rem;
-    gap: 0.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .header-left h1 svg {
@@ -33,25 +52,22 @@
     height: 24px;
   }
 
+  /* Barre de recherche mobile - cachée par défaut */
+  .search-bar-header {
+    display: none;
+  }
+
+  /* Boutons header mobile */
   .header-center {
-    display: none; /* Barre de recherche cachée, remplacée par icône */
-  }
-
-  .header-right {
     display: flex;
-    gap: 0.5rem;
+    justify-content: flex-end;
     align-items: center;
+    gap: 0.5rem;
   }
 
-  /* Boutons d'action mobile dans le header */
-  .mobile-header-actions {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-  }
-
-  .mobile-search-btn,
-  .mobile-filter-btn {
+  .btn-search-mobile,
+  .btn-filter-mobile,
+  .btn-add-mobile {
     background: rgba(255, 255, 255, 0.25);
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 50%;
@@ -66,86 +82,86 @@
     position: relative;
   }
 
-  .mobile-search-btn:active,
-  .mobile-filter-btn:active {
+  .btn-search-mobile:active,
+  .btn-filter-mobile:active,
+  .btn-add-mobile:active {
     transform: scale(0.95);
     background: rgba(255, 255, 255, 0.35);
   }
 
-  /* Badge notification sur filtres */
-  .mobile-filter-badge {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 8px;
-    height: 8px;
-    background: #dc3545;
-    border: 2px solid white;
-    border-radius: 50%;
-    animation: pulse-badge 2s ease-in-out infinite;
+  .user-menu-trigger {
+    height: 40px;
+    padding: 0 0.75rem;
+    font-size: 0.9rem;
   }
 
   .user-menu-trigger span {
-    display: none; /* Cache le texte, garde juste l'icône */
+    display: none;
   }
 
-  /* ===== LAYOUT MOBILE ===== */
-  .main-container {
-    flex-direction: column;
-    height: calc(100vh - var(--mobile-header-height));
-    position: relative;
-  }
-
-  .sidebar {
-    display: none; /* Sidebar cachée sur mobile */
-  }
-
+  /* ===== MAP SECTION MOBILE ===== */
   .map-section {
-    width: 100%;
-    height: 100%;
+    flex: 1;
     position: relative;
+    height: 50vh;
+    transition: height 0.3s var(--mobile-transition-smooth);
+  }
+
+  .map-section.sheet-open {
+    height: 50vh;
+  }
+
+  .map-section.sheet-full {
+    height: 10vh;
+  }
+
+  /* Overlay pour la carte quand sheet ouvert */
+  .map-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0);
+    pointer-events: none;
+    transition: background 0.3s ease;
+    z-index: 10;
+  }
+
+  .map-overlay.active {
+    background: rgba(0, 0, 0, 0.2);
   }
 
   /* ===== BOTTOM SHEET ===== */
   .bottom-sheet {
     position: fixed;
-    bottom: 0;
     left: 0;
     right: 0;
+    bottom: 0;
     background: white;
-    border-radius: 24px 24px 0 0;
+    border-radius: 20px 20px 0 0;
     box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
+    z-index: 100;
     transform: translateY(100%);
-    transition: transform var(--mobile-transition-speed) var(--mobile-ease-out);
+    transition: transform 0.3s var(--mobile-transition-smooth);
     max-height: 90vh;
     display: flex;
     flex-direction: column;
   }
 
-  .bottom-sheet.open {
+  .bottom-sheet.visible {
     transform: translateY(0);
   }
 
-  /* États du bottom sheet */
-  .bottom-sheet.state-peek {
-    transform: translateY(calc(100% - 80px)); /* Juste la poignée visible */
+  .bottom-sheet.semi-open {
+    transform: translateY(50vh);
   }
 
-  .bottom-sheet.state-half {
-    transform: translateY(50%); /* 50% écran */
+  .bottom-sheet.full-open {
+    transform: translateY(10vh);
   }
 
-  .bottom-sheet.state-full {
-    transform: translateY(10%); /* Presque plein écran */
-  }
-
-  /* Animation bounce */
-  .bottom-sheet.bouncing {
-    transition: transform 250ms var(--mobile-bounce-easing);
-  }
-
-  /* Poignée du sheet */
+  /* Poignée du bottom sheet */
   .sheet-handle {
     width: 100%;
     height: var(--mobile-sheet-handle-height);
@@ -153,8 +169,8 @@
     align-items: center;
     justify-content: center;
     cursor: grab;
-    flex-shrink: 0;
     position: relative;
+    flex-shrink: 0;
   }
 
   .sheet-handle:active {
@@ -164,139 +180,115 @@
   .sheet-handle-bar {
     width: 40px;
     height: 4px;
-    background: #dee2e6;
+    background: #cbd5e0;
     border-radius: 2px;
     transition: all 0.2s ease;
   }
 
-  .bottom-sheet.state-half .sheet-handle-bar,
-  .bottom-sheet.state-full .sheet-handle-bar {
-    background: #667eea;
+  .sheet-handle:active .sheet-handle-bar {
     width: 50px;
+    background: #667eea;
   }
 
-  /* Bouton fermer dans le sheet */
   .sheet-close-btn {
     position: absolute;
     right: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    background: #f8f9fa;
+    background: transparent;
     border: none;
-    border-radius: 50%;
     width: 32px;
     height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    border-radius: 50%;
     transition: all 0.2s ease;
-    color: #495057;
+    color: #6c757d;
   }
 
   .sheet-close-btn:active {
+    background: #f8f9fa;
     transform: translateY(-50%) scale(0.9);
-    background: #e9ecef;
   }
 
   /* Contenu du sheet */
   .sheet-content {
     flex: 1;
     overflow-y: auto;
-    overflow-x: hidden;
     padding: 0 1rem 1rem 1rem;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Animation fade in du contenu */
-  .sheet-content > * {
-    animation: fadeInUp 0.3s ease forwards;
     opacity: 0;
+    transition: opacity 0.2s ease 0.1s;
   }
 
-  .sheet-content > *:nth-child(1) { animation-delay: 0ms; }
-  .sheet-content > *:nth-child(2) { animation-delay: 50ms; }
-  .sheet-content > *:nth-child(3) { animation-delay: 100ms; }
-  .sheet-content > *:nth-child(4) { animation-delay: 150ms; }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .bottom-sheet.semi-open .sheet-content,
+  .bottom-sheet.full-open .sheet-content {
+    opacity: 1;
   }
 
-  /* Overlay sombre derrière le sheet */
-  .sheet-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0);
-    z-index: 999;
-    pointer-events: none;
-    transition: background var(--mobile-transition-speed) ease;
-  }
-
-  .sheet-overlay.visible {
-    background: rgba(0, 0, 0, 0.3);
-    pointer-events: all;
+  /* ===== SIDEBAR DEVIENT BOTTOM SHEET CONTENT ===== */
+  .sidebar {
+    display: none;
   }
 
   /* ===== LISTE MOBILE COMPACTE ===== */
-  .mobile-restaurant-list {
-    width: 100%;
+  .restaurant-list-mobile {
+    height: 100%;
   }
 
-  .mobile-list-header {
+  /* Boutons filtres mobile */
+  .mobile-filter-bar {
     display: flex;
     gap: 0.5rem;
-    padding: 1rem 0;
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 10;
+    padding: 1rem 1rem 0.75rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+    flex-shrink: 0;
   }
 
-  .mobile-filter-toggle,
-  .mobile-sort-toggle {
+  .btn-mobile-filter {
     flex: 1;
     padding: 0.6rem 1rem;
-    background: #f8f9fa;
+    background: white;
     border: 1px solid #dee2e6;
     border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #495057;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 0.5rem;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-size: 0.9rem;
-    color: #495057;
-    position: relative;
   }
 
-  .mobile-filter-toggle:active,
-  .mobile-sort-toggle:active {
+  .btn-mobile-filter:active {
     transform: scale(0.98);
-    background: #e9ecef;
+    background: #f8f9fa;
   }
 
-  .mobile-filter-toggle.active {
+  .btn-mobile-filter.active {
     background: #667eea;
     color: white;
     border-color: #667eea;
   }
 
+  /* Liste des restaurants */
+  .mobile-restaurant-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem 0;
+  }
+
   .mobile-restaurant-item {
-    padding: 1rem 0;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 1rem 1rem;
+    border-bottom: 1px solid #f1f3f5;
     cursor: pointer;
-    transition: background 0.15s ease;
+    transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .mobile-restaurant-item:active {
@@ -304,24 +296,163 @@
     transform: scale(0.98);
   }
 
-  .mobile-restaurant-name {
-    font-weight: 600;
-    font-size: 1rem;
-    color: #2c3e50;
-    margin-bottom: 0.3rem;
+  .mobile-restaurant-item.selected {
+    background: #f0f4ff;
+    border-left: 3px solid #667eea;
   }
 
-  .mobile-restaurant-meta {
+  .mobile-restaurant-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+  }
+
+  .mobile-restaurant-info {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
     font-size: 0.85rem;
     color: #6c757d;
     flex-wrap: wrap;
   }
 
-  .mobile-restaurant-meta svg {
-    flex-shrink: 0;
+  .mobile-restaurant-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .mobile-restaurant-type,
+  .mobile-restaurant-city {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  /* ===== RESTAURANT DETAIL MOBILE ===== */
+  .mobile-restaurant-detail {
+    animation: fadeIn 0.2s ease;
+  }
+
+  .mobile-detail-header {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 1rem;
+  }
+
+  .mobile-detail-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .mobile-detail-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .mobile-detail-address {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .mobile-detail-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #495057;
+  }
+
+  /* Carte mini */
+  .mobile-mini-map {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .mobile-mini-map h4 {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin: 0 0 0.75rem 0;
+    font-weight: 500;
+  }
+
+  .btn-view-map {
+    background: white;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #667eea;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-view-map:active {
+    transform: scale(0.98);
+    background: #f8f9fa;
+  }
+
+  /* Avis mobile */
+  .mobile-reviews-section {
+    margin-top: 1.5rem;
+  }
+
+  .mobile-reviews-section h4 {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin: 0 0 1rem 0;
+    font-weight: 600;
+  }
+
+  .mobile-review-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .mobile-review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .mobile-review-author {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.9rem;
+  }
+
+  .mobile-review-date {
+    font-size: 0.75rem;
+    color: #adb5bd;
+  }
+
+  .mobile-review-comment {
+    color: #495057;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0.5rem 0 0 0;
   }
 
   /* ===== MODAL RECHERCHE MOBILE ===== */
@@ -336,7 +467,7 @@
     display: flex;
     flex-direction: column;
     transform: translateY(-100%);
-    transition: transform 0.3s var(--mobile-ease-out);
+    transition: transform 0.3s var(--mobile-transition-smooth);
   }
 
   .mobile-search-modal.open {
@@ -346,47 +477,40 @@
   .mobile-search-header {
     display: flex;
     align-items: center;
-    gap: 1rem;
     padding: 1rem;
-    border-bottom: 1px solid #dee2e6;
-    background: white;
+    border-bottom: 1px solid #e9ecef;
+    gap: 0.75rem;
   }
 
-  .mobile-search-back {
-    background: none;
+  .btn-back-mobile {
+    background: transparent;
     border: none;
-    color: #667eea;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0.5rem;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    color: #495057;
   }
 
-  .mobile-search-input-wrapper {
-    flex: 1;
-    position: relative;
+  .btn-back-mobile:active {
+    background: #f8f9fa;
   }
 
   .mobile-search-input {
-    width: 100%;
-    padding: 0.8rem 1rem;
-    border: 1px solid #dee2e6;
-    border-radius: 12px;
-    font-size: 1rem;
+    flex: 1;
+    border: none;
     outline: none;
-  }
-
-  .mobile-search-input:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    font-size: 1rem;
+    padding: 0.5rem;
   }
 
   .mobile-search-results {
     flex: 1;
     overflow-y: auto;
-    padding: 1rem;
+    padding: 0.5rem 0;
   }
 
   /* ===== MODAL FILTRES MOBILE ===== */
@@ -401,7 +525,7 @@
     display: flex;
     flex-direction: column;
     transform: translateY(100%);
-    transition: transform 0.3s var(--mobile-ease-out);
+    transition: transform 0.3s var(--mobile-transition-smooth);
   }
 
   .mobile-filters-modal.open {
@@ -412,28 +536,15 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #dee2e6;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
   }
 
   .mobile-filters-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
     margin: 0;
-    font-size: 1.3rem;
-  }
-
-  .mobile-filters-close {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: white;
   }
 
   .mobile-filters-content {
@@ -448,21 +559,22 @@
 
   .mobile-filter-group label {
     display: block;
+    font-size: 0.9rem;
     font-weight: 600;
     color: #2c3e50;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
   }
 
   .mobile-filter-group select {
     width: 100%;
-    padding: 0.8rem;
+    padding: 0.75rem;
     border: 1px solid #dee2e6;
     border-radius: 8px;
     font-size: 1rem;
     background: white;
   }
 
+  /* Boutons chips pour note */
   .mobile-rating-chips {
     display: flex;
     gap: 0.5rem;
@@ -471,15 +583,16 @@
 
   .mobile-rating-chip {
     padding: 0.6rem 1rem;
-    background: #f8f9fa;
     border: 1px solid #dee2e6;
     border-radius: 20px;
+    background: white;
+    font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
+  }
+
+  .mobile-rating-chip:active {
+    transform: scale(0.95);
   }
 
   .mobile-rating-chip.active {
@@ -488,167 +601,115 @@
     border-color: #667eea;
   }
 
-  .mobile-sort-options {
+  /* Radio buttons mobile */
+  .mobile-radio-group {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
   }
 
-  .mobile-sort-option {
+  .mobile-radio-option {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
-    padding: 0.8rem;
-    background: #f8f9fa;
+    gap: 0.75rem;
+    padding: 0.75rem;
     border: 1px solid #dee2e6;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
   }
 
-  .mobile-sort-option.active {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
+  .mobile-radio-option:active {
+    transform: scale(0.98);
   }
 
-  .mobile-sort-option input[type="radio"] {
+  .mobile-radio-option.selected {
+    border-color: #667eea;
+    background: #f0f4ff;
+  }
+
+  .mobile-radio-option input[type="radio"] {
     width: 20px;
     height: 20px;
   }
 
+  /* Footer modal filtres */
   .mobile-filters-footer {
-    padding: 1rem 1.5rem;
-    border-top: 1px solid #dee2e6;
-    background: white;
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-top: 1px solid #e9ecef;
   }
 
-  .mobile-filters-reset,
-  .mobile-filters-apply {
+  .btn-mobile-reset {
     flex: 1;
-    padding: 1rem;
-    border: none;
-    border-radius: 12px;
+    padding: 0.9rem;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 500;
+    color: #495057;
     cursor: pointer;
     transition: all 0.2s ease;
   }
 
-  .mobile-filters-reset {
+  .btn-mobile-reset:active {
+    transform: scale(0.98);
     background: #f8f9fa;
-    color: #495057;
   }
 
-  .mobile-filters-reset:active {
-    transform: scale(0.98);
-    background: #e9ecef;
-  }
-
-  .mobile-filters-apply {
+  .btn-mobile-apply {
+    flex: 2;
+    padding: 0.9rem;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
     color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
 
-  .mobile-filters-apply:active {
+  .btn-mobile-apply:active {
     transform: scale(0.98);
   }
 
-  /* ===== MARKER ANIMATIONS ===== */
-  .leaflet-marker-icon.selected {
-    animation: markerSelected 0.3s ease forwards, markerPulse 2s ease-in-out infinite 0.3s;
-    z-index: 10000 !important;
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  @keyframes markerSelected {
-    0% {
-      transform: scale(1);
+  @keyframes slideInUp {
+    from {
+      transform: translateY(100%);
     }
-    50% {
-      transform: scale(1.4);
-    }
-    100% {
-      transform: scale(1.25);
+    to {
+      transform: translateY(0);
     }
   }
 
   @keyframes markerPulse {
     0%, 100% {
       opacity: 1;
+      transform: scale(1.25);
     }
     50% {
       opacity: 0.7;
+      transform: scale(1.35);
     }
   }
 
-  /* ===== DÉTAILS RESTAURANT MOBILE ===== */
-  .mobile-restaurant-detail {
-    padding: 0;
-  }
-
-  .mobile-detail-header {
-    padding: 1rem;
-    border-bottom: 1px solid #f0f0f0;
-  }
-
-  .mobile-detail-name {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-  }
-
-  .mobile-detail-rating {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .mobile-detail-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    color: #6c757d;
-    font-size: 0.9rem;
-  }
-
-  .mobile-detail-meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .mobile-map-preview {
-    height: 150px;
-    background: #f8f9fa;
-    border-radius: 12px;
-    margin: 1rem;
-    overflow: hidden;
-  }
-
-  .mobile-reviews-section {
-    padding: 1rem;
-  }
-
-  .mobile-reviews-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 1rem;
-  }
-
-  .mobile-review-card {
-    background: #f8f9fa;
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-  }
-
   /* ===== FORMULAIRE AJOUT MOBILE ===== */
-  .mobile-add-form {
+  .add-restaurant-form {
     position: fixed;
     top: 0;
     left: 0;
@@ -658,69 +719,36 @@
     z-index: 2000;
     display: flex;
     flex-direction: column;
-    transform: translateX(100%);
-    transition: transform 0.3s var(--mobile-ease-out);
+    overflow-y: auto;
   }
 
-  .mobile-add-form.open {
-    transform: translateX(0);
-  }
-
-  .mobile-add-header {
+  .add-restaurant-form h2 {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem;
+    margin: 0;
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #dee2e6;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    z-index: 10;
   }
 
-  .mobile-add-back {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: white;
+  .add-restaurant-form .form-group {
+    margin-bottom: 1.25rem;
   }
 
-  .mobile-add-header h3 {
-    margin: 0;
-    font-size: 1.2rem;
-  }
-
-  .mobile-add-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1.5rem;
-  }
-
-  .mobile-add-content .form-group {
-    margin-bottom: 1.5rem;
-  }
-
-  .mobile-add-content .form-group label {
-    display: block;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-  }
-
-  .mobile-add-content .form-group input,
-  .mobile-add-content .form-group select,
-  .mobile-add-content .form-group textarea {
-    width: 100%;
-    padding: 1rem;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
+  .add-restaurant-form .form-group input,
+  .add-restaurant-form .form-group select,
+  .add-restaurant-form .form-group textarea {
+    min-height: 48px;
     font-size: 1rem;
-    min-height: 44px; /* Touch-friendly */
+  }
+
+  .add-restaurant-form .btn-primary {
+    min-height: 52px;
+    font-size: 1.05rem;
   }
 
   /* ===== PANNEAU UTILISATEUR MOBILE ===== */
@@ -729,59 +757,56 @@
     max-width: 350px;
   }
 
+  /* ===== RESTAURANT DETAIL (plein écran) ===== */
+  .restaurant-detail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    z-index: 1500;
+    overflow-y: auto;
+  }
+
   /* ===== UTILITAIRES ===== */
-  .hide-on-mobile {
-    display: none !important;
+  .mobile-only {
+    display: block;
   }
 
-  .show-on-mobile {
-    display: block !important;
+  .desktop-only {
+    display: none;
   }
 
-  /* Désactiver le scroll du body quand modal ouvert */
-  body.modal-open {
-    overflow: hidden;
-  }
-
-  /* ===== ANIMATIONS GLOBALES ===== */
-  @keyframes pulse-badge {
-    0%, 100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-    50% {
-      transform: scale(1.15);
-      opacity: 0.9;
-    }
-  }
-
-  @keyframes slideInUp {
-    from {
-      transform: translateY(20px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
+  /* Pas de hover sur mobile */
+  .mobile-restaurant-item:hover,
+  .btn-mobile-filter:hover,
+  .mobile-rating-chip:hover {
+    transform: none;
   }
 }
 
-/* ===== TABLETTE (769px - 1024px) ===== */
+/* ===== TABLETTE ===== */
 @media (min-width: 769px) and (max-width: 1024px) {
-  .main-container {
-    flex-direction: row;
+  .mobile-only {
+    display: none;
   }
 
-  .sidebar {
-    width: 350px;
+  .desktop-only {
+    display: block;
+  }
+}
+
+/* ===== DESKTOP ===== */
+@media (min-width: 1025px) {
+  .mobile-only {
+    display: none;
   }
 
-  .map-section {
-    flex: 1;
+  .desktop-only {
+    display: block;
   }
 
-  /* Bottom sheet désactivé sur tablette */
   .bottom-sheet {
     display: none;
   }
