@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Users, Shield, UserCheck, UserX, AlertTriangle } from 'lucide-react'
+import '../styles/admin-panel.css'
 
 const AdminPanel = ({ isOpen, onClose, user }) => {
   const [users, setUsers] = useState([])
