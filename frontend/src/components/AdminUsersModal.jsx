@@ -116,6 +116,7 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
     setIsClosing(true)
     setTimeout(() => {
       onClose()
+      setIsClosing(false)
     }, 300) // Durée de l'animation
   }
 
