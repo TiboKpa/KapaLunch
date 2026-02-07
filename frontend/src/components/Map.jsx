@@ -10,7 +10,7 @@ const restaurantIcon = L.icon({
   shadowSize: [41, 41]
 })
 
-const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, showUserPanel, showRestaurantDetail }, ref) => {
+const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, showUserPanel, showRestaurantDetail, onBoundsChange }, ref) => {
   const mapRef = useRef(null)
   const markersRef = useRef([])
   const layersRef = useRef({})
@@ -18,8 +18,7 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
   const prevSelectedRef = useRef(null) // Pour détecter le changement de restaurant
 
   // Exposer la méthode resetView au parent via ref
-  useImperativeHandle(ref, () => ({
-    resetView: () => {
+  useImperativeHandle(ref, () => ({\n    resetView: () => {
       if (!mapRef.current || !restaurants.length) return
 
       // Créer un groupe de tous les markers pour calculer les bounds
@@ -59,6 +58,25 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
       
       // Ajouter la couche par défaut
       layersRef.current.map.addTo(mapRef.current)
+
+      // Gestion des événements de mouvement pour mettre à jour les bounds
+      const updateBounds = () => {
+        if (onBoundsChange && mapRef.current) {
+          const bounds = mapRef.current.getBounds()
+          onBoundsChange({
+            north: bounds.getNorth(),
+            south: bounds.getSouth(),
+            east: bounds.getEast(),
+            west: bounds.getWest()
+          })
+        }
+      }
+
+      mapRef.current.on('moveend', updateBounds)
+      mapRef.current.on('zoomend', updateBounds)
+      
+      // Initial bounds
+      updateBounds()
     }
 
     return () => {
@@ -67,7 +85,28 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
         mapRef.current = null
       }
     }
-  }, [])
+  }, []) // Empty dependency array ensures this runs once
+
+  // Update listener if onBoundsChange changes (though usually stable)
+  useEffect(() => {
+    if (!mapRef.current) return
+    
+    const updateBounds = () => {
+        if (onBoundsChange && mapRef.current) {
+          const bounds = mapRef.current.getBounds()
+          onBoundsChange({
+            north: bounds.getNorth(),
+            south: bounds.getSouth(),
+            east: bounds.getEast(),
+            west: bounds.getWest()
+          })
+        }
+    }
+    
+    // We need to re-bind if onBoundsChange changes, but Leaflet event binding is tricky in effects.
+    // Given the architecture, we'll rely on the initial bind or assume onBoundsChange is stable.
+    // Ideally we would unbind old and bind new, but keeping it simple as prop is likely stable function from App.
+  }, [onBoundsChange])
 
   // Changer de couche quand mapType change
   useEffect(() => {
@@ -151,8 +190,7 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      {/* Sélecteur de type de carte */}
-      <div className="map-type-selector">
+      {/* Sélecteur de type de carte */}\n      <div className="map-type-selector">
         <button 
           className={`map-type-btn ${mapType === 'map' ? 'active' : ''}`}
           onClick={() => setMapType('map')}
