@@ -22,6 +22,10 @@ function App() {
   const [showFilters, setShowFilters] = useState(false) // État du panneau de filtres
   const [hasActiveFilters, setHasActiveFilters] = useState(false) // État des filtres actifs
   const [mapBounds, setMapBounds] = useState(null) // { south, west, north, east } ou null
+  
+  // État pour le bottom sheet mobile : 'mid' (65vh) ou 'low' (22vh)
+  const [sheetPosition, setSheetPosition] = useState('mid')
+  
   const userPanelRef = useRef(null)
   const mapRef = useRef(null)
 
@@ -107,7 +111,10 @@ function App() {
     setSelectedRestaurant(restaurant)
     setShowRestaurantDetail(true)
     setShowAddForm(false)
-    setShowUserPanel(false) // Fermer le panneau utilisateur
+    setShowUserPanel(false)
+    
+    // Sur mobile, on passe en mode 'bas' pour laisser la place à la fiche détail
+    setSheetPosition('low')
     
     if (reviewData) {
       setPendingReview(reviewData)
@@ -118,11 +125,13 @@ function App() {
     loadRestaurants()
     setSelectedRestaurant(null)
     setShowRestaurantDetail(false)
+    setSheetPosition('mid') // Retour en position standard
   }
 
   const handleLogoClick = () => {
     setSelectedRestaurant(null)
     setShowRestaurantDetail(false)
+    setSheetPosition('mid') // Retour en position standard
     
     if (mapRef.current && mapRef.current.resetView) {
       mapRef.current.resetView()
@@ -132,14 +141,14 @@ function App() {
   // Handler pour ouvrir le formulaire d'ajout avec le searchTerm pré-rempli
   const handleToggleAddFormWithSearch = () => {
     setShowAddForm(true)
+    // Optionnel : passer en 'mid' si on veut voir le formulaire en entier
+    setSheetPosition('mid') 
   }
 
-  // Fonction pour réinitialiser la recherche ET les filtres
   const handleResetFilters = () => {
     setSearchTerm('')
   }
 
-  // Fonction wrapper pour showToast compatible avec AddRestaurantForm
   const showToast = (message, type = 'info', duration = 5000, actionLabel = null, onAction = null) => {
     setToast({
       message,
@@ -152,10 +161,17 @@ function App() {
       } : null
     })
   }
+  
+  // Fermeture du détail : on revient en mode liste (mid)
+  const handleCloseDetail = () => {
+    setShowRestaurantDetail(false)
+    setSelectedRestaurant(null)
+    setPendingReview(null)
+    setSheetPosition('mid')
+  }
 
   const canAddRestaurant = user && (user.role === 'user' || user.role === 'admin')
 
-  // Calcul des restaurants visibles (visible + pinned)
   const visibleRestaurants = useMemo(() => {
     if (!mapBounds) return restaurants
 
@@ -173,7 +189,6 @@ function App() {
 
     const visibles = restaurants.filter(inView)
 
-    // Strict + pinned : on garde le resto sélectionné même hors zone
     if (selectedRestaurant && !visibles.some(r => (r._id || r.id) === (selectedRestaurant._id || selectedRestaurant.id))) {
       return [selectedRestaurant, ...visibles]
     }
@@ -216,11 +231,7 @@ function App() {
           {showRestaurantDetail && selectedRestaurant && (
             <RestaurantDetail
               restaurant={selectedRestaurant}
-              onClose={() => {
-                setShowRestaurantDetail(false)
-                setSelectedRestaurant(null)
-                setPendingReview(null)
-              }}
+              onClose={handleCloseDetail}
               user={user}
               onRestaurantDeleted={handleRestaurantDeleted}
               pendingReview={pendingReview}
@@ -229,8 +240,17 @@ function App() {
           )}
         </div>
 
-        <div className="sidebar">
-          {/* Compteur de résultats dans la zone */}
+        {/* Sidebar avec gestion dynamique de la classe de hauteur */}
+        <div className={`sidebar ${sheetPosition === 'low' ? 'sheet-low' : 'sheet-mid'}`}>
+          {/* Poignée de redimensionnement/toggle */}
+          <div 
+            className="sheet-handle-bar" 
+            onClick={() => setSheetPosition(prev => prev === 'mid' ? 'low' : 'mid')}
+            title={sheetPosition === 'mid' ? "Réduire" : "Agrandir"}
+          >
+            <div className="sheet-handle"></div>
+          </div>
+
           {mapBounds && !showAddForm && (
               <div className="area-results" style={{
                   padding: '10px 12px',
@@ -241,7 +261,7 @@ function App() {
                   fontSize: '0.9rem',
                   color: '#495057',
                   position: 'sticky',
-                  top: 0,
+                  top: '0', /* Juste sous le handle (qui est relatif/sticky) */
                   zIndex: 10
               }}>
                 {visibleRestaurants.length} résultat(s) dans la zone
