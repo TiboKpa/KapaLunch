@@ -47,7 +47,8 @@ function App() {
     }
   }, [showUserPanel])
 
-  const loadRestaurants = async () => {\n    try {
+  const loadRestaurants = async () => {
+    try {
       const response = await fetch('/api/restaurants')
       const data = await response.json()
       setRestaurants(data.data || data)
@@ -216,7 +217,8 @@ function App() {
             <RestaurantDetail
               restaurant={selectedRestaurant}
               onClose={() => {
-                setShowRestaurantDetail(false)\n                setSelectedRestaurant(null)
+                setShowRestaurantDetail(false)
+                setSelectedRestaurant(null)
                 setPendingReview(null)
               }}
               user={user}
