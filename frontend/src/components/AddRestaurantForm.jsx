@@ -189,12 +189,12 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
     
     // Validation de l'adresse (obligatoire)
     if (!foundAddress || foundAddress.trim() === '') {
-      showToast('L\\'adresse est obligatoire', 'error')
+      showToast("L'adresse est obligatoire", 'error')
       return
     }
     
     if (geocodeStatus !== 'success') {
-      showToast('Veuillez attendre la validation de l\\'adresse ou saisir l\\'adresse complète manuellement', 'warning')
+      showToast("Veuillez attendre la validation de l'adresse ou saisir l'adresse complète manuellement", 'warning')
       return
     }
 
@@ -266,7 +266,7 @@ function AddRestaurantForm({ onSubmit, restaurants = [], onExistingRestaurantFou
       }
     } catch (error) {
       console.error('Erreur ajout restaurant:', error)
-      showToast('Erreur lors de l\\'ajout de l\\'établissement', 'error')
+      showToast("Erreur lors de l'ajout de l'établissement", 'error')
     } finally {
       setLoading(false)
     }
