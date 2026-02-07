@@ -295,8 +295,13 @@ function App() {
         {isMobile ? (
           <BottomSheet 
             defaultPosition={sheetPosition}
-            // Use 'dvh' for dynamic viewport height to better handle mobile browsers
-            positions={{ high: 'calc(100dvh - 64px)', mid: '45vh', low: '5vh' }}
+            // Use CSS var for header height to ensure perfect sync
+            // Use CSS var for low position height to ensure perfect sync with overlay
+            positions={{ 
+              high: 'calc(100dvh - var(--header-height))', 
+              mid: '45vh', 
+              low: 'var(--sheet-peek-height)' 
+            }}
             onPositionChange={setSheetPosition}
           >
             {renderSidebarContent()}
