@@ -21,7 +21,7 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
     try {
       const token = localStorage.getItem('token')
       const response = await axios.get(
-        'http://localhost:5000/api/users/all',
+        '/api/users/all',
         { headers: { Authorization: `Bearer ${token}` } }
       )
       setUsers(response.data.data)
@@ -37,7 +37,7 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
     try {
       const token = localStorage.getItem('token')
       await axios.put(
-        `http://localhost:5000/api/users/${userId}/role`,
+        `/api/users/${userId}/role`,
         { newRole },
         { headers: { Authorization: `Bearer ${token}` } }
       )
@@ -63,7 +63,7 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
     try {
       const token = localStorage.getItem('token')
       await axios.delete(
-        `http://localhost:5000/api/users/${userId}`,
+        `/api/users/${userId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       )
       
@@ -149,8 +149,8 @@ function AdminUsersModal({ isOpen, onClose, currentUser }) {
           </div>
           <button className="admin-modal-close" onClick={handleClose}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
           </button>
         </div>
