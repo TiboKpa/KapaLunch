@@ -4,6 +4,11 @@
   box-sizing: border-box;
 }
 
+:root {
+  --header-height: 64px;
+  --sheet-peek-height: 60px; /* Fixed height for the 'low' sheet position */
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -24,8 +29,9 @@ body {
   color: white;
   padding: 0.75rem 2rem;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  z-index: 2000; /* Ensure header is above map and sidebar on mobile */
+  z-index: 2000;
   position: relative;
+  height: var(--header-height); /* Enforce fixed height on desktop too if needed, or override in media query */
 }
 
 .header-content {
@@ -41,7 +47,7 @@ body {
   font-size: 1.6rem;
   margin: 0;
   font-weight: 600;
-  white-space: nowrap; /* Prevent logo wrap */
+  white-space: nowrap;
 }
 
 /* Centre: Barre de recherche */
@@ -51,7 +57,6 @@ body {
   margin: 0 1rem;
 }
 
-/* Container de la barre de recherche dans le header */
 .search-bar-header {
   display: flex;
   align-items: center;
@@ -81,10 +86,10 @@ body {
 }
 
 .search-icon {
-  display: none; /* Hide standard icon in desktop view if preferred, or style it */
+  display: none;
 }
 
-/* Boutons dans le header (filtre, add, clear) */
+/* Boutons dans le header */
 .btn-filter-header,
 .btn-add-header,
 .btn-clear-search {
@@ -190,7 +195,6 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* Bouton Ajouter un resto */
 .btn-add {
   background: rgba(255, 255, 255, 0.2);
   color: white;
@@ -208,7 +212,6 @@ body {
   font-size: 0.85rem;
 }
 
-/* Actions utilisateur avec icônes */
 .user-actions {
   display: flex;
   align-items: center;
@@ -263,7 +266,7 @@ body {
   flex: 1;
   display: flex;
   overflow: hidden;
-  position: relative; /* Needed for absolute positioning on mobile */
+  position: relative;
 }
 
 .map-section {
@@ -340,21 +343,18 @@ body {
   border-color: #667eea;
 }
 
-/* Bouton actif (panneau ouvert) */
 .filter-toggle-btn.active {
   background: #667eea;
   border-color: #667eea;
   color: white;
 }
 
-/* Indicateur subtil de filtres actifs (panneau fermé) */
 .filter-toggle-btn.has-active-filters:not(.active) {
   background: #e8eeff;
   border-color: #667eea;
   color: #667eea;
 }
 
-/* Badge indicateur */
 .filter-toggle-btn.has-active-filters::after {
   content: '';
   position: absolute;
@@ -385,7 +385,6 @@ body {
   overflow: hidden;
 }
 
-/* Animation d'ouverture panneau filtres */
 @keyframes slideDownPanel {
   from {
     max-height: 0;
@@ -401,7 +400,6 @@ body {
   }
 }
 
-/* Animation de fermeture panneau filtres */
 @keyframes slideUpPanel {
   from {
     max-height: 500px;
@@ -421,7 +419,6 @@ body {
   animation: slideUpPanel 0.3s ease forwards;
 }
 
-/* Ligne de filtres Type + Ville (responsive) */
 .filter-row {
   display: flex;
   gap: 1rem;
@@ -429,10 +426,9 @@ body {
   align-items: end;
 }
 
-/* Les filter-group prennent l'espace équitablement */
 .filter-row .filter-group {
   flex: 1;
-  min-width: 0; /* Important pour le flex */
+  min-width: 0;
   margin-bottom: 0;
 }
 
@@ -469,7 +465,6 @@ body {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* Bouton croix de réinitialisation avec animation */
 .btn-reset-filters-icon {
   background: white;
   border: 1px solid #ced4da;
@@ -487,7 +482,6 @@ body {
   animation: fadeInScale 0.3s ease;
 }
 
-/* Animation d'apparition de la croix */
 @keyframes fadeInScale {
   from {
     opacity: 0;
@@ -510,7 +504,6 @@ body {
   display: block;
 }
 
-/* Boutons de tri */
 .sort-buttons {
   display: flex;
   gap: 0.5rem;
@@ -548,7 +541,6 @@ body {
   flex-shrink: 0;
 }
 
-/* Boutons de filtrage par note */
 .rating-filter-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -582,17 +574,14 @@ body {
   border-color: #ffc107;
 }
 
-/* Étoiles deviennent blanches quand le bouton est actif */
 .rating-btn.active svg {
   fill: white;
 }
 
-/* ===== ANCIENNE BARRE DE FILTRES (supprimée) ===== */
 .filter-bar {
   display: none;
 }
 
-/* ===== LISTE DES RESTAURANTS (style panneau utilisateur) ===== */
 .list-container {
   flex: 1;
   overflow-y: auto;
@@ -609,7 +598,7 @@ body {
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem; /* ✅ Gap vertical entre ligne 1 et ligne 2 */
+  gap: 0.5rem;
 }
 
 .restaurant-item:hover {
@@ -625,13 +614,12 @@ body {
   padding: calc(1rem - 1px) calc(1.25rem - 1px);
 }
 
-/* Ligne 1 : Nom + Note */
 .restaurant-header-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0.75rem;
-  margin: 0; /* ✅ Pas de margin, on utilise gap du parent */
+  margin: 0;
 }
 
 .restaurant-header-line h3 {
@@ -664,13 +652,12 @@ body {
   color: #495057;
 }
 
-/* Ligne 2 : Type + Ville */
 .restaurant-info-line {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
-  margin: 0; /* ✅ Pas de margin, on utilise gap du parent */
+  margin: 0;
 }
 
 .type-badge {
@@ -695,7 +682,6 @@ body {
   flex-shrink: 0;
 }
 
-/* Ancien affichage supprimé */
 .restaurant-item .address {
   display: none;
 }
@@ -719,7 +705,6 @@ body {
   overflow: hidden;
 }
 
-/* Animation d'ouverture formulaire */
 @keyframes slideDownForm {
   from {
     max-height: 0;
@@ -735,7 +720,6 @@ body {
   }
 }
 
-/* Animation de fermeture formulaire */
 @keyframes slideUpForm {
   from {
     max-height: 1000px;
@@ -895,9 +879,9 @@ body {
 
 @media (max-width: 768px) {
   .main-container {
-    display: block; /* Disable flex column behavior */
+    display: block;
     position: relative;
-    height: calc(100vh - 60px); /* Assuming header is around 60px */
+    height: calc(100vh - var(--header-height));
   }
 
   .map-section {
@@ -911,35 +895,33 @@ body {
   }
 
   .sidebar {
-    display: none; /* Sidebar gérée par BottomSheet component maintenant */
+    display: none;
   }
 
-  /* === HEADER RESPONSIVE DESIGN TYPE APPLICATION === */
   .header {
-    padding: 0.5rem 0.5rem; /* Marges réduites */
-    height: 64px; /* Hauteur fixe pour que le reste se cale dessus */
+    padding: 0.5rem 0.5rem;
+    height: var(--header-height);
   }
 
   .header-content {
-    display: flex !important; /* Force le flex */
-    flex-direction: row !important; /* Force la ligne unique */
-    flex-wrap: nowrap !important; /* INTERDIT le passage à la ligne */
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
     height: 48px;
-    width: 100%; /* Assure la pleine largeur */
+    width: 100%;
   }
 
-  /* 1. LOGO SANS BULLE */
   .header-left {
-    flex-shrink: 0; /* Ne rétrécit pas */
-    flex-grow: 0; /* Ne grandit pas */
+    flex-shrink: 0;
+    flex-grow: 0;
   }
 
   .header-left h1 {
-    font-size: 0; /* Cache le texte KapaLunch */
-    background: transparent; /* PLUS DE FOND */
+    font-size: 0;
+    background: transparent;
     width: 42px;
     height: 42px;
     display: flex;
@@ -949,25 +931,24 @@ body {
   }
   
   .header-left h1 svg {
-    width: 28px; /* Icône un peu plus grande */
+    width: 28px;
     height: 28px;
     display: block;
   }
 
-  /* 2. BARRE DE RECHERCHE PILLULE AU CENTRE (AGRANDIE) */
   .header-center {
-    flex: 1 1 auto; /* Grandit et rétrécit pour remplir l'espace */
+    flex: 1 1 auto;
     margin: 0;
     max-width: none;
-    min-width: 0; /* Important pour éviter le débordement flex */
-    overflow: hidden; /* Coupe ce qui dépasse */
+    min-width: 0;
+    overflow: hidden;
   }
   
   .search-bar-header {
     background: rgba(255, 255, 255, 0.2);
-    border-radius: 50px; /* Forme pillule complète */
+    border-radius: 50px;
     padding: 0 0.3rem 0 0.8rem;
-    height: 46px; /* HAUTEUR AUGMENTÉE (était 42px) */
+    height: 46px;
     width: 100%;
     display: flex;
     align-items: center;
@@ -975,7 +956,7 @@ body {
   }
 
   .search-icon {
-    display: block; /* Affiche la loupe */
+    display: block;
     width: 18px;
     height: 18px;
     opacity: 0.8;
@@ -984,24 +965,23 @@ body {
   }
   
   .search-input-header {
-    background: transparent; /* Fond transparent pour fondre dans la pillule */
+    background: transparent;
     padding: 0;
     height: 100%;
-    font-size: 1rem; /* Texte un peu plus grand */
+    font-size: 1rem;
     border: none;
-    box-shadow: none !important; /* Pas de focus ring standard */
-    flex: 1; /* Prend toute la place restante */
-    min-width: 0; /* Permet le rétrécissement du texte */
+    box-shadow: none !important;
+    flex: 1;
+    min-width: 0;
   }
 
-  /* BOUTON FILTRE ROND À DROITE DANS LA BARRE */
   .btn-filter-header {
-    background: rgba(255, 255, 255, 0.25); /* Cercle légèrement plus visible */
-    width: 36px; /* Bouton filtre un peu plus grand aussi */
+    background: rgba(255, 255, 255, 0.25);
+    width: 36px;
     height: 36px;
-    border-radius: 50%; /* Cercle parfait */
-    margin-left: 0.3rem; /* Espace après l'input */
-    flex-shrink: 0; /* Ne rétrécit pas */
+    border-radius: 50%;
+    margin-left: 0.3rem;
+    flex-shrink: 0;
   }
 
   .btn-clear-search {
@@ -1012,22 +992,21 @@ body {
   }
   
   .btn-add-header {
-    display: none; /* On cache le bouton + dans le header mobile si manque de place */
+    display: none;
   }
 
-  /* 3. PROFIL BOUTON CARRÉ/ROND À DROITE (RÉDUIT) */
   .header-right {
-    flex-shrink: 0; /* Ne rétrécit pas */
-    flex-grow: 0; /* Ne grandit pas */
+    flex-shrink: 0;
+    flex-grow: 0;
     width: auto;
     gap: 0;
   }
   
   .user-menu-trigger {
     background: rgba(255, 255, 255, 0.2);
-    width: 38px; /* TAILLE RÉDUITE (était 42px) */
+    width: 38px;
     height: 38px;
-    border-radius: 12px; /* Même style que le logo */
+    border-radius: 12px;
     padding: 0;
     display: flex;
     align-items: center;
@@ -1035,11 +1014,11 @@ body {
   }
   
   .user-menu-trigger span {
-    display: none; /* Cache le nom */
+    display: none;
   }
   
   .user-menu-trigger svg {
-    width: 20px; /* Icône profil réduite */
+    width: 20px;
     height: 20px;
   }
 
@@ -1049,7 +1028,6 @@ body {
     justify-content: center;
   }
 
-  /* Responsive filtres */
   .filter-row {
     flex-direction: column;
     gap: 1rem;
@@ -1060,7 +1038,6 @@ body {
     margin-bottom: 0;
   }
 
-  /* Croix prend toute la largeur sur mobile */
   .btn-reset-filters-icon {
     width: 100%;
     border-radius: 6px;
@@ -1075,27 +1052,24 @@ body {
     font-size: 0.85rem;
   }
   
-  /* Area results badge on mobile */
   .area-results {
-    border-radius: 16px 16px 0 0; /* Match sidebar radius */
+    border-radius: 16px 16px 0 0;
   }
   
   /* === SPLIT VIEW DETAIL MODE MOBILE === */
-  /* Redéfinition de l'overlay de détail pour qu'il ne couvre pas tout mais se place ENTRE le header et le sheet */
   .restaurant-detail-overlay {
     position: fixed;
-    top: 64px; /* Hauteur fixe du header */
-    bottom: 5vh; /* Se cale pile au-dessus du sheet en mode 'low' (5vh) */
+    top: var(--header-height); /* Starts strictly below header */
+    bottom: var(--sheet-peek-height); /* Ends strictly above bottom sheet handle */
     left: 0;
     right: 0;
     width: 100%;
-    height: auto; /* On laisse top/bottom définir la hauteur */
-    background: transparent; /* Pas de fond noir, on veut voir la carte derrière si besoin (ou pas ?) */
-    /* Le user a dit "remplissant... jusqu'au slider", donc on remplit avec la carte détail */
-    z-index: 900; /* SOUS le BottomSheet (1000) mais AU-DESSUS de la map */
+    height: auto;
+    background: transparent;
+    z-index: 900;
     padding: 0;
-    align-items: stretch; /* Remplir tout l'espace */
-    animation: none; /* On gère l'anim nous même ou pas */
+    align-items: stretch;
+    animation: none;
   }
   
   .restaurant-detail {
@@ -1103,15 +1077,14 @@ body {
     height: 100%;
     max-height: none;
     max-width: none;
-    border-radius: 0; /* Carré car remplit l'espace */
+    border-radius: 0;
     margin: 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Ombre légère vers le bas */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     overflow-y: auto;
     position: relative;
-    background: white; /* Fond blanc opaque */
+    background: white;
   }
   
-  /* Ajustement du bouton fermer dans ce mode */
   .restaurant-detail .close-btn {
     top: 0.5rem;
     right: 0.5rem;
