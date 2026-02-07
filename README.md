@@ -19,7 +19,21 @@ L'application est conçue pour être déployée comme un **conteneur unique** (M
 docker compose up -d --build
 ```
 
-L'application sera accessible sur `http://localhost:5000`.
+L'application sera accessible par défaut sur `http://localhost:5000`.
+
+### Configuration (Portainer / Docker)
+
+Vous pouvez personnaliser l'installation via des variables d'environnement dans votre fichier `docker-compose.yml` ou l'interface de Portainer :
+
+| Variable | Défaut | Description |
+| :--- | :--- | :--- |
+| `APP_PORT` | `5000` | Port d'accès externe (ex: `8080` pour `http://localhost:8080`) |
+| `JWT_SECRET` | *(insecure)* | **Critique** : Clé secrète pour signer les sessions. À changer impérativement en production. |
+| `NODE_ENV` | `production` | Environnement d'exécution |
+
+**Exemple de configuration Portainer (Environment variables) :**
+- `APP_PORT` : `80`
+- `JWT_SECRET` : `MaSuperCleSecreteTresLongue!!!`
 
 ## Installation (Développement local)
 
