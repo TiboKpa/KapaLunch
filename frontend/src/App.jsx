@@ -5,6 +5,7 @@ import RestaurantList from './components/RestaurantList'
 import AddRestaurantForm from './components/AddRestaurantForm'
 import RestaurantDetail from './components/RestaurantDetail'
 import Toast from './components/Toast'
+import BottomSheet from './components/BottomSheet'
 import './styles/App.css'
 import './styles/features.css'
 import './styles/header-user-panel.css'
@@ -19,22 +20,30 @@ function App() {
   const [pendingReview, setPendingReview] = useState(null)
   const [toast, setToast] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [showFilters, setShowFilters] = useState(false) // État du panneau de filtres
-  const [hasActiveFilters, setHasActiveFilters] = useState(false) // État des filtres actifs
-  const [mapBounds, setMapBounds] = useState(null) // { south, west, north, east } ou null
+  const [showFilters, setShowFilters] = useState(false)
+  const [hasActiveFilters, setHasActiveFilters] = useState(false)
+  const [mapBounds, setMapBounds] = useState(null)
   
-  // État pour le bottom sheet mobile : 'mid' (65vh) ou 'low' (22vh)
+  // Sheet state: 'high' | 'mid' | 'low'
   const [sheetPosition, setSheetPosition] = useState('mid')
   
   const userPanelRef = useRef(null)
   const mapRef = useRef(null)
+
+  // Detect mobile view to conditionally render BottomSheet or classic Sidebar
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     loadRestaurants()
     checkUserSession()
   }, [])
 
-  // Fermer le panneau utilisateur au clic en dehors
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (showUserPanel && userPanelRef.current && !userPanelRef.current.contains(event.target)) {
@@ -113,7 +122,7 @@ function App() {
     setShowAddForm(false)
     setShowUserPanel(false)
     
-    // Sur mobile, on passe en mode 'bas' pour laisser la place à la fiche détail
+    // Auto-collapse sheet on selection to show map/detail
     setSheetPosition('low')
     
     if (reviewData) {
@@ -125,24 +134,23 @@ function App() {
     loadRestaurants()
     setSelectedRestaurant(null)
     setShowRestaurantDetail(false)
-    setSheetPosition('mid') // Retour en position standard
+    setSheetPosition('mid')
   }
 
   const handleLogoClick = () => {
     setSelectedRestaurant(null)
     setShowRestaurantDetail(false)
-    setSheetPosition('mid') // Retour en position standard
+    setSheetPosition('mid')
     
     if (mapRef.current && mapRef.current.resetView) {
       mapRef.current.resetView()
     }
   }
 
-  // Handler pour ouvrir le formulaire d'ajout avec le searchTerm pré-rempli
   const handleToggleAddFormWithSearch = () => {
     setShowAddForm(true)
-    // Optionnel : passer en 'mid' si on veut voir le formulaire en entier
-    setSheetPosition('mid') 
+    // Expand sheet to see form
+    if (isMobile) setSheetPosition('high')
   }
 
   const handleResetFilters = () => {
@@ -162,7 +170,6 @@ function App() {
     })
   }
   
-  // Fermeture du détail : on revient en mode liste (mid)
   const handleCloseDetail = () => {
     setShowRestaurantDetail(false)
     setSelectedRestaurant(null)
@@ -195,6 +202,51 @@ function App() {
 
     return visibles
   }, [restaurants, mapBounds, selectedRestaurant])
+
+  // Mobile Bottom Sheet Content
+  const renderSidebarContent = () => (
+    <>
+      {mapBounds && !showAddForm && (
+          <div className="area-results" style={{
+              padding: '10px 12px',
+              background: 'rgba(255,255,255,0.92)',
+              backdropFilter: 'blur(6px)',
+              borderBottom: '1px solid rgba(0,0,0,0.06)',
+              fontWeight: '600',
+              fontSize: '0.9rem',
+              color: '#495057',
+              position: 'sticky',
+              top: 0,
+              zIndex: 10
+          }}>
+            {visibleRestaurants.length} résultat(s) dans la zone
+          </div>
+      )}
+
+      {showAddForm && canAddRestaurant && (
+        <AddRestaurantForm 
+          onSubmit={handleAddRestaurant}
+          restaurants={restaurants}
+          onExistingRestaurantFound={handleSelectRestaurant}
+          showToast={showToast}
+          initialName={searchTerm}
+        />
+      )}
+
+      <RestaurantList 
+        restaurants={visibleRestaurants}
+        selectedRestaurant={selectedRestaurant}
+        onSelectRestaurant={handleSelectRestaurant}
+        searchTerm={searchTerm}
+        showFilters={showFilters}
+        setShowFilters={setShowFilters}
+        canAddRestaurant={canAddRestaurant}
+        onOpenAddForm={handleToggleAddFormWithSearch}
+        onResetFilters={handleResetFilters}
+        onFiltersChange={setHasActiveFilters}
+      />
+    </>
+  )
 
   return (
     <div className={`app ${showUserPanel ? 'panel-open' : ''}`}>
@@ -240,57 +292,19 @@ function App() {
           )}
         </div>
 
-        {/* Sidebar avec gestion dynamique de la classe de hauteur */}
-        <div className={`sidebar ${sheetPosition === 'low' ? 'sheet-low' : 'sheet-mid'}`}>
-          {/* Poignée de redimensionnement/toggle */}
-          <div 
-            className="sheet-handle-bar" 
-            onClick={() => setSheetPosition(prev => prev === 'mid' ? 'low' : 'mid')}
-            title={sheetPosition === 'mid' ? "Réduire" : "Agrandir"}
+        {isMobile ? (
+          <BottomSheet 
+            defaultPosition={sheetPosition}
+            positions={{ high: 90, mid: 45, low: 5 }} // Low updated to 5vh
+            onPositionChange={setSheetPosition}
           >
-            <div className="sheet-handle"></div>
+            {renderSidebarContent()}
+          </BottomSheet>
+        ) : (
+          <div className="sidebar">
+            {renderSidebarContent()}
           </div>
-
-          {mapBounds && !showAddForm && (
-              <div className="area-results" style={{
-                  padding: '10px 12px',
-                  background: 'rgba(255,255,255,0.92)',
-                  backdropFilter: 'blur(6px)',
-                  borderBottom: '1px solid rgba(0,0,0,0.06)',
-                  fontWeight: '600',
-                  fontSize: '0.9rem',
-                  color: '#495057',
-                  position: 'sticky',
-                  top: '0', /* Juste sous le handle (qui est relatif/sticky) */
-                  zIndex: 10
-              }}>
-                {visibleRestaurants.length} résultat(s) dans la zone
-              </div>
-          )}
-
-          {showAddForm && canAddRestaurant && (
-            <AddRestaurantForm 
-              onSubmit={handleAddRestaurant}
-              restaurants={restaurants}
-              onExistingRestaurantFound={handleSelectRestaurant}
-              showToast={showToast}
-              initialName={searchTerm}
-            />
-          )}
-
-          <RestaurantList 
-            restaurants={visibleRestaurants}
-            selectedRestaurant={selectedRestaurant}
-            onSelectRestaurant={handleSelectRestaurant}
-            searchTerm={searchTerm}
-            showFilters={showFilters}
-            setShowFilters={setShowFilters}
-            canAddRestaurant={canAddRestaurant}
-            onOpenAddForm={handleToggleAddFormWithSearch}
-            onResetFilters={handleResetFilters}
-            onFiltersChange={setHasActiveFilters}
-          />
-        </div>
+        )}
       </div>
 
       {toast && (
