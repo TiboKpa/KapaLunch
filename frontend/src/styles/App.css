@@ -91,7 +91,8 @@ body {
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);\n  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 /* Bouton Ajouter un resto */
@@ -254,7 +255,8 @@ body {
 /* Indicateur subtil de filtres actifs (panneau fermé) */
 .filter-toggle-btn.has-active-filters:not(.active) {
   background: #e8eeff;
-  border-color: #667eea;\n  color: #667eea;
+  border-color: #667eea;
+  color: #667eea;
 }
 
 /* Badge indicateur */
@@ -313,7 +315,8 @@ body {
     padding-bottom: 1rem;
   }
   to {
-    max-height: 0;\n    opacity: 0;
+    max-height: 0;
+    opacity: 0;
     padding-top: 0;
     padding-bottom: 0;
   }
@@ -334,7 +337,8 @@ body {
 /* Les filter-group prennent l'espace équitablement */
 .filter-row .filter-group {
   flex: 1;
-  min-width: 0; /* Important pour le flex */\n  margin-bottom: 0;
+  min-width: 0; /* Important pour le flex */
+  margin-bottom: 0;
 }
 
 .filter-group {
@@ -451,7 +455,8 @@ body {
 
 /* Boutons de filtrage par note */
 .rating-filter-buttons {
-  display: grid;\n  grid-template-columns: repeat(4, 1fr);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.5rem;
 }
 
@@ -504,7 +509,8 @@ body {
   border: 1px solid #dee2e6;
   border-radius: 12px;
   padding: 1rem 1.25rem;
-  margin-bottom: 0.5rem;\n  cursor: pointer;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
@@ -655,7 +661,8 @@ body {
 }
 
 .add-restaurant-form h2 {
-  font-size: 1.2rem;\n  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
   color: #2c3e50;
 }
 
@@ -842,7 +849,8 @@ body {
 
   .user-info {
     order: -1;
-    width: 100%;\n    justify-content: center;
+    width: 100%;
+    justify-content: center;
   }
 
   /* Responsive filtres */
