@@ -4,7 +4,8 @@ WORKDIR /app
 
 # Installation des dépendances
 COPY package*.json ./
-RUN npm ci --only=production
+# Utilisation de npm install car package-lock.json est manquant
+RUN npm install --only=production
 
 # Copie du code source
 COPY . .
