@@ -18,7 +18,8 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
   const prevSelectedRef = useRef(null) // Pour détecter le changement de restaurant
 
   // Exposer la méthode resetView au parent via ref
-  useImperativeHandle(ref, () => ({\n    resetView: () => {
+  useImperativeHandle(ref, () => ({
+    resetView: () => {
       if (!mapRef.current || !restaurants.length) return
 
       // Créer un groupe de tous les markers pour calculer les bounds
@@ -190,7 +191,8 @@ const Map = forwardRef(({ restaurants, selectedRestaurant, onSelectRestaurant, s
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      {/* Sélecteur de type de carte */}\n      <div className="map-type-selector">
+      {/* Sélecteur de type de carte */}
+      <div className="map-type-selector">
         <button 
           className={`map-type-btn ${mapType === 'map' ? 'active' : ''}`}
           onClick={() => setMapType('map')}
