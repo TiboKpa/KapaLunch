@@ -911,64 +911,13 @@ body {
   }
 
   .sidebar {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    
-    width: 100%;
-    /* La hauteur est maintenant gérée par les classes .sheet-mid et .sheet-low */
-    max-height: 90vh; /* Sécurité */
-    
-    background: #fff;
-    border-radius: 16px 16px 0 0;
-    box-shadow: 0 -8px 24px rgba(0,0,0,0.18);
-    overflow-y: auto;
-    
-    border-left: none;
-    border-top: none;
-    z-index: 1000;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom));
-    
-    /* Animation fluide de la hauteur */
-    transition: height 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-  
-  /* Positions du Bottom Sheet */
-  .sidebar.sheet-mid {
-    height: 65vh;
-  }
-  
-  .sidebar.sheet-low {
-    height: 22vh;
-    overflow-y: hidden; /* Empêcher le scroll en mode "peek" pour éviter de scroller la liste par erreur */
-  }
-
-  /* Handle (poignée) pour le drag/toggle */
-  .sheet-handle-bar {
-    width: 100%;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 20;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  
-  .sheet-handle {
-    width: 40px;
-    height: 4px;
-    background: #e2e8f0;
-    border-radius: 2px;
+    display: none; /* Sidebar gérée par BottomSheet component maintenant */
   }
 
   /* === HEADER RESPONSIVE DESIGN TYPE APPLICATION === */
   .header {
     padding: 0.5rem 0.5rem; /* Marges réduites */
+    height: 64px; /* Hauteur fixe pour que le reste se cale dessus */
   }
 
   .header-content {
@@ -1135,15 +1084,15 @@ body {
   /* Redéfinition de l'overlay de détail pour qu'il ne couvre pas tout mais se place ENTRE le header et le sheet */
   .restaurant-detail-overlay {
     position: fixed;
-    top: 64px; /* Hauteur approx du header + un peu d'espace ? Non, collé au header. */
-    bottom: 22vh; /* Se cale pile au-dessus du sheet en mode 'low' */
+    top: 64px; /* Hauteur fixe du header */
+    bottom: 5vh; /* Se cale pile au-dessus du sheet en mode 'low' (5vh) */
     left: 0;
     right: 0;
     width: 100%;
     height: auto; /* On laisse top/bottom définir la hauteur */
     background: transparent; /* Pas de fond noir, on veut voir la carte derrière si besoin (ou pas ?) */
     /* Le user a dit "remplissant... jusqu'au slider", donc on remplit avec la carte détail */
-    z-index: 1500; /* Au-dessus de la map (1) et sidebar (1000), sous le header (2000) */
+    z-index: 900; /* SOUS le BottomSheet (1000) mais AU-DESSUS de la map */
     padding: 0;
     align-items: stretch; /* Remplir tout l'espace */
     animation: none; /* On gère l'anim nous même ou pas */
