@@ -4,7 +4,7 @@ import '../styles/BottomSheet.css'
 const BottomSheet = ({ 
   children, 
   defaultPosition = 'mid', 
-  positions = { high: 90, mid: 45, low: 15 },
+  positions = { high: 'calc(100dvh - 64px)', mid: '45vh', low: '5vh' },
   onPositionChange 
 }) => {
   const [position, setPosition] = useState(defaultPosition)
@@ -62,13 +62,11 @@ const BottomSheet = ({
     }
   }
 
+  // Helper to handle both numeric (vh assumed) and string values
   const getHeight = () => {
-    switch (position) {
-      case 'high': return `${positions.high}vh`
-      case 'mid': return `${positions.mid}vh`
-      case 'low': return `${positions.low}vh`
-      default: return `${positions.mid}vh`
-    }
+    const val = positions[position] || positions.mid
+    if (typeof val === 'number') return `${val}vh`
+    return val
   }
 
   return (
