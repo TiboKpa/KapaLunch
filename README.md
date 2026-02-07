@@ -1,81 +1,85 @@
-# KapaLunch
+# KapaLunch 🍽️
 
-Application web de découverte et notation de restaurants avec carte interactive.
+Application web interactive de découverte et de notation de restaurants. Elle propose une carte dynamique, un système d'avis communautaire et une gestion des utilisateurs complète.
 
-## Fonctionnalités
+![Statut](https://img.shields.io/badge/Statut-Opérationnel-success) ![Docker](https://img.shields.io/badge/Docker-Ready-blue) ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-- Carte interactive avec tous les restaurants
-- Recherche et filtres avancés (type, ville, note)
-- Système de rôles (visiteur, utilisateur, admin)
-- Avis et notations (1-5 étoiles)
-- Géolocalisation automatique via OpenStreetMap
+## ✨ Fonctionnalités
 
-## Installation (Docker - Recommandé)
+- **Carte Interactive** : Visualisation de tous les restaurants avec clustering (Leaflet).
+- **Recherche Avancée** : Filtrage par type de cuisine, ville et note moyenne.
+- **Ajout Simplifié** : Géocodage automatique des adresses et détection du type de cuisine.
+- **Avis & Notes** : Système de notation de 1 à 5 étoiles avec commentaires.
+- **Rôles Utilisateurs** :
+  - *Visiteur* : Consultation seule.
+  - *Lurker* : Compte créé, en attente de validation.
+  - *Utilisateur* : Peut ajouter des restaurants et des avis.
+  - *Admin* : Gestion complète des utilisateurs (validation, suppression) et du contenu.
 
-L'application est conçue pour être déployée comme un **conteneur unique** (Monolithique) où le backend Node.js sert également les fichiers statiques du frontend.
+## 🚀 Installation Rapide (Docker)
+
+L'application est conçue pour être déployée comme un **conteneur unique** (Monolithique) : le backend Node.js sert également l'interface React compilée. C'est la méthode recommandée pour la production.
+
+### Pré-requis
+- Docker & Docker Compose
+- (Optionnel) Portainer pour une gestion graphique
+
+### Déploiement
 
 ```bash
-# Lancer l'application avec Docker Compose
+# Cloner le dépôt
+git clone https://github.com/TiboKpa/KapaLunch.git
+cd KapaLunch
+
+# Lancer l'application
 docker compose up -d --build
 ```
 
-L'application sera accessible par défaut sur `http://localhost:5000`.
+L'application sera accessible sur `http://localhost:5000` (ou le port défini).
 
-### Configuration (Portainer / Docker)
+### Configuration (Variables d'environnement)
 
-Vous pouvez personnaliser l'installation via des variables d'environnement dans votre fichier `docker-compose.yml` ou l'interface de Portainer :
+Vous pouvez configurer l'application via un fichier `.env` ou directement dans votre gestionnaire de conteneurs :
 
 | Variable | Défaut | Description |
 | :--- | :--- | :--- |
-| `APP_PORT` | `5000` | Port d'accès externe (ex: `8080` pour `http://localhost:8080`) |
-| `JWT_SECRET` | *(insecure)* | **Critique** : Clé secrète pour signer les sessions. À changer impérativement en production. |
+| `PORT` | `5000` | Port interne du serveur Node.js |
+| `JWT_SECRET` | *(insecure)* | **Critique** : Clé secrète pour signer les sessions. |
 | `NODE_ENV` | `production` | Environnement d'exécution |
 
-**Exemple de configuration Portainer (Environment variables) :**
-- `APP_PORT` : `80`
-- `JWT_SECRET` : `MaSuperCleSecreteTresLongue!!!`
+**Pour Portainer :** Mappez le port conteneur `5000` vers un port hôte de votre choix (ex: `8080`).
 
-## Installation (Développement local)
+## 🛠️ Développement Local
 
-Pour le développement, vous pouvez lancer le frontend et le backend séparément :
+Pour contribuer ou modifier le code, vous pouvez lancer les deux parties séparément.
 
-### 1. Backend
+### 1. Backend (API)
 
 ```bash
 cd backend
 npm install
-cp .env.example .env
+# Créez un fichier .env basé sur .env.example
 npm run dev
 ```
-API sur `http://localhost:5000`
+L'API tourne sur `http://localhost:5000`.
+**Compte Admin par défaut** : `admin@kapalunch.local` / `Admin123!`
 
-**Compte admin par défaut :**
-- Email : `admin@kapalunch.local`
-- Mot de passe : `Admin123!`
-
-### 2. Frontend
+### 2. Frontend (React)
 
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-Interface sur `http://localhost:3000` (ou 5173 selon config Vite)
+L'interface tourne sur `http://localhost:3000` (ou 5173).
 
-## Architecture
+## 🏗️ Architecture Technique
 
-- **Single Container** : Le build React est servi statiquement par Express en production.
-- **Frontend** : React 18, Vite, Leaflet
-- **Backend** : Node.js, Express, Sequelize, SQLite
-- **Auth** : JWT + bcryptjs
+- **Conteneurisation** : Build multi-stage optimisé (Node 20 Alpine).
+- **Frontend** : React 18, Vite, Leaflet (Cartographie), CSS Modules.
+- **Backend** : Node.js, Express, Base de données fichier (JSON/SQLite) pour la simplicité.
+- **Sécurité** : Authentification JWT, Hashage bcrypt, Protection CORS.
 
-## Rôles utilisateurs
+## 📝 Licence
 
-1. **Visiteur** : Lecture seule
-2. **Lurker** : Compte créé, en attente de validation
-3. **User** : Peut ajouter restaurants et avis
-4. **Admin** : Gestion complète + validation utilisateurs
-
-## Licence
-
-MIT
+Ce projet est sous licence MIT. Libre à vous de le modifier et de le distribuer.
