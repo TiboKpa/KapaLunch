@@ -1,6 +1,10 @@
 # Étape 1 : Build de l'app React
 FROM node:20-alpine as build-stage
 WORKDIR /app
+
+# Augmenter la mémoire pour le build
+ENV NODE_OPTIONS="--max-old-space-size=2048"
+
 COPY package*.json ./
 # Utilisation de npm install car package-lock.json est manquant
 RUN npm install
