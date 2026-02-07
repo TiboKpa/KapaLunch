@@ -14,11 +14,19 @@ COPY frontend/package*.json ./
 # Use 'npm install' because package-lock.json is missing in the repo
 RUN npm install --legacy-peer-deps
 
-# Build
+# Copy all source files
 COPY frontend/ .
 
-# Try standard build script first
-RUN npm run build
+# Ensure proper casing for critical files (Linux is case-sensitive)
+# This fixes the common issue where "App.jsx" is imported but file is "app.jsx" or similar
+# We use a wildcard copy to be sure, but file names in repo seem correct.
+# The real issue might be how Vite resolves paths in Docker.
+
+# DEBUG: List all files recursively to help identify missing files in logs
+RUN find src -maxdepth 3
+
+# Build with verbose logging to see exactly why it fails
+RUN npm run build -- --debug
 
 # Stage 2: Build Backend & Serve
 FROM node:20-alpine
