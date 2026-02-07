@@ -46,7 +46,7 @@ const AddReviewForm = ({ restaurantId, onReviewAdded, user, initialRating, initi
       }, 2000)
 
     } catch (err) {
-      setError(err.response?.data?.message || 'Erreur lors de l\\'ajout de l\\'avis')
+      setError(err.response?.data?.message || "Erreur lors de l'ajout de l'avis")
     } finally {
       setLoading(false)
     }
