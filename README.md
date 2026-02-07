@@ -43,11 +43,12 @@ Vous pouvez configurer l'application via un fichier `.env` ou directement dans v
 
 | Variable | Défaut | Description |
 | :--- | :--- | :--- |
-| `PORT` | `5000` | Port interne du serveur Node.js |
+| `APP_PORT` | `5000` | Port **externe** sur l'hôte (utilisé par Docker Compose) |
+| `PORT` | `5000` | Port **interne** du serveur Node.js (ne pas modifier sauf besoin spécifique) |
 | `JWT_SECRET` | *(insecure)* | **Critique** : Clé secrète pour signer les sessions. |
 | `NODE_ENV` | `production` | Environnement d'exécution |
 
-**Pour Portainer :** Mappez le port conteneur `5000` vers un port hôte de votre choix (ex: `8080`).
+**Pour Portainer (Stack) :** Définissez la variable d'environnement `APP_PORT` (ex: `10082`) pour changer le port d'accès sans modifier le fichier Compose.
 
 ## 🛠️ Développement Local
 
