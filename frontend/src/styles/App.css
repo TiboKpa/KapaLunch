@@ -937,17 +937,20 @@ body {
   }
 
   .header-content {
-    display: flex;
-    flex-direction: row; /* Force la ligne unique */
+    display: flex !important; /* Force le flex */
+    flex-direction: row !important; /* Force la ligne unique */
+    flex-wrap: nowrap !important; /* INTERDIT le passage à la ligne */
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
     height: 48px;
+    width: 100%; /* Assure la pleine largeur */
   }
 
   /* 1. LOGO CARRÉ À GAUCHE */
   .header-left {
-    flex-shrink: 0;
+    flex-shrink: 0; /* Ne rétrécit pas */
+    flex-grow: 0; /* Ne grandit pas */
   }
 
   .header-left h1 {
@@ -969,10 +972,11 @@ body {
 
   /* 2. BARRE DE RECHERCHE PILLULE AU CENTRE */
   .header-center {
-    flex: 1;
+    flex: 1 1 auto; /* Grandit et rétrécit pour remplir l'espace */
     margin: 0;
-    max-width: none; /* Laisse prendre toute la place dispo */
-    min-width: 0; /* Permet le rétrécissement */
+    max-width: none;
+    min-width: 0; /* Important pour éviter le débordement flex */
+    overflow: hidden; /* Coupe ce qui dépasse */
   }
   
   .search-bar-header {
@@ -992,6 +996,7 @@ body {
     height: 18px;
     opacity: 0.8;
     margin-right: 0.2rem;
+    flex-shrink: 0;
   }
   
   .search-input-header {
@@ -1001,6 +1006,8 @@ body {
     font-size: 0.9rem;
     border: none;
     box-shadow: none !important; /* Pas de focus ring standard */
+    flex: 1; /* Prend toute la place restante */
+    min-width: 0; /* Permet le rétrécissement du texte */
   }
 
   /* BOUTON FILTRE ROND À DROITE DANS LA BARRE */
@@ -1009,14 +1016,15 @@ body {
     width: 32px;
     height: 32px;
     border-radius: 50%; /* Cercle parfait */
-    margin-left: auto; /* Pousse à droite */
-    flex-shrink: 0;
+    margin-left: 0.3rem; /* Espace après l'input */
+    flex-shrink: 0; /* Ne rétrécit pas */
   }
 
   .btn-clear-search {
     background: transparent;
     width: 28px;
     height: 28px;
+    flex-shrink: 0;
   }
   
   .btn-add-header {
@@ -1025,7 +1033,8 @@ body {
 
   /* 3. PROFIL BOUTON CARRÉ/ROND À DROITE */
   .header-right {
-    flex-shrink: 0;
+    flex-shrink: 0; /* Ne rétrécit pas */
+    flex-grow: 0; /* Ne grandit pas */
     width: auto;
     gap: 0;
   }
