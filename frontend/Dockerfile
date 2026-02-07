@@ -2,12 +2,15 @@
 FROM node:20-alpine as build-stage
 WORKDIR /app
 
+# Fix critique pour esbuild/Vite sur Alpine
+RUN apk add --no-cache libc6-compat
+
 # Augmenter la mémoire pour le build
-ENV NODE_OPTIONS="--max-old-space-size=2048"
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 COPY package*.json ./
-# Utilisation de npm install car package-lock.json est manquant
 RUN npm install
+
 COPY . .
 RUN npm run build
 
