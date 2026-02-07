@@ -53,7 +53,33 @@ const ReviewList = ({ restaurantId }) => {
 
   if (reviews.length === 0) {
     return (
-      <div className=\"reviews-empty\">\n        <p>💬 Aucun avis pour le moment</p>\n      </div>\n    )\n  }
+      <div className="reviews-empty">
+        <p>💬 Aucun avis pour le moment</p>
+      </div>
+    )
+  }
 
   return (
-    <div className=\"reviews-list\">\n      <h3>💬 Avis ({reviews.length})</h3>\n      {reviews.map((review) => (\n        <div key={review.id} className=\"review-card\">\n          <div className=\"review-header\">\n            <div className=\"review-author\">\n              <strong>{review.author?.name || 'Utilisateur'}</strong>\n              <span className=\"review-date\">\n                {new Date(review.createdAt).toLocaleDateString('fr-FR')}\n              </span>\n            </div>\n            <div className=\"review-rating\">{renderStars(review.rating)}</div>\n          </div>\n          {review.comment && (\n            <p className=\"review-comment\">{review.comment}</p>\n          )}\n        </div>\n      ))}\n    </div>\n  )\n}\n\nexport default ReviewList
+    <div className="reviews-list">
+      <h3>💬 Avis ({reviews.length})</h3>
+      {reviews.map((review) => (
+        <div key={review.id} className="review-card">
+          <div className="review-header">
+            <div className="review-author">
+              <strong>{review.author?.name || 'Utilisateur'}</strong>
+              <span className="review-date">
+                {new Date(review.createdAt).toLocaleDateString('fr-FR')}
+              </span>
+            </div>
+            <div className="review-rating">{renderStars(review.rating)}</div>
+          </div>
+          {review.comment && (
+            <p className="review-comment">{review.comment}</p>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export default ReviewList

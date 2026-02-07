@@ -174,8 +174,8 @@ function App() {
         hasActiveFilters={hasActiveFilters}
       />
 
-      <div className=\"main-container\">
-        <div className=\"map-section\">
+      <div className="main-container">
+        <div className="map-section">
           <Map 
             ref={mapRef}
             restaurants={restaurants}
@@ -201,7 +201,7 @@ function App() {
           )}
         </div>
 
-        <div className=\"sidebar\">
+        <div className="sidebar">
           {showAddForm && canAddRestaurant && (
             <AddRestaurantForm 
               onSubmit={handleAddRestaurant}
