@@ -947,7 +947,7 @@ body {
     width: 100%; /* Assure la pleine largeur */
   }
 
-  /* 1. LOGO CARRÉ À GAUCHE */
+  /* 1. LOGO SANS BULLE */
   .header-left {
     flex-shrink: 0; /* Ne rétrécit pas */
     flex-grow: 0; /* Ne grandit pas */
@@ -955,22 +955,22 @@ body {
 
   .header-left h1 {
     font-size: 0; /* Cache le texte KapaLunch */
-    background: rgba(255, 255, 255, 0.2);
+    background: transparent; /* PLUS DE FOND */
     width: 42px;
     height: 42px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px; /* Carré arrondi */
+    border-radius: 0;
   }
   
   .header-left h1 svg {
-    width: 24px;
-    height: 24px;
+    width: 28px; /* Icône un peu plus grande */
+    height: 28px;
     display: block;
   }
 
-  /* 2. BARRE DE RECHERCHE PILLULE AU CENTRE */
+  /* 2. BARRE DE RECHERCHE PILLULE AU CENTRE (AGRANDIE) */
   .header-center {
     flex: 1 1 auto; /* Grandit et rétrécit pour remplir l'espace */
     margin: 0;
@@ -983,7 +983,7 @@ body {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 50px; /* Forme pillule complète */
     padding: 0 0.3rem 0 0.8rem;
-    height: 42px;
+    height: 46px; /* HAUTEUR AUGMENTÉE (était 42px) */
     width: 100%;
     display: flex;
     align-items: center;
@@ -1003,7 +1003,7 @@ body {
     background: transparent; /* Fond transparent pour fondre dans la pillule */
     padding: 0;
     height: 100%;
-    font-size: 0.9rem;
+    font-size: 1rem; /* Texte un peu plus grand */
     border: none;
     box-shadow: none !important; /* Pas de focus ring standard */
     flex: 1; /* Prend toute la place restante */
@@ -1013,8 +1013,8 @@ body {
   /* BOUTON FILTRE ROND À DROITE DANS LA BARRE */
   .btn-filter-header {
     background: rgba(255, 255, 255, 0.25); /* Cercle légèrement plus visible */
-    width: 32px;
-    height: 32px;
+    width: 36px; /* Bouton filtre un peu plus grand aussi */
+    height: 36px;
     border-radius: 50%; /* Cercle parfait */
     margin-left: 0.3rem; /* Espace après l'input */
     flex-shrink: 0; /* Ne rétrécit pas */
@@ -1031,7 +1031,7 @@ body {
     display: none; /* On cache le bouton + dans le header mobile si manque de place */
   }
 
-  /* 3. PROFIL BOUTON CARRÉ/ROND À DROITE */
+  /* 3. PROFIL BOUTON CARRÉ/ROND À DROITE (RÉDUIT) */
   .header-right {
     flex-shrink: 0; /* Ne rétrécit pas */
     flex-grow: 0; /* Ne grandit pas */
@@ -1041,8 +1041,8 @@ body {
   
   .user-menu-trigger {
     background: rgba(255, 255, 255, 0.2);
-    width: 42px;
-    height: 42px;
+    width: 38px; /* TAILLE RÉDUITE (était 42px) */
+    height: 38px;
     border-radius: 12px; /* Même style que le logo */
     padding: 0;
     display: flex;
@@ -1055,8 +1055,8 @@ body {
   }
   
   .user-menu-trigger svg {
-    width: 22px;
-    height: 22px;
+    width: 20px; /* Icône profil réduite */
+    height: 20px;
   }
 
   .user-info {
