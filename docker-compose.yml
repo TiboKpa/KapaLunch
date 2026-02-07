@@ -3,16 +3,19 @@ services:
     build: .
     ports:
       # Port Externe : Port Interne (5000 par défaut)
-      # Modifiez le premier chiffre pour changer le port d'accès (ex: "8080:5000")
       - "${APP_PORT:-5000}:5000"
     environment:
       - PORT=5000
       - NODE_ENV=production
-      # Persistence de la base de données dans le volume
+      # Persistence de la base de données DANS le volume Docker
       - DB_PATH=/app/data/database.sqlite
       # Définissez JWT_SECRET ici ou dans un fichier .env à la racine
       - JWT_SECRET=${JWT_SECRET:-change_me_in_production_please}
     volumes:
-      # Montage du volume pour la persistence des données (base de données, uploads...)
-      - ./data:/app/data
+      # Utilisation d'un "Named Volume" géré par Docker (plus sûr et performant)
+      - kapalunch_data:/app/data
     restart: always
+
+# Déclaration du volume
+volumes:
+  kapalunch_data:
