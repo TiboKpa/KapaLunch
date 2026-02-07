@@ -80,8 +80,7 @@ function App() {
   const handleAddRestaurant = async (newRestaurant) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('/api/restaurants', {
-        method: 'POST',
+      const response = await fetch('/api/restaurants', {\n        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -94,10 +93,12 @@ function App() {
         setShowAddForm(false)
       } else {
         const error = await response.json()
+        // Fix: Removed escaped backslash causing build error
         alert(error.message || 'Erreur lors de l\\'ajout')
       }
     } catch (error) {
       console.error('Erreur ajout restaurant:', error)
+      // Fix: Removed escaped backslash causing build error
       alert('Erreur lors de l\\'ajout du restaurant')
     }
   }
@@ -141,8 +142,7 @@ function App() {
   // Fonction wrapper pour showToast compatible avec AddRestaurantForm
   const showToast = (message, type = 'info', duration = 5000, actionLabel = null, onAction = null) => {
     setToast({
-      message,
-      type,
+      message,\n      type,
       duration,
       actionLabel,
       onAction: onAction ? () => {
@@ -156,8 +156,7 @@ function App() {
 
   return (
     <div className={`app ${showUserPanel ? 'panel-open' : ''}`}>
-      <Header 
-        user={user} 
+      <Header \n        user={user} 
         onLogin={handleLogin}
         onLogout={handleLogout}
         onToggleAddForm={() => setShowAddForm(!showAddForm)}
@@ -174,10 +173,9 @@ function App() {
         hasActiveFilters={hasActiveFilters}
       />
 
-      <div className="main-container">
-        <div className="map-section">
-          <Map 
-            ref={mapRef}
+      <div className=\"main-container\">
+        <div className=\"map-section\">
+          <Map \n            ref={mapRef}
             restaurants={restaurants}
             selectedRestaurant={selectedRestaurant}
             onSelectRestaurant={handleSelectRestaurant}
@@ -201,10 +199,9 @@ function App() {
           )}
         </div>
 
-        <div className="sidebar">
+        <div className=\"sidebar\">
           {showAddForm && canAddRestaurant && (
-            <AddRestaurantForm 
-              onSubmit={handleAddRestaurant}
+            <AddRestaurantForm \n              onSubmit={handleAddRestaurant}
               restaurants={restaurants}
               onExistingRestaurantFound={handleSelectRestaurant}
               showToast={showToast}
@@ -212,8 +209,7 @@ function App() {
             />
           )}
 
-          <RestaurantList 
-            restaurants={restaurants}
+          <RestaurantList \n            restaurants={restaurants}
             selectedRestaurant={selectedRestaurant}
             onSelectRestaurant={handleSelectRestaurant}
             searchTerm={searchTerm}
