@@ -94,11 +94,11 @@ function App() {
         setShowAddForm(false)
       } else {
         const error = await response.json()
-        alert(error.message || 'Erreur lors de l\\'ajout')
+        alert(error.message || "Erreur lors de l'ajout")
       }
     } catch (error) {
       console.error('Erreur ajout restaurant:', error)
-      alert('Erreur lors de l\\'ajout du restaurant')
+      alert("Erreur lors de l'ajout du restaurant")
     }
   }
 
@@ -174,8 +174,8 @@ function App() {
         hasActiveFilters={hasActiveFilters}
       />
 
-      <div className=\"main-container\">
-        <div className=\"map-section\">
+      <div className="main-container">
+        <div className="map-section">
           <Map 
             ref={mapRef}
             restaurants={restaurants}
@@ -201,7 +201,7 @@ function App() {
           )}
         </div>
 
-        <div className=\"sidebar\">
+        <div className="sidebar">
           {showAddForm && canAddRestaurant && (
             <AddRestaurantForm 
               onSubmit={handleAddRestaurant}
