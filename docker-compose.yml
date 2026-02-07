@@ -2,10 +2,14 @@ services:
   kapalunch:
     build: .
     ports:
-      - "5000:5000"
+      # Port Externe : Port Interne (5000 par défaut)
+      # Modifiez le premier chiffre pour changer le port d'accès (ex: "8080:5000")
+      - "${APP_PORT:-5000}:5000"
     environment:
       - PORT=5000
       - NODE_ENV=production
+      # Définissez JWT_SECRET ici ou dans un fichier .env à la racine
+      - JWT_SECRET=${JWT_SECRET:-change_me_in_production_please}
     volumes:
       - ./data:/app/data
     restart: always
