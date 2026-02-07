@@ -3,7 +3,6 @@ FROM node:20-alpine as frontend-builder
 WORKDIR /app/frontend
 
 # Install libc6-compat for vite/esbuild on Alpine
-# Essential for 'vite build' to work on Alpine Linux
 RUN apk add --no-cache libc6-compat git
 
 # Increase memory limit for Node to prevent OOM
@@ -14,19 +13,11 @@ COPY frontend/package*.json ./
 # Use 'npm install' because package-lock.json is missing in the repo
 RUN npm install --legacy-peer-deps
 
-# Copy all source files
+# Copy source files
 COPY frontend/ .
 
-# Ensure proper casing for critical files (Linux is case-sensitive)
-# This fixes the common issue where "App.jsx" is imported but file is "app.jsx" or similar
-# We use a wildcard copy to be sure, but file names in repo seem correct.
-# The real issue might be how Vite resolves paths in Docker.
-
-# DEBUG: List all files recursively to help identify missing files in logs
-RUN find src -maxdepth 3
-
-# Build with verbose logging to see exactly why it fails
-RUN npm run build -- --debug
+# Build
+RUN npm run build
 
 # Stage 2: Build Backend & Serve
 FROM node:20-alpine
