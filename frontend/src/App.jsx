@@ -295,7 +295,8 @@ function App() {
         {isMobile ? (
           <BottomSheet 
             defaultPosition={sheetPosition}
-            positions={{ high: 90, mid: 45, low: 5 }} // Low updated to 5vh
+            // Use 'dvh' for dynamic viewport height to better handle mobile browsers
+            positions={{ high: 'calc(100dvh - 64px)', mid: '45vh', low: '5vh' }}
             onPositionChange={setSheetPosition}
           >
             {renderSidebarContent()}
