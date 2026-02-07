@@ -31,7 +31,7 @@ body {
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   z-index: 2000;
   position: relative;
-  height: var(--header-height); /* Enforce fixed height on desktop too if needed, or override in media query */
+  height: var(--header-height);
 }
 
 .header-content {
@@ -1059,14 +1059,14 @@ body {
   /* === SPLIT VIEW DETAIL MODE MOBILE === */
   .restaurant-detail-overlay {
     position: fixed;
-    top: var(--header-height); /* Starts strictly below header */
-    bottom: var(--sheet-peek-height); /* Ends strictly above bottom sheet handle */
+    top: var(--header-height) !important; /* Force override */
+    bottom: var(--sheet-peek-height) !important; /* Force override */
     left: 0;
     right: 0;
     width: 100%;
     height: auto;
     background: transparent;
-    z-index: 900;
+    z-index: 1500; /* Between Sheet (1000) and Header (2000) */
     padding: 0;
     align-items: stretch;
     animation: none;
