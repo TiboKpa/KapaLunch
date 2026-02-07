@@ -57,22 +57,49 @@ body {
   margin: 0 1rem;
 }
 
+/* ===== BARRE DE RECHERCHE DANS LE HEADER (Style Main Branch) ===== */
 .search-bar-header {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 24px;
+  padding: 0 0.5rem;
+  transition: all 0.3s ease;
+  height: 40px;
   width: 100%;
+}
+
+.search-bar-header:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.search-bar-header:focus-within {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+.search-icon {
+  display: block; /* Toujours visible comme sur main */
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0.5rem;
+  flex-shrink: 0;
 }
 
 .search-input-header {
   flex: 1;
-  padding: 0.6rem 1rem;
+  background: transparent;
   border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  background: rgba(255, 255, 255, 0.15);
+  outline: none;
   color: white;
-  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  padding: 0.5rem 0;
+  min-width: 0;
+  border-radius: 0;
+  box-shadow: none !important;
 }
 
 .search-input-header::placeholder {
@@ -80,47 +107,91 @@ body {
 }
 
 .search-input-header:focus {
-  outline: none;
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+  background: transparent;
+  box-shadow: none;
 }
 
-.search-icon {
-  display: none;
-}
-
-/* Boutons dans le header */
+/* Boutons dans le header (Style Main Branch) */
 .btn-filter-header,
 .btn-add-header,
 .btn-clear-search {
-  background: rgba(255, 255, 255, 0.15);
+  background: transparent;
   border: none;
-  border-radius: 8px;
-  width: 38px;
-  height: 38px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: white;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-.btn-filter-header:hover,
-.btn-add-header:hover,
+/* Bouton croix pour effacer */
+.btn-clear-search {
+  width: 28px;
+  height: 28px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0.25rem;
+}
+
 .btn-clear-search:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Bouton Filtres dans le header */
+.btn-filter-header {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  width: 32px;
+  height: 32px;
+  margin-left: 0.25rem;
+}
+
+.btn-filter-header:hover {
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: scale(1.05);
+}
+
+/* Bouton + dans le header */
+.btn-add-header {
   background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  width: 32px;
+  height: 32px;
+  margin-left: 0.25rem;
+}
+
+.btn-add-header:hover {
+  background: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.7);
+  transform: scale(1.1) rotate(90deg);
 }
 
 .filter-notification-badge {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 8px;
-  height: 8px;
-  background: #ff4757;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  background: #dc3545;
+  border: 2px solid white;
   border-radius: 50%;
-  border: 1px solid white;
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.9;
+  }
 }
 
 .header-right {
@@ -944,11 +1015,12 @@ body {
     overflow: hidden;
   }
   
+  /* Reset mobile styles for search bar container */
   .search-bar-header {
     background: rgba(255, 255, 255, 0.2);
-    border-radius: 50px;
-    padding: 0 0.3rem 0 0.8rem;
-    height: 46px;
+    border-radius: 24px; /* Same rounded style */
+    padding: 0 0.5rem;
+    height: 40px; /* Reduced height for mobile if needed, but 40px is good */
     width: 100%;
     display: flex;
     align-items: center;
@@ -962,6 +1034,7 @@ body {
     opacity: 0.8;
     margin-right: 0.2rem;
     flex-shrink: 0;
+    margin-left: 0.5rem;
   }
   
   .search-input-header {
@@ -975,13 +1048,15 @@ body {
     min-width: 0;
   }
 
+  /* Specific mobile button styles */
   .btn-filter-header {
-    background: rgba(255, 255, 255, 0.25);
-    width: 36px;
-    height: 36px;
+    background: transparent; /* Keep consistent with desktop new style */
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    margin-left: 0.3rem;
+    margin-left: 0.25rem;
     flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.4);
   }
 
   .btn-clear-search {
