@@ -24,6 +24,8 @@ body {
   color: white;
   padding: 0.75rem 2rem;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 2000; /* Ensure header is above map and sidebar on mobile */
+  position: relative;
 }
 
 .header-content {
@@ -89,8 +91,7 @@ body {
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px);\n  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 /* Bouton Ajouter un resto */
@@ -166,6 +167,7 @@ body {
   flex: 1;
   display: flex;
   overflow: hidden;
+  position: relative; /* Needed for absolute positioning on mobile */
 }
 
 .map-section {
@@ -183,6 +185,7 @@ body {
   background: #f8f9fa;
   overflow-y: auto;
   border-left: 1px solid #dee2e6;
+  z-index: 10;
 }
 
 .restaurant-list {
@@ -251,8 +254,7 @@ body {
 /* Indicateur subtil de filtres actifs (panneau fermé) */
 .filter-toggle-btn.has-active-filters:not(.active) {
   background: #e8eeff;
-  border-color: #667eea;
-  color: #667eea;
+  border-color: #667eea;\n  color: #667eea;
 }
 
 /* Badge indicateur */
@@ -311,8 +313,7 @@ body {
     padding-bottom: 1rem;
   }
   to {
-    max-height: 0;
-    opacity: 0;
+    max-height: 0;\n    opacity: 0;
     padding-top: 0;
     padding-bottom: 0;
   }
@@ -333,8 +334,7 @@ body {
 /* Les filter-group prennent l'espace équitablement */
 .filter-row .filter-group {
   flex: 1;
-  min-width: 0; /* Important pour le flex */
-  margin-bottom: 0;
+  min-width: 0; /* Important pour le flex */\n  margin-bottom: 0;
 }
 
 .filter-group {
@@ -451,8 +451,7 @@ body {
 
 /* Boutons de filtrage par note */
 .rating-filter-buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: grid;\n  grid-template-columns: repeat(4, 1fr);
   gap: 0.5rem;
 }
 
@@ -505,8 +504,7 @@ body {
   border: 1px solid #dee2e6;
   border-radius: 12px;
   padding: 1rem 1.25rem;
-  margin-bottom: 0.5rem;
-  cursor: pointer;
+  margin-bottom: 0.5rem;\n  cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
@@ -657,8 +655,7 @@ body {
 }
 
 .add-restaurant-form h2 {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
+  font-size: 1.2rem;\n  margin-bottom: 1rem;
   color: #2c3e50;
 }
 
@@ -796,18 +793,40 @@ body {
 
 @media (max-width: 768px) {
   .main-container {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    height: 50%;
-    border-left: none;
-    border-top: 1px solid #dee2e6;
+    display: block; /* Disable flex column behavior */
+    position: relative;
+    height: calc(100vh - 60px); /* Assuming header is around 60px */
   }
 
   .map-section {
-    height: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100% !important;
+    z-index: 1;
+  }
+
+  .sidebar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    
+    width: 100%;
+    height: 55vh; /* Default height for bottom sheet */
+    max-height: 85vh; /* Allow expansion but keep some map visible */
+    
+    background: #fff;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -8px 24px rgba(0,0,0,0.18);
+    overflow-y: auto;
+    
+    border-left: none;
+    border-top: none;
+    z-index: 1000;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
   }
 
   .header-content {
@@ -823,8 +842,7 @@ body {
 
   .user-info {
     order: -1;
-    width: 100%;
-    justify-content: center;
+    width: 100%;\n    justify-content: center;
   }
 
   /* Responsive filtres */
@@ -851,6 +869,11 @@ body {
 
   .sort-btn {
     font-size: 0.85rem;
+  }
+  
+  /* Area results badge on mobile */
+  .area-results {
+    border-radius: 16px 16px 0 0; /* Match sidebar radius */
   }
 }
 
