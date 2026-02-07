@@ -34,18 +34,28 @@ body {
   align-items: center;
   max-width: 1400px;
   margin: 0 auto;
+  gap: 1rem;
 }
 
 .header-left h1 {
   font-size: 1.6rem;
   margin: 0;
   font-weight: 600;
+  white-space: nowrap; /* Prevent logo wrap */
+}
+
+/* Centre: Barre de recherche */
+.header-center {
+  flex: 1;
+  max-width: 600px;
+  margin: 0 1rem;
 }
 
 .header-right {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-shrink: 0;
 }
 
 .user-info {
@@ -836,15 +846,72 @@ body {
     padding-bottom: calc(10px + env(safe-area-inset-bottom));
   }
 
-  .header-content {
-    flex-direction: column;
-    gap: 1rem;
+  /* === HEADER RESPONSIVE OPTIMISÉ (Mobile One-Line) === */
+  .header {
+    padding: 0.5rem 0.75rem; /* Reduce padding significantly */
   }
 
-  .header-right {
-    width: 100%;
+  .header-content {
+    flex-direction: row; /* Keep elements in a row */
+    gap: 0.5rem; /* Reduce gap */
     justify-content: space-between;
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* Force single line */
+  }
+
+  /* Logo: Icon only on very small screens, or small text */
+  .header-left h1 {
+    font-size: 1.1rem; /* Smaller font */
+  }
+  
+  .header-left h1 svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Search Bar: Compact mode */
+  .header-center {
+    flex: 1; /* Take available space */
+    margin: 0; /* Remove margin */
+    min-width: 0; /* Allow shrinking */
+  }
+  
+  .search-bar-header {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 0 0.5rem;
+    height: 36px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .search-input-header {
+    font-size: 0.85rem;
+    padding: 0.2rem 0.5rem;
+  }
+  
+  /* Hide text placeholder on very small screens if needed, 
+     but flexbox usually handles it by shrinking input */
+     
+  .btn-filter-header, .btn-add-header, .btn-clear-search {
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+  }
+  
+  /* User Profile: Icon only, hide name if needed */
+  .header-right {
+    width: auto; /* Auto width, not 100% */
+    gap: 0;
+  }
+  
+  .user-menu-trigger {
+    padding: 0.4rem;
+    background: transparent;
+    border: none;
+  }
+  
+  .user-menu-trigger span {
+    display: none; /* Hide username on mobile to save space */
   }
 
   .user-info {
