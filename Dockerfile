@@ -11,7 +11,8 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 # Install deps
 COPY frontend/package*.json ./
-RUN npm ci --legacy-peer-deps
+# Use 'npm install' because package-lock.json is missing in the repo
+RUN npm install --legacy-peer-deps
 
 # Build
 COPY frontend/ .
@@ -24,7 +25,8 @@ WORKDIR /app
 
 # Setup Backend
 COPY backend/package*.json ./
-RUN npm ci --production --legacy-peer-deps
+# Use 'npm install' because package-lock.json is missing in the repo
+RUN npm install --production --legacy-peer-deps
 
 # Copy backend source code
 COPY backend/ .
