@@ -16,12 +16,9 @@ RUN npm install --legacy-peer-deps
 
 # Build
 COPY frontend/ .
-# DEBUG: List files to ensure everything is here
-RUN ls -R src/
 
-# Disable type checking during build (tsc) to allow build even with minor TS errors
-# We replace "vite build" with "npx vite build" to bypass potential script alias issues
-RUN npx vite build --emptyOutDir
+# Try standard build script first
+RUN npm run build
 
 # Stage 2: Build Backend & Serve
 FROM node:20-alpine
