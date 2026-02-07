@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import Header from './components/Header'
 import Map from './components/Map'
 import RestaurantList from './components/RestaurantList'
@@ -21,6 +21,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('')
   const [showFilters, setShowFilters] = useState(false) // État du panneau de filtres
   const [hasActiveFilters, setHasActiveFilters] = useState(false) // État des filtres actifs
+  const [mapBounds, setMapBounds] = useState(null) // { south, west, north, east } ou null
   const userPanelRef = useRef(null)
   const mapRef = useRef(null)
 
@@ -46,8 +47,7 @@ function App() {
     }
   }, [showUserPanel])
 
-  const loadRestaurants = async () => {
-    try {
+  const loadRestaurants = async () => {\n    try {
       const response = await fetch('/api/restaurants')
       const data = await response.json()
       setRestaurants(data.data || data)
@@ -154,6 +154,32 @@ function App() {
 
   const canAddRestaurant = user && (user.role === 'user' || user.role === 'admin')
 
+  // Calcul des restaurants visibles (visible + pinned)
+  const visibleRestaurants = useMemo(() => {
+    if (!mapBounds) return restaurants
+
+    const inView = (r) => {
+      const lat = Number(r.lat)
+      const lon = Number(r.lon)
+      if (Number.isNaN(lat) || Number.isNaN(lon)) return false
+      return (
+        lat >= mapBounds.south &&
+        lat <= mapBounds.north &&
+        lon >= mapBounds.west &&
+        lon <= mapBounds.east
+      )
+    }
+
+    const visibles = restaurants.filter(inView)
+
+    // Strict + pinned : on garde le resto sélectionné même hors zone
+    if (selectedRestaurant && !visibles.some(r => (r._id || r.id) === (selectedRestaurant._id || selectedRestaurant.id))) {
+      return [selectedRestaurant, ...visibles]
+    }
+
+    return visibles
+  }, [restaurants, mapBounds, selectedRestaurant])
+
   return (
     <div className={`app ${showUserPanel ? 'panel-open' : ''}`}>
       <Header 
@@ -183,14 +209,14 @@ function App() {
             onSelectRestaurant={handleSelectRestaurant}
             showUserPanel={showUserPanel}
             showRestaurantDetail={showRestaurantDetail}
+            onBoundsChange={setMapBounds}
           />
           
           {showRestaurantDetail && selectedRestaurant && (
             <RestaurantDetail
               restaurant={selectedRestaurant}
               onClose={() => {
-                setShowRestaurantDetail(false)
-                setSelectedRestaurant(null)
+                setShowRestaurantDetail(false)\n                setSelectedRestaurant(null)
                 setPendingReview(null)
               }}
               user={user}
@@ -202,6 +228,24 @@ function App() {
         </div>
 
         <div className="sidebar">
+          {/* Compteur de résultats dans la zone */}
+          {mapBounds && !showAddForm && (
+              <div className="area-results" style={{
+                  padding: '10px 12px',
+                  background: 'rgba(255,255,255,0.92)',
+                  backdropFilter: 'blur(6px)',
+                  borderBottom: '1px solid rgba(0,0,0,0.06)',
+                  fontWeight: '600',
+                  fontSize: '0.9rem',
+                  color: '#495057',
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 10
+              }}>
+                {visibleRestaurants.length} résultat(s) dans la zone
+              </div>
+          )}
+
           {showAddForm && canAddRestaurant && (
             <AddRestaurantForm 
               onSubmit={handleAddRestaurant}
@@ -213,7 +257,7 @@ function App() {
           )}
 
           <RestaurantList 
-            restaurants={restaurants}
+            restaurants={visibleRestaurants}
             selectedRestaurant={selectedRestaurant}
             onSelectRestaurant={handleSelectRestaurant}
             searchTerm={searchTerm}
