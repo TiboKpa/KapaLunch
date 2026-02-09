@@ -4,6 +4,11 @@
   box-sizing: border-box;
 }
 
+:root {
+  --header-height: 64px;
+  --sheet-peek-height: 60px; /* Fixed height for the 'low' sheet position */
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -24,6 +29,9 @@ body {
   color: white;
   padding: 0.75rem 2rem;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 2000;
+  position: relative;
+  height: var(--header-height);
 }
 
 .header-content {
@@ -32,18 +40,183 @@ body {
   align-items: center;
   max-width: 1400px;
   margin: 0 auto;
+  gap: 1rem;
 }
 
 .header-left h1 {
   font-size: 1.6rem;
   margin: 0;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Centre: Barre de recherche */
+.header-center {
+  flex: 1;
+  max-width: 600px;
+  margin: 0 1rem;
+}
+
+/* ===== BARRE DE RECHERCHE DANS LE HEADER (Style Main Branch) ===== */
+.search-bar-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 24px;
+  padding: 0 0.5rem;
+  transition: all 0.3s ease;
+  height: 40px;
+  width: 100%;
+}
+
+.search-bar-header:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.search-bar-header:focus-within {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+.search-icon {
+  display: block; /* Toujours visible comme sur main */
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0.5rem;
+  flex-shrink: 0;
+}
+
+.search-input-header {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 0.95rem;
+  padding: 0.5rem 0;
+  min-width: 0;
+  border-radius: 0;
+  box-shadow: none !important;
+}
+
+.search-input-header::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.search-input-header:focus {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Boutons dans le header (Style Main Branch) */
+.btn-filter-header,
+.btn-add-header,
+.btn-clear-search {
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+/* Bouton croix pour effacer */
+.btn-clear-search {
+  width: 28px;
+  height: 28px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0.25rem;
+}
+
+.btn-clear-search:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Bouton Filtres dans le header */
+.btn-filter-header {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  width: 32px;
+  height: 32px;
+  margin-left: 0.25rem;
+}
+
+.btn-filter-header:hover {
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: scale(1.05);
+}
+
+/* Bouton + dans le header */
+.btn-add-header {
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  width: 32px;
+  height: 32px;
+  margin-left: 0.25rem;
+}
+
+.btn-add-header:hover {
+  background: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.7);
+  transform: scale(1.1) rotate(90deg);
+}
+
+.filter-notification-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  background: #dc3545;
+  border: 2px solid white;
+  border-radius: 50%;
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.9;
+  }
 }
 
 .header-right {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-shrink: 0;
+}
+
+.user-menu-trigger {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-menu-trigger:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .user-info {
@@ -93,7 +266,6 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* Bouton Ajouter un resto */
 .btn-add {
   background: rgba(255, 255, 255, 0.2);
   color: white;
@@ -111,7 +283,6 @@ body {
   font-size: 0.85rem;
 }
 
-/* Actions utilisateur avec icônes */
 .user-actions {
   display: flex;
   align-items: center;
@@ -166,6 +337,7 @@ body {
   flex: 1;
   display: flex;
   overflow: hidden;
+  position: relative;
 }
 
 .map-section {
@@ -183,6 +355,7 @@ body {
   background: #f8f9fa;
   overflow-y: auto;
   border-left: 1px solid #dee2e6;
+  z-index: 10;
 }
 
 .restaurant-list {
@@ -241,21 +414,18 @@ body {
   border-color: #667eea;
 }
 
-/* Bouton actif (panneau ouvert) */
 .filter-toggle-btn.active {
   background: #667eea;
   border-color: #667eea;
   color: white;
 }
 
-/* Indicateur subtil de filtres actifs (panneau fermé) */
 .filter-toggle-btn.has-active-filters:not(.active) {
   background: #e8eeff;
   border-color: #667eea;
   color: #667eea;
 }
 
-/* Badge indicateur */
 .filter-toggle-btn.has-active-filters::after {
   content: '';
   position: absolute;
@@ -286,7 +456,6 @@ body {
   overflow: hidden;
 }
 
-/* Animation d'ouverture panneau filtres */
 @keyframes slideDownPanel {
   from {
     max-height: 0;
@@ -302,7 +471,6 @@ body {
   }
 }
 
-/* Animation de fermeture panneau filtres */
 @keyframes slideUpPanel {
   from {
     max-height: 500px;
@@ -322,7 +490,6 @@ body {
   animation: slideUpPanel 0.3s ease forwards;
 }
 
-/* Ligne de filtres Type + Ville (responsive) */
 .filter-row {
   display: flex;
   gap: 1rem;
@@ -330,10 +497,9 @@ body {
   align-items: end;
 }
 
-/* Les filter-group prennent l'espace équitablement */
 .filter-row .filter-group {
   flex: 1;
-  min-width: 0; /* Important pour le flex */
+  min-width: 0;
   margin-bottom: 0;
 }
 
@@ -370,7 +536,6 @@ body {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* Bouton croix de réinitialisation avec animation */
 .btn-reset-filters-icon {
   background: white;
   border: 1px solid #ced4da;
@@ -388,7 +553,6 @@ body {
   animation: fadeInScale 0.3s ease;
 }
 
-/* Animation d'apparition de la croix */
 @keyframes fadeInScale {
   from {
     opacity: 0;
@@ -411,7 +575,6 @@ body {
   display: block;
 }
 
-/* Boutons de tri */
 .sort-buttons {
   display: flex;
   gap: 0.5rem;
@@ -449,7 +612,6 @@ body {
   flex-shrink: 0;
 }
 
-/* Boutons de filtrage par note */
 .rating-filter-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -483,17 +645,14 @@ body {
   border-color: #ffc107;
 }
 
-/* Étoiles deviennent blanches quand le bouton est actif */
 .rating-btn.active svg {
   fill: white;
 }
 
-/* ===== ANCIENNE BARRE DE FILTRES (supprimée) ===== */
 .filter-bar {
   display: none;
 }
 
-/* ===== LISTE DES RESTAURANTS (style panneau utilisateur) ===== */
 .list-container {
   flex: 1;
   overflow-y: auto;
@@ -510,7 +669,7 @@ body {
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem; /* ✅ Gap vertical entre ligne 1 et ligne 2 */
+  gap: 0.5rem;
 }
 
 .restaurant-item:hover {
@@ -526,13 +685,12 @@ body {
   padding: calc(1rem - 1px) calc(1.25rem - 1px);
 }
 
-/* Ligne 1 : Nom + Note */
 .restaurant-header-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0.75rem;
-  margin: 0; /* ✅ Pas de margin, on utilise gap du parent */
+  margin: 0;
 }
 
 .restaurant-header-line h3 {
@@ -565,13 +723,12 @@ body {
   color: #495057;
 }
 
-/* Ligne 2 : Type + Ville */
 .restaurant-info-line {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
-  margin: 0; /* ✅ Pas de margin, on utilise gap du parent */
+  margin: 0;
 }
 
 .type-badge {
@@ -596,7 +753,6 @@ body {
   flex-shrink: 0;
 }
 
-/* Ancien affichage supprimé */
 .restaurant-item .address {
   display: none;
 }
@@ -612,15 +768,13 @@ body {
 }
 
 .add-restaurant-form {
-  background: white;
-  padding: 1.5rem;
+  background: white;  padding: 1.5rem;
   border-bottom: 2px solid #dee2e6;
   margin-bottom: 0.5rem;
   animation: slideDownForm 0.3s ease;
   overflow: hidden;
 }
 
-/* Animation d'ouverture formulaire */
 @keyframes slideDownForm {
   from {
     max-height: 0;
@@ -636,7 +790,6 @@ body {
   }
 }
 
-/* Animation de fermeture formulaire */
 @keyframes slideUpForm {
   from {
     max-height: 1000px;
@@ -771,106 +924,4 @@ body {
   cursor: pointer;
   font-weight: 500;
   margin-left: 0.5rem;
-  text-decoration: underline;
-}
-
-.link-btn:hover {
-  color: #764ba2;
-}
-
-.leaflet-popup-content {
-  margin: 0.5rem;
-}
-
-.popup-content h3 {
-  margin: 0 0 0.5rem 0;
-  color: #2c3e50;
-  font-size: 1.1rem;
-}
-
-.popup-content p {
-  margin: 0.3rem 0;
-  color: #495057;
-  font-size: 0.9rem;
-}
-
-@media (max-width: 768px) {
-  .main-container {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    height: 50%;
-    border-left: none;
-    border-top: 1px solid #dee2e6;
-  }
-
-  .map-section {
-    height: 50%;
-  }
-
-  .header-content {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .header-right {
-    width: 100%;
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
-
-  .user-info {
-    order: -1;
-    width: 100%;
-    justify-content: center;
-  }
-
-  /* Responsive filtres */
-  .filter-row {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .filter-row .filter-group {
-    width: 100%;
-    margin-bottom: 0;
-  }
-
-  /* Croix prend toute la largeur sur mobile */
-  .btn-reset-filters-icon {
-    width: 100%;
-    border-radius: 6px;
-    height: 40px;
-  }
-
-  .rating-filter-buttons {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .sort-btn {
-    font-size: 0.85rem;
-  }
-}
-
-.list-container::-webkit-scrollbar,
-.sidebar::-webkit-scrollbar {
-  width: 8px;
-}
-
-.list-container::-webkit-scrollbar-track,
-.sidebar::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.list-container::-webkit-scrollbar-thumb,
-.sidebar::-webkit-scrollbar-thumb {
-  background: #cbd5e0;
-  border-radius: 4px;
-}
-
-.list-container::-webkit-scrollbar-thumb:hover,
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: #a0aec0;
-}
+  text-decoration: underline;\n}\n\n.link-btn:hover {\n  color: #764ba2;\n}\n\n.leaflet-popup-content {\n  margin: 0.5rem;\n}\n\n.popup-content h3 {\n  margin: 0 0 0.5rem 0;\n  color: #2c3e50;\n  font-size: 1.1rem;\n}\n\n.popup-content p {\n  margin: 0.3rem 0;\n  color: #495057;\n  font-size: 0.9rem;\n}\n\n@media (max-width: 768px) {\n  .main-container {\n    display: block;\n    position: relative;\n    height: calc(100vh - var(--header-height));\n  }\n\n  .map-section {\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    height: 100% !important;\n    z-index: 1;\n  }\n\n  .sidebar {\n    display: none;\n  }\n\n  .header {\n    padding: 0.5rem 0.5rem;\n    height: var(--header-height);\n  }\n\n  .header-content {\n    display: flex !important;\n    flex-direction: row !important;\n    flex-wrap: nowrap !important;\n    align-items: center;\n    justify-content: space-between;\n    gap: 0.5rem;\n    height: 48px;\n    width: 100%;\n  }\n\n  .header-left {\n    flex-shrink: 0;\n    flex-grow: 0;\n  }\n\n  .header-left h1 {\n    font-size: 0;\n    background: transparent;\n    width: 42px;\n    height: 42px;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    border-radius: 0;\n  }\n  \n  .header-left h1 svg {\n    width: 28px;\n    height: 28px;\n    display: block;\n  }\n\n  .header-center {\n    flex: 1 1 auto;\n    margin: 0;\n    max-width: none;\n    min-width: 0;\n    overflow: hidden;\n  }\n  \n  /* Reset mobile styles for search bar container */\n  .search-bar-header {\n    background: rgba(255, 255, 255, 0.2);\n    border-radius: 24px; /* Same rounded style */\n    padding: 0 0.5rem;\n    height: 40px; /* Reduced height for mobile if needed, but 40px is good */\n    width: 100%;\n    display: flex;\n    align-items: center;\n    border: 1px solid rgba(255, 255, 255, 0.1);\n  }\n\n  .search-icon {\n    display: block;\n    width: 18px;\n    height: 18px;\n    opacity: 0.8;\n    margin-right: 0.2rem;\n    flex-shrink: 0;\n    margin-left: 0.5rem;\n  }\n  \n  .search-input-header {\n    background: transparent;\n    padding: 0;\n    height: 100%;\n    font-size: 1rem;\n    border: none;\n    box-shadow: none !important;\n    flex: 1;\n    min-width: 0;\n  }\n\n  /* Specific mobile button styles */\n  .btn-filter-header {\n    background: transparent; /* Keep consistent with desktop new style */\n    width: 32px;\n    height: 32px;\n    border-radius: 50%;\n    margin-left: 0.25rem;\n    flex-shrink: 0;\n    border: 1px solid rgba(255, 255, 255, 0.4);\n  }\n\n  .btn-clear-search {\n    background: transparent;\n    width: 28px;\n    height: 28px;\n    flex-shrink: 0;\n  }\n  \n  .btn-add-header {\n    display: none;\n  }\n\n  .header-right {\n    flex-shrink: 0;\n    flex-grow: 0;\n    width: auto;\n    gap: 0;\n  }\n  \n  .user-menu-trigger {\n    background: rgba(255, 255, 255, 0.2);\n    width: 38px;\n    height: 38px;\n    border-radius: 12px;\n    padding: 0;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n  }\n  \n  .user-menu-trigger span {\n    display: none;\n  }\n  \n  .user-menu-trigger svg {\n    width: 20px;\n    height: 20px;\n  }\n\n  .user-info {\n    order: -1;\n    width: 100%;\n    justify-content: center;\n  }\n\n  .filter-row {\n    flex-direction: column;\n    gap: 1rem;\n  }\n\n  .filter-row .filter-group {\n    width: 100%;\n    margin-bottom: 0;\n  }\n\n  .btn-reset-filters-icon {\n    width: 100%;\n    border-radius: 6px;\n    height: 40px;\n  }\n\n  .rating-filter-buttons {\n    grid-template-columns: repeat(2, 1fr);\n  }\n\n  .sort-btn {\n    font-size: 0.85rem;\n  }\n  \n  .area-results {\n    border-radius: 16px 16px 0 0;\n  }\n  \n  /* === SPLIT VIEW DETAIL MODE MOBILE === */\n  .restaurant-detail-overlay {\n    position: fixed;\n    top: var(--header-height) !important; /* Force override */\n    bottom: var(--sheet-peek-height) !important; /* Force override */\n    left: 0;\n    right: 0;\n    width: 100%;\n    height: auto;\n    background: transparent;\n    z-index: 1500; /* Between Sheet (1000) and Header (2000) */\n    padding: 0;\n    align-items: stretch;\n    animation: none;\n  }\n  \n  .restaurant-detail {\n    width: 100%;\n    height: 100%;\n    max-height: none;\n    max-width: none;\n    border-radius: 0;\n    margin: 0;\n    box-shadow: 0 4px 12px rgba(0,0,0,0.1);\n    overflow-y: auto;\n    position: relative;\n    background: white;\n  }\n  \n  .restaurant-detail .close-btn {\n    top: 0.5rem;\n    right: 0.5rem;\n    background: rgba(0,0,0,0.05);\n    z-index: 10;\n  }\n}\n\n.list-container::-webkit-scrollbar,\n.sidebar::-webkit-scrollbar {\n  width: 8px;\n}\n\n.list-container::-webkit-scrollbar-track,\n.sidebar::-webkit-scrollbar-track {\n  background: #f1f1f1;\n}\n\n.list-container::-webkit-scrollbar-thumb,\n.sidebar::-webkit-scrollbar-thumb {\n  background: #cbd5e0;\n  border-radius: 4px;\n}\n\n.list-container::-webkit-scrollbar-thumb:hover,\n.sidebar::-webkit-scrollbar-thumb:hover {\n  background: #a0aec0;\n}

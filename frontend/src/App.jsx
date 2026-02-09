@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import Header from './components/Header'
 import Map from './components/Map'
 import RestaurantList from './components/RestaurantList'
 import AddRestaurantForm from './components/AddRestaurantForm'
 import RestaurantDetail from './components/RestaurantDetail'
 import Toast from './components/Toast'
+import BottomSheet from './components/BottomSheet'
 import './styles/App.css'
 import './styles/features.css'
 import './styles/header-user-panel.css'
@@ -19,17 +20,30 @@ function App() {
   const [pendingReview, setPendingReview] = useState(null)
   const [toast, setToast] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [showFilters, setShowFilters] = useState(false) // État du panneau de filtres
-  const [hasActiveFilters, setHasActiveFilters] = useState(false) // État des filtres actifs
+  const [showFilters, setShowFilters] = useState(false)
+  const [hasActiveFilters, setHasActiveFilters] = useState(false)
+  const [mapBounds, setMapBounds] = useState(null)
+  
+  // Sheet state: 'high' | 'mid' | 'low'
+  const [sheetPosition, setSheetPosition] = useState('mid')
+  
   const userPanelRef = useRef(null)
   const mapRef = useRef(null)
+
+  // Detect mobile view to conditionally render BottomSheet or classic Sidebar
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     loadRestaurants()
     checkUserSession()
   }, [])
 
-  // Fermer le panneau utilisateur au clic en dehors
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (showUserPanel && userPanelRef.current && !userPanelRef.current.contains(event.target)) {
@@ -106,7 +120,10 @@ function App() {
     setSelectedRestaurant(restaurant)
     setShowRestaurantDetail(true)
     setShowAddForm(false)
-    setShowUserPanel(false) // Fermer le panneau utilisateur
+    setShowUserPanel(false)
+    
+    // Auto-collapse sheet on selection to show map/detail
+    setSheetPosition('low')
     
     if (reviewData) {
       setPendingReview(reviewData)
@@ -117,28 +134,29 @@ function App() {
     loadRestaurants()
     setSelectedRestaurant(null)
     setShowRestaurantDetail(false)
+    setSheetPosition('mid')
   }
 
   const handleLogoClick = () => {
     setSelectedRestaurant(null)
     setShowRestaurantDetail(false)
+    setSheetPosition('mid')
     
     if (mapRef.current && mapRef.current.resetView) {
       mapRef.current.resetView()
     }
   }
 
-  // Handler pour ouvrir le formulaire d'ajout avec le searchTerm pré-rempli
   const handleToggleAddFormWithSearch = () => {
     setShowAddForm(true)
+    // Expand sheet to see form
+    if (isMobile) setSheetPosition('high')
   }
 
-  // Fonction pour réinitialiser la recherche ET les filtres
   const handleResetFilters = () => {
     setSearchTerm('')
   }
 
-  // Fonction wrapper pour showToast compatible avec AddRestaurantForm
   const showToast = (message, type = 'info', duration = 5000, actionLabel = null, onAction = null) => {
     setToast({
       message,
@@ -151,8 +169,84 @@ function App() {
       } : null
     })
   }
+  
+  const handleCloseDetail = () => {
+    setShowRestaurantDetail(false)
+    setSelectedRestaurant(null)
+    setPendingReview(null)
+    setSheetPosition('mid')
+  }
 
   const canAddRestaurant = user && (user.role === 'user' || user.role === 'admin')
+
+  const visibleRestaurants = useMemo(() => {
+    if (!mapBounds) return restaurants
+
+    const inView = (r) => {
+      const lat = Number(r.lat)
+      const lon = Number(r.lon)
+      if (Number.isNaN(lat) || Number.isNaN(lon)) return false
+      return (
+        lat >= mapBounds.south &&
+        lat <= mapBounds.north &&
+        lon >= mapBounds.west &&
+        lon <= mapBounds.east
+      )
+    }
+
+    const visibles = restaurants.filter(inView)
+
+    if (selectedRestaurant && !visibles.some(r => (r._id || r.id) === (selectedRestaurant._id || selectedRestaurant.id))) {
+      return [selectedRestaurant, ...visibles]
+    }
+
+    return visibles
+  }, [restaurants, mapBounds, selectedRestaurant])
+
+  // Mobile Bottom Sheet Content
+  const renderSidebarContent = () => (
+    <>
+      {mapBounds && !showAddForm && (
+          <div className="area-results" style={{
+              padding: '10px 12px',
+              background: 'rgba(255,255,255,0.92)',
+              backdropFilter: 'blur(6px)',
+              borderBottom: '1px solid rgba(0,0,0,0.06)',
+              fontWeight: '600',
+              fontSize: '0.9rem',
+              color: '#495057',
+              position: 'sticky',
+              top: 0,
+              zIndex: 10
+          }}>
+            {visibleRestaurants.length} résultat(s) dans la zone
+          </div>
+      )}
+
+      {showAddForm && canAddRestaurant && (
+        <AddRestaurantForm 
+          onSubmit={handleAddRestaurant}
+          restaurants={restaurants}
+          onExistingRestaurantFound={handleSelectRestaurant}
+          showToast={showToast}
+          initialName={searchTerm}
+        />
+      )}
+
+      <RestaurantList 
+        restaurants={visibleRestaurants}
+        selectedRestaurant={selectedRestaurant}
+        onSelectRestaurant={handleSelectRestaurant}
+        searchTerm={searchTerm}
+        showFilters={showFilters}
+        setShowFilters={setShowFilters}
+        canAddRestaurant={canAddRestaurant}
+        onOpenAddForm={handleToggleAddFormWithSearch}
+        onResetFilters={handleResetFilters}
+        onFiltersChange={setHasActiveFilters}
+      />
+    </>
+  )
 
   return (
     <div className={`app ${showUserPanel ? 'panel-open' : ''}`}>
@@ -183,16 +277,13 @@ function App() {
             onSelectRestaurant={handleSelectRestaurant}
             showUserPanel={showUserPanel}
             showRestaurantDetail={showRestaurantDetail}
+            onBoundsChange={setMapBounds}
           />
           
           {showRestaurantDetail && selectedRestaurant && (
             <RestaurantDetail
               restaurant={selectedRestaurant}
-              onClose={() => {
-                setShowRestaurantDetail(false)
-                setSelectedRestaurant(null)
-                setPendingReview(null)
-              }}
+              onClose={handleCloseDetail}
               user={user}
               onRestaurantDeleted={handleRestaurantDeleted}
               pendingReview={pendingReview}
@@ -201,30 +292,25 @@ function App() {
           )}
         </div>
 
-        <div className="sidebar">
-          {showAddForm && canAddRestaurant && (
-            <AddRestaurantForm 
-              onSubmit={handleAddRestaurant}
-              restaurants={restaurants}
-              onExistingRestaurantFound={handleSelectRestaurant}
-              showToast={showToast}
-              initialName={searchTerm}
-            />
-          )}
-
-          <RestaurantList 
-            restaurants={restaurants}
-            selectedRestaurant={selectedRestaurant}
-            onSelectRestaurant={handleSelectRestaurant}
-            searchTerm={searchTerm}
-            showFilters={showFilters}
-            setShowFilters={setShowFilters}
-            canAddRestaurant={canAddRestaurant}
-            onOpenAddForm={handleToggleAddFormWithSearch}
-            onResetFilters={handleResetFilters}
-            onFiltersChange={setHasActiveFilters}
-          />
-        </div>
+        {isMobile ? (
+          <BottomSheet 
+            defaultPosition={sheetPosition}
+            // Use CSS var for header height to ensure perfect sync
+            // Use CSS var for low position height to ensure perfect sync with overlay
+            positions={{ 
+              high: 'calc(100dvh - var(--header-height))', 
+              mid: '45vh', 
+              low: 'var(--sheet-peek-height)' 
+            }}
+            onPositionChange={setSheetPosition}
+          >
+            {renderSidebarContent()}
+          </BottomSheet>
+        ) : (
+          <div className="sidebar">
+            {renderSidebarContent()}
+          </div>
+        )}
       </div>
 
       {toast && (
