@@ -17,6 +17,8 @@
   justify-self: center;
   width: 100%;
   max-width: 600px;
+  display: flex;
+  align-items: center;
 }
 
 .header-right {
@@ -33,7 +35,8 @@
   border-radius: 24px;
   padding: 0 0.5rem;
   transition: all 0.3s ease;
-  height: 40px;
+  height: 48px; /* Hauteur cohérente avec App.css */
+  width: 100%;
 }
 
 .search-bar-header:hover {
@@ -51,6 +54,8 @@
   color: rgba(255, 255, 255, 0.8);
   margin: 0 0.5rem;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
 .search-input-header {
@@ -60,8 +65,11 @@
   outline: none;
   color: white;
   font-size: 0.95rem;
-  padding: 0.5rem 0;
+  padding: 0; /* Suppression du padding vertical pour un centrage parfait */
   min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }
 
 .search-input-header::placeholder {
@@ -732,7 +740,7 @@
   border: 1px solid #c3e6cb;
 }
 
-/* ===== PROMPT "AUCUN RÉSULTAT" ===== */
+/* ===== PROMPT \"AUCUN RÉSULTAT\" ===== */
 .no-results-prompt {
   display: flex;
   flex-direction: column;
@@ -831,9 +839,13 @@
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .header-content {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    padding: 1rem;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0;
+    height: 100%;
   }
 
   .header-left,
